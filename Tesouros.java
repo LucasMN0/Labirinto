@@ -1,8 +1,8 @@
-package Labirinto;
+package LABIRINTO;
 
 import java.util.*;
 
-abstract class Tesouros{
+public abstract class Tesouros{
     private String nome;
     private ArrayList<ArrayList<String>> localizacao;
     private String tipo;

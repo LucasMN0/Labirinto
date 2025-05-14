@@ -1,8 +1,8 @@
-package Labirinto;
+package LABIRINTO;
 
 import java.util.*;
 
-class Labirinto {
+public class Labirinto {
     private ArrayList<ArrayList<String>> estruturaLabirinto;
     private ArrayList<String> listaTesouros;
     private ArrayList<String> listaPerigos;
@@ -231,7 +231,7 @@ class Labirinto {
     }
 
     public void limparTerminal(){
-        for(int i=0;i<30;++i){
+        for(int i=0;i<15;++i){
             System.out.println();
         }
     }

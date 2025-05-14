@@ -1,8 +1,8 @@
-package Labirinto;
+package LABIRINTO;
 
 import java.util.*;
 
-class Perigo{
+public class Perigo{
     private ArrayList<ArrayList<String>> localizacao;
     private int dano;
 

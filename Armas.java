@@ -1,8 +1,8 @@
-package Labirinto;
+package LABIRINTO;
 
 import java.util.*;
 
-class Armas extends Tesouros{
+public class Armas extends Tesouros{
     private int dano;
 
     public Armas(String nome,ArrayList<ArrayList<String>> localizacao,String tipo, int dano){

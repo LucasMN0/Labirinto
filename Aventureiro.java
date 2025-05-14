@@ -1,4 +1,4 @@
-package Labirinto;
+package LABIRINTO;
 
 import java.util.*;
 
@@ -15,12 +15,12 @@ class Aventureiro {
  * uma consideração minha, papo q eu gostei da musiquinha q tu fez mano, ficou simples mas ficou super legalzinho skskskksks
  * amanha nos vemos mais, qualquer coisa pode chamar.
  */
-    public Aventureiro(String nome, int startJ, int startI, ArrayList<String> tesourosEncontrados, Labirinto labirinto) {
+    public Aventureiro(String nome, ArrayList<String> tesourosEncontrados, Labirinto labirinto) {
         this.nome = nome;
-        this.posJ = startJ;
-        this.posI = startI;
         this.tesourosEncontrados = tesourosEncontrados;
         this.labirintoAtual = labirinto;
+
+        encontrarPosicaoInicial();
     }
     public int getPosJ() {return posJ;}
     public int getPosi() {return posI;}
@@ -54,12 +54,26 @@ class Aventureiro {
         }
 
         if(podeMover(novoJ, novoI)){
+            labirintoAtual.getEstrutura().get(posI).set(posJ, "°");
             posJ = novoJ;
             posI = novoI;
+            labirintoAtual.getEstrutura().get(posI).set(posJ, "O");
             verificarTesouro();
             return true;
         }
         return false;
+    }
+
+    public boolean sair(){
+        ArrayList<ArrayList<String>> estrutura = labirintoAtual.getEstrutura();
+        for (int i = 0; i < estrutura.size(); i++) {
+            for (int j = 0; j < estrutura.get(i).size(); j++) {
+                if ("S".equals(estrutura.get(i).get(j))) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private boolean podeMover(int j, int i){
@@ -74,7 +88,7 @@ class Aventureiro {
             "" é diferente de " " por isso funfa
         */ 
         String celula = labirintoAtual.getEstrutura().get(i).get(j);
-        return !celula.equals("X") && !celula.equals("");
+        return !celula.equals("X") && !celula.equals("") && !celula.equals("E");
     }
 
     private void verificarTesouro(){
@@ -84,6 +98,22 @@ class Aventureiro {
             System.out.println("voce encontrou um tesouro: " + celula);
         }
     }
+private void encontrarPosicaoInicial() {
+    ArrayList<ArrayList<String>> estrutura = labirintoAtual.getEstrutura();
+    for (int i = 0; i < estrutura.size(); i++) {
+        for (int j = 0; j < estrutura.get(i).size(); j++) {
+            if ("O".equals(estrutura.get(i).get(j))) {
+                this.posI = i;
+                this.posJ = j;
+                return;
+            }
+        }
+    }
+    // Se não encontrar o "O"
+    System.out.println("Erro: posição inicial 'O' não encontrada no labirinto.");
+    this.posI = 0;
+    this.posJ = 0;
+}
 
     public void coletarRecursos() {
         // lógica futura de coleta

@@ -1,12 +1,12 @@
-package Labirinto;
+package LABIRINTO;
 
 import java.util.*;
 
-class Mapa{
+public class Mapa{
     private int level;
     private ArrayList<ArrayList<String>> estruturaMapa;
 
-    public Labirinto_Principal(int level) {
+    public Mapa(int level) {
         estruturaMapa = new ArrayList<>();
         this.level=level;
 
@@ -77,4 +77,14 @@ class Mapa{
         }
     }
     
+    public ArrayList<ArrayList<String>> getEstrutura(){
+        return estruturaMapa;
+    }
+
+    public void limparTerminal(){
+        for(int i=0;i<15;++i){
+            System.out.println();
+        }
+    }
+
 }

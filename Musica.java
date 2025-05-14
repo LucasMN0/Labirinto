@@ -1,8 +1,9 @@
-package Labirinto;
+package LABIRINTO;
 
-import import javax.sound.midi.*;
+import javax.sound.midi.*;
+import java.util.*;
 
-class DungeonMusic {
+public class Musica {
 
     private Sequencer sequencer;
 
