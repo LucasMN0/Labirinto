@@ -15,65 +15,64 @@ class Aventureiro {
  * uma consideração minha, papo q eu gostei da musiquinha q tu fez mano, ficou simples mas ficou super legalzinho skskskksks
  * amanha nos vemos mais, qualquer coisa pode chamar.
  */
-    public Aventureiro(String nome, ArrayList<String> tesourosEncontrados, Labirinto labirinto) {
+    public Aventureiro(String nome, ArrayList<String> tesourosEncontrados, Labirinto labirinto, int I , int J) {
         this.nome = nome;
         this.tesourosEncontrados = tesourosEncontrados;
         this.labirintoAtual = labirinto;
+        this.posI = I;
+        this.posJ = J;
 
-        encontrarPosicaoInicial();
+
     }
     public int getPosJ() {return posJ;}
-    public int getPosi() {return posI;}
+    public int getPosI() {return posI;}
 
-    public boolean mover(char direcao){
-        char direcaoUpper = Character.toUpperCase(direcao);
+public boolean mover(char direcao) {
+    char direcaoUpper = Character.toUpperCase(direcao);
 
-        if(direcaoUpper != 'W' && direcaoUpper != 'A' && direcaoUpper != 'S' && direcaoUpper != 'D'){
-            System.out.println("direção invalida! use W A S D" );
-            return false;
-        }
-        
-        int novoJ = posJ;
-        int novoI = posI;
-
-        switch(direcao){
-            case 'W':
-                novoI--;
-                break;
-            case 'S':
-                novoI++;
-                break;
-            case 'A':
-                novoJ--;
-                break;
-            case 'D':
-                novoJ++;
-                break;
-            default:
-                return false;
-        }
-
-        if(podeMover(novoJ, novoI)){
-            labirintoAtual.getEstrutura().get(posI).set(posJ, "°");
-            posJ = novoJ;
-            posI = novoI;
-            labirintoAtual.getEstrutura().get(posI).set(posJ, "O");
-            verificarTesouro();
-            return true;
-        }
+    if (direcaoUpper != 'W' && direcaoUpper != 'A' && direcaoUpper != 'S' && direcaoUpper != 'D') {
+        System.out.println("direção inválida! use W A S D");
         return false;
     }
 
-    public boolean sair(){
-        ArrayList<ArrayList<String>> estrutura = labirintoAtual.getEstrutura();
-        for (int i = 0; i < estrutura.size(); i++) {
-            for (int j = 0; j < estrutura.get(i).size(); j++) {
-                if ("S".equals(estrutura.get(i).get(j))) {
-                    return false;
-                }
-            }
-        }
+    int novoI = posI;
+    int novoJ = posJ;
+
+    switch (direcaoUpper) {
+        case 'W':
+            novoI--;
+            break;
+        case 'S':
+            novoI++;
+            break;
+        case 'A':
+            novoJ--;
+            break;
+        case 'D':
+            novoJ++;
+            break;
+    }
+
+    if (novoI < 0 || novoI >= labirintoAtual.getEstrutura().size()) {
+        return false;
+    }
+
+    if (podeMover(novoJ, novoI)) {
+        labirintoAtual.getEstrutura().get(posI).set(posJ, "°");
+        posI = novoI;
+        posJ = novoJ;
+        labirintoAtual.getEstrutura().get(posI).set(posJ, "O");
+        verificarTesouro();
         return true;
+    }
+
+    return false;
+}
+
+
+
+    public boolean sair(){
+        return posI == labirintoAtual.getFimI() && posJ == labirintoAtual.getFimJ();
     }
 
     private boolean podeMover(int j, int i){
@@ -98,22 +97,6 @@ class Aventureiro {
             System.out.println("voce encontrou um tesouro: " + celula);
         }
     }
-private void encontrarPosicaoInicial() {
-    ArrayList<ArrayList<String>> estrutura = labirintoAtual.getEstrutura();
-    for (int i = 0; i < estrutura.size(); i++) {
-        for (int j = 0; j < estrutura.get(i).size(); j++) {
-            if ("O".equals(estrutura.get(i).get(j))) {
-                this.posI = i;
-                this.posJ = j;
-                return;
-            }
-        }
-    }
-    // Se não encontrar o "O"
-    System.out.println("Erro: posição inicial 'O' não encontrada no labirinto.");
-    this.posI = 0;
-    this.posJ = 0;
-}
 
     public void coletarRecursos() {
         // lógica futura de coleta
