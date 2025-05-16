@@ -364,7 +364,7 @@ public class Labirinto {
     }
 
     public void gerar_Mapa(int Level) {
-        //estruturaLabirinto.clear(); // limpa mapa anterior, se houver
+        estruturaLabirinto.clear(); // limpa mapa anterior, se houver
         String[][] matriz;
         switch(Level){
             case 1:
