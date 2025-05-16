@@ -5,8 +5,8 @@ import java.util.*;
 public class Armas extends Tesouros{
     private int dano;
 
-    public Armas(String nome,ArrayList<ArrayList<String>> localizacao,String tipo, int dano){
-        super(nome,localizacao,tipo);
+    public Armas(String nome,int linha, int coluna, String tipo, int dano){
+        super(nome, linha, coluna, tipo);
         this.dano=dano;
     }
 

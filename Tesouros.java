@@ -1,25 +1,31 @@
 package LABIRINTO;
 
-import java.util.*;
-
-public abstract class Tesouros{
+public class Tesouros {
     private String nome;
-    private ArrayList<ArrayList<String>> localizacao;
+    private int linha;
+    private int coluna;
     private String tipo;
 
-    public Tesouros(String nome,ArrayList<ArrayList<String>> localizacao,String tipo){
-        this.nome=nome;
-        this.localizacao=localizacao;
-        this.tipo=tipo;
-    } 
+    public Tesouros(String nome, int linha, int coluna, String tipo) {
+        this.nome = nome;
+        this.tipo = tipo;
+        this.linha = linha;
+        this.coluna = coluna;
+    }
 
-    public String getTipo(){
+    public String getTipo() {
         return tipo;
     }
-    public String getNome(){
+
+    public String getNome() {
         return nome;
     }
-    public ArrayList<ArrayList<String>> getLocal(){
-        return localizacao;
+
+    public int getLinha() {
+        return linha;
+    }
+
+    public int getColuna() {
+        return coluna;
     }
 }

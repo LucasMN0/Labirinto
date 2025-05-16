@@ -10,6 +10,4 @@ public class Perigo{
         this.localizacao = localizacao;
         this.dano = dano;
     }
-
-
 }
