@@ -20,7 +20,7 @@ public class Centro{
 
         Aventureiro P2 = new Aventureiro("Lucas",tesourosEncontrados,lab[1],lab[1].getInicioI(),lab[1].getInicioJ());
         Aventureiro P3 = new Aventureiro("Lucas",tesourosEncontrados,lab[y],lab[y].getInicioI(),lab[y].getInicioJ());
-
+        Musica music = new Musica();
         lab[1].imprimirLabirinto();
 
         System.out.printf("Digite a direção: ");
@@ -29,15 +29,16 @@ public class Centro{
 
         System.out.println("Aventureiro " + P2.getPosJ() + ", " + P2.getPosI() + " no mapa");
         //Lobby.limparTerminal();
-
+        music.playLevel(1);
         while(!(P3.sair())){
+
+            System.out.println("Aventureiro " + P3.getPosJ() + ", " + P3.getPosI() + " no labirinto");
             lab[y].imprimirLabirinto();
             System.out.printf("Digite a direção: ");
             Direcao = sc.next().charAt(0);
             P3.mover(Direcao);
+            lab[y].limparTerminal();
             
-
-            System.out.println("Aventureiro " + P3.getPosJ() + ", " + P3.getPosI() + " no labirinto");
         }
         lab[y].limparTerminal();
 
@@ -45,8 +46,6 @@ public class Centro{
 
         System.out.println("Aventureiro " + P2.getPosJ() + ", " + P2.getPosI() + " no mapa");
         lab[1].imprimirLabirinto();
-        // Musica music = new Musica();
-        // music.playLevel(3);
 
 
         // for (int i = 0; i < x; i++) {
