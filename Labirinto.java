@@ -35,10 +35,21 @@ public class Labirinto {
 
         // Inicialização completa do sub-labirinto
         this.subLabirintoAtual = new Labirinto(idSubLabirinto);
-        this.subLabirintoAtual.emSubLabirinto = true; // Marca como sub-labirinto
+        this.subLabirintoAtual.setLabirintoPai(this); // aqui liga o pai
+        this.subLabirintoAtual.emSubLabirinto = true;
         this.emSubLabirinto = true;
 
+
         System.out.println("Entrando no labirinto secreto ID: " + idSubLabirinto);
+    }
+    private Labirinto encontrarLabirintoPrincipal(Labirinto atual) {
+        if (!atual.isEmSubLabirinto()) {
+            return atual;
+        }
+        if (atual.getLabirintoPai() != null) {
+            return encontrarLabirintoPrincipal(atual.getLabirintoPai());
+        }
+        return atual;
     }
 
     public void sairDoSubLabirinto() {
@@ -87,13 +98,13 @@ public class Labirinto {
     public int getFimI() {
         return (emSubLabirinto && subLabirintoAtual != null) ?
                 subLabirintoAtual.getFimI() :
-                FimI;
+        FimI;
     }
 
     public int getFimJ() {
         return (emSubLabirinto && subLabirintoAtual != null) ?
                 subLabirintoAtual.getFimJ() :
-                FimJ;
+        FimJ;
     }
 
     public int getID() {
@@ -107,6 +118,17 @@ public class Labirinto {
         return estruturaLabirinto;
     }
 
+    private Labirinto labirintoPai = null;
+
+    public Labirinto getLabirintoPai() {
+        return labirintoPai;
+    }
+
+    public void setLabirintoPai(Labirinto pai) {
+        this.labirintoPai = pai;
+    }
+
+
     public void gerar_labirinto(int ID){
         estruturaLabirinto.clear();
         String[][] matriz;
@@ -117,7 +139,7 @@ public class Labirinto {
                         {"X", "X", "S", "X", "X"},
                         {"X", " ", " ", " ", "X"},
                         {"X", " ", " ", " ", "X"},
-                        {"X", " ", " ", " ", "X"},
+                        {"X", " ", "O", " ", "X"},
                         {"X", "X", "E", "X", "X"},
                 };
                 this.InicioI = 3;
@@ -133,7 +155,7 @@ public class Labirinto {
                         {"X", " ", " ", " ", " ", " ", " ", "X"},
                         {"X", " ", " ", " ", " ", " ", " ", "X"},
                         {"X", " ", " ", " ", " ", " ", " ", "X"},
-                        {"E", " ", " ", " ", " ", " ", " ", "X"},
+                        {"E", "O", " ", " ", " ", " ", " ", "X"},
                         {"X", "X", "X", "X", "X", "X", "X", "X"},
                 };
                 this.InicioI = 6;
@@ -145,7 +167,7 @@ public class Labirinto {
                 matriz = new String[][] {
                         {"X", "X", "X", "X", "X", "X", "X", "X"},
                         {"X", " ", " ", " ", " ", " ", " ", "X"},
-                        {"E", " ", " ", " ", " ", " ", " ", "S"},
+                        {"E", "O", " ", " ", " ", " ", " ", "S"},
                         {"X", " ", " ", " ", " ", " ", " ", "X"},
                         {"X", "X", "X", "X", "X", "X", "X", "X"},
                 };
@@ -163,7 +185,7 @@ public class Labirinto {
                         {"X", " ", " ", "X", "X", "X", " ", " ","X"},
                         {"X", " ", " ", " ", "X", " ", " ", " ","X"},
                         {"X", "X", " ", " ", " ", " ", " ", "X","X"},
-                        {".", "X", "X", " ", " ", " ", "X", "X"},
+                        {".", "X", "X", " ", "O", " ", "X", "X"},
                         {".", ".", "X", "X", "E", "X" ,"X"},
                 };
                 this.InicioI = 7;
@@ -174,7 +196,7 @@ public class Labirinto {
             case 5:
                 matriz = new String[][] {
                         {"X", "X", "E", "X", "X"},
-                        {"X", " ", " ", " ", "X"},
+                        {"X", " ", "O", " ", "X"},
                         {"X", " ", " ", " ", "X"},
                         {"X", " ", " ", " ", "X"},
                         {"X", " ", " ", " ", "X"},
@@ -205,7 +227,7 @@ public class Labirinto {
                         {".", ".", ".", ".", "X", " ", " ", " ", "X"},
                         {".", ".", ".", ".", "X", " ", " ", " ", "X"},
                         {".", ".", ".", ".", "X", " ", " ", " ", "X"},
-                        {".", ".", ".", ".", "X", " ", " ", " ", "X"},
+                        {".", ".", ".", ".", "X", " ", "O", " ", "X"},
                         {".", ".", ".", ".", "X", "X", "E", "X", "X"},
                 };
                 this.InicioI = 13;
@@ -221,7 +243,7 @@ public class Labirinto {
                         {"X", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ","X"},
                         {"X", " ", " ", " ", "X", "X", "X", "X", "X", "X", "X", "X", "X", "X", "X", "X", " ", " ", " ", " ", " ","X"},
                         {"X", " ", " ", " ", "X", "X", "X", "X", "X", "X", "X", "X", "X", "X", ".", "X", " ", " ", " ", " ", " ","X"},
-                        {"X", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "X", ".", "X", "X", " ", " ", " ", "X","X"},
+                        {"X", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "X", ".", "X", "X", " ", "O", " ", "X","X"},
                         {"X", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "X", ".", ".", "X", "X", "E", "X", "X","."},
                         {"X", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "X", ".", ".", ".", ".", "X"},
                         {".", "X", "X", "X", "X", "X", "X", "X", "X", "X", " ", " ", " ", "X", ".", ".", ".", ".", "X"},
@@ -240,7 +262,7 @@ public class Labirinto {
                         {"X", "X", ".", ".", ".", "X", "X", "X", "X", "X"},
                         {"X", " ", "X", ".", "X", " ", " "," "," "," ", "X"},
                         {"X", " ", " ", "X", " ", " ", " ", " ", " ", "X"," ", "X"},
-                        {"E", " ", " ", " ", " ", " ", " ", " ", " ", " "," ", "S"},
+                        {"E", "O", " ", " ", " ", " ", " ", " ", " ", " "," ", "S"},
                         {"X", " ", " ", "X", " ", " ", " ", " ", " ", " "," ", "X"},
                         {"X", " ", "X", ".", "X", " ", " "," "," "," ", "X"},
                         {"X", "X", ".", ".", ".", "X", "X", "X", "X","X"},
@@ -261,7 +283,7 @@ public class Labirinto {
                         {"X"," "," "," ", " ", " "," ","X"},
                         {"X"," "," "," "," "," "," "," ","X"},
                         {"X","X"," "," "," "," "," "," "," ","X"},
-                        {".","X","X"," "," "," "," "," ","X","X"},
+                        {".","X","X"," "," ","O"," "," ","X","X"},
                         {".",".","X","X","X","E","X","X","X"},
                 };
                 this.InicioI = 9;
@@ -286,7 +308,7 @@ public class Labirinto {
                         {".",".",".",".","X"," "," "," ","X",".",".",".","."},
                         {".",".",".",".","X"," "," "," ","X",".",".",".","."},
                         {".",".",".",".","X"," "," "," ","X",".",".",".","."},
-                        {".",".",".",".","X"," "," "," ","X",".",".",".","."},
+                        {".",".",".",".","X"," ","O"," ","X",".",".",".","."},
                         {".",".",".",".","X","X","E","X","X",".",".",".","."},
                 };
                 this.InicioI = 15;
@@ -307,7 +329,7 @@ public class Labirinto {
                         {"X", "X", " ", " ", " ", " ", " ", " ", " ", " ", " ", "X","X"},
                         {".","X","X", " ", " ", "X", " ", "X"," "," ", "X","X"},
                         {".",".","X", "X", " ", "X", " ", "X"," ", "X","X"},
-                        {".",".",".", "X", " ", "X", " ", "X"," ", "X"},
+                        {".",".",".", "X", " ", "X", "O", "X"," ", "X"},
                         {".",".",".", "X", "X", "X", "E", "X","X", "X"},
                 };
                 this.InicioI = 11;
@@ -342,7 +364,7 @@ public class Labirinto {
     }
 
     public void gerar_Mapa(int Level) {
-        estruturaLabirinto.clear(); // limpa mapa anterior, se houver
+        //estruturaLabirinto.clear(); // limpa mapa anterior, se houver
         String[][] matriz;
         switch(Level){
             case 1:
@@ -406,7 +428,7 @@ public class Labirinto {
 
 
     public void imprimirLabirinto(Aventureiro jogador) {
-        // Verifica qual labirinto está ativo
+        //Verifica qual labirinto está ativo
         Labirinto labAtual = this.emSubLabirinto ? this.subLabirintoAtual : this;
 
         if (labAtual == null) {
