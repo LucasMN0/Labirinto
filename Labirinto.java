@@ -339,18 +339,18 @@ public class Labirinto {
                 break;
             default:
                 matriz = new String[][] {
-                        {"X", "X", "X", "X", "X", "X", "X"},
-                        {"X", " ", "X", " ", "X", " ", "X"},
-                        {"X", "X", "X", "X", "X", "X", "X"},
-                        {"X", " ", "X", " ", "X", " ", "X"},
-                        {"X", "X", "X", "X", "X", "X", "X"},
-                        {"X", " ", "X", " ", "X", " ", "X"},
-                        {"X", "X", "X", "X", "X", "X", "X"},
+                        {"X", "X", "X", "X", "X", "S", "X"},
+                        {"X", " ", " ", " ", " ", " ", "X"},
+                        {"X", "X", " ", "X", " ", "X", "X"},
+                        {"X", " ", " ", " ", " ", " ", "X"},
+                        {"X", "X", " ", "X", " ", "X", "X"},
+                        {"X", "O", " ", " ", " ", " ", "X"},
+                        {"X", "E", "X", "X", "X", "X", "X"},
                 };
-                this.InicioI = 6;
+                this.InicioI = 5;
                 this.InicioJ = 1;
                 this.FimI = 0;
-                this.FimJ = 6;
+                this.FimJ = 5;
         }
 
         for(int i = 0; i < matriz.length; i++) {
