@@ -1,133 +1,77 @@
 package LABIRINTO;
 
 import java.util.*;
+import java.util.Random;
 
 public class Labirinto {
+    private int ID;
+    private boolean isMapaPrincipal;
+    private int dificuldade; // 0 para labirintos, 1-3 para mapas
     private ArrayList<ArrayList<String>> estruturaLabirinto;
     private ArrayList<Tesouros> listaTesouros;
     private ArrayList<String> listaPerigos;
-    private Labirinto subLabirintoAtual = null;
-    private int[] posicaoEntradaSubLabirinto = null;
-    private boolean emSubLabirinto = false;
-    private int ID;
     private int InicioI, InicioJ;
     private int FimI, FimJ;
+    Random rand = new Random();
 
-    public Labirinto(int ID) {
+    public Labirinto(int ID, int dificuldade, boolean isMapaPrincipal) {
         this.ID = ID;
-        estruturaLabirinto = new ArrayList<>();
-        listaTesouros = new ArrayList<>();
-        listaPerigos = new ArrayList<>();
+        this.dificuldade = dificuldade;
+        this.isMapaPrincipal = isMapaPrincipal;
+        this.estruturaLabirinto = new ArrayList<>();
+        this.listaTesouros = new ArrayList<>();
+        this.listaPerigos = new ArrayList<>();
 
-        gerar_labirinto(this.ID);
-        adicionarTesouroAleatorio();
+        if (isMapaPrincipal) {
+            gerar_Mapa(dificuldade);  // Usando seu metodo existente
+        } else {
+            gerar_labirinto(ID);  // Usando seu metodo existente
+            adicionarTesourosAleatorios(0 + rand.nextInt(3));
+        }
     }
 
-    public void entrarSubLabirinto(int i, int j) {
-        this.posicaoEntradaSubLabirinto = new int[]{i, j};
+    public boolean isMapaPrincipal() {
+        return this.isMapaPrincipal; // Use o campo que você já tem na classe
+    }
+
+    public boolean isEntradaLabirinto(int i, int j) {
+        return isMapaPrincipal() && estruturaLabirinto.get(i).get(j).equals("L");
+    }
+
+    private void gerarMapa(int dificuldade) {
+        gerar_Mapa(dificuldade); // Redireciona para o metodo existente
+    }
+
+    private void gerarLabirintoAleatorio() {
+        // Implementação básica - você pode ajustar conforme necessário
         Random rand = new Random();
-        int idSubLabirinto = rand.nextInt(11) + 4; // Começa do 4 para não conflitar com os níveis 1-3
-
-        // Garante que o sub-labirinto seja diferente do atual
-        while (idSubLabirinto == this.getID()) {
-            idSubLabirinto = rand.nextInt(11) + 4;
-        }
-
-        // Inicialização completa do sub-labirinto
-        this.subLabirintoAtual = new Labirinto(idSubLabirinto);
-        this.subLabirintoAtual.setLabirintoPai(this); // aqui liga o pai
-        this.subLabirintoAtual.emSubLabirinto = true;
-        this.emSubLabirinto = true;
-
-
-        System.out.println("Entrando no labirinto secreto ID: " + idSubLabirinto);
-    }
-    private Labirinto encontrarLabirintoPrincipal(Labirinto atual) {
-        if (!atual.isEmSubLabirinto()) {
-            return atual;
-        }
-        if (atual.getLabirintoPai() != null) {
-            return encontrarLabirintoPrincipal(atual.getLabirintoPai());
-        }
-        return atual;
-    }
-
-    public void sairDoSubLabirinto() {
-        if (this.subLabirintoAtual != null) {
-            this.subLabirintoAtual = null;
-        }
-        this.emSubLabirinto = false;
-        this.posicaoEntradaSubLabirinto = null;
-    }
-
-    public boolean deveGerarSubLabirinto() {
-        // Só gera sub-labirinto se for um mapa de nível (1-3) e não estiver já em um sub-labirinto
-        return (this.ID >= 1 && this.ID <= 3) && !this.emSubLabirinto;
-    }
-
-    public void setSubLabirintoAtual(Labirinto subLabirinto) {
-        this.subLabirintoAtual = subLabirinto;
-    }
-
-    public boolean isEmSubLabirinto() {
-        return emSubLabirinto;
-    }
-
-    public Labirinto getSubLabirintoAtual() {
-        return this.subLabirintoAtual;
-    }
-
-    public int[] getPosicaoEntradaSubLabirinto() {
-        return posicaoEntradaSubLabirinto;
+        int labirintoID = rand.nextInt(12) + 1; // Gera ID entre 1-12
+        gerar_labirinto(labirintoID);
     }
 
     public int getInicioI() {
-        if (emSubLabirinto && subLabirintoAtual != null) {
-            return subLabirintoAtual.getInicioI();
-        }
         return InicioI;
     }
 
     public int getInicioJ() {
-        if (emSubLabirinto && subLabirintoAtual != null) {
-            return subLabirintoAtual.getInicioJ();
-        }
         return InicioJ;
     }
 
     public int getFimI() {
-        return (emSubLabirinto && subLabirintoAtual != null) ?
-                subLabirintoAtual.getFimI() :
-        FimI;
+        return FimI;
     }
 
     public int getFimJ() {
-        return (emSubLabirinto && subLabirintoAtual != null) ?
-                subLabirintoAtual.getFimJ() :
-        FimJ;
+        return FimJ;
     }
 
     public int getID() {
         return this.ID;
     }
 
-    public ArrayList<ArrayList<String>> getEstrutura() {
-        if (emSubLabirinto && subLabirintoAtual != null) {
-            return subLabirintoAtual.getEstrutura();
-        }
+    public ArrayList<ArrayList<String>> getEstrutura(){
         return estruturaLabirinto;
     }
-
-    private Labirinto labirintoPai = null;
-
-    public Labirinto getLabirintoPai() {
-        return labirintoPai;
-    }
-
-    public void setLabirintoPai(Labirinto pai) {
-        this.labirintoPai = pai;
-    }
-
 
     public void gerar_labirinto(int ID){
         estruturaLabirinto.clear();
@@ -253,7 +197,7 @@ public class Labirinto {
                         {".", ".", ".", ".", "X", "X", "X", "X", "X", "X", "X", "X", "X"},
                 };
                 this.InicioI = 6;
-                this.InicioJ = 19;
+                this.InicioJ = 18;
                 this.FimI = 11;
                 this.FimJ = 4;
                 break;
@@ -340,16 +284,16 @@ public class Labirinto {
             default:
                 matriz = new String[][] {
                         {"X", "X", "X", "X", "X", "X", "X"},
-                        {"X", " ", "X", " ", "X", " ", "X"},
-                        {"X", "X", "X", "X", "X", "X", "X"},
-                        {"X", " ", "X", " ", "X", " ", "X"},
-                        {"X", "X", "X", "X", "X", "X", "X"},
-                        {"X", " ", "X", " ", "X", " ", "X"},
-                        {"X", "X", "X", "X", "X", "X", "X"},
+                        {"X", " ", " ", " ", " ", " ", "X"},
+                        {"X", " ", "X", "X", "X", " ", "X"},
+                        {"X", " ", " ", " ", "X", " ", "X"},
+                        {"X", "X", "X", " ", "X", " ", "X"},
+                        {"X", "O", " ", " ", "X", " ", "X"},
+                        {"X", "E", "X", "X", "X", "S", "X"},
                 };
-                this.InicioI = 6;
+                this.InicioI = 5;
                 this.InicioJ = 1;
-                this.FimI = 0;
+                this.FimI = 5;
                 this.FimJ = 6;
         }
 
@@ -364,15 +308,15 @@ public class Labirinto {
     }
 
     public void gerar_Mapa(int Level) {
-        estruturaLabirinto.clear(); // limpa mapa anterior, se houver
+        estruturaLabirinto.clear();
         String[][] matriz;
         switch(Level){
             case 1:
                 matriz = new String[][] {
                         {"X", "X", "X", "X", "X"},
-                        {"X", "O", " ", " ", "X"},
-                        {"X", " ", " ", " ", "X"},
-                        {"X", " ", " ", "F", "X"},
+                        {"X", "O", "L", "L", "X"},  // L representa entrada para labirinto
+                        {"X", "L", "L", "L", "X"},
+                        {"X", "L", "L", "F", "X"},
                         {"X", "X", "X", "X", "X"},
                 };
                 this.InicioI = 1; this.InicioJ = 1;
@@ -381,10 +325,10 @@ public class Labirinto {
             case 2:
                 matriz = new String[][] {
                         {"X", "X", "X", "X", "X", "X"},
-                        {"X", "O", " ", " ", " ", "X"},
-                        {"X", " ", " ", " ", " ", "X"},
-                        {"X", " ", " ", " ", " ", "X"},
-                        {"X", " ", " ", " ", "F", "X"},
+                        {"X", "O", "L", "L", "L", "X"},
+                        {"X", "L", "L", "L", "L", "X"},
+                        {"X", "L", "L", "L", "L", "X"},
+                        {"X", "L", "L", "L", "F", "X"},
                         {"X", "X", "X", "X", "X", "X"},
                 };
                 this.InicioI = 1; this.InicioJ = 1;
@@ -393,11 +337,11 @@ public class Labirinto {
             case 3:
                 matriz = new String[][] {
                         {"X", "X", "X", "X", "X", "X", "X"},
-                        {"X", "O", " ", " ", " ", " ", "X"},
-                        {"X", " ", " ", " ", " ", " ", "X"},
-                        {"X", " ", " ", " ", " ", " ", "X"},
-                        {"X", " ", " ", " ", " ", " ", "X"},
-                        {"X", " ", " ", " ", " ", "F", "X"},
+                        {"X", "O", "L", "L", "L", "L", "X"},
+                        {"X", "L", "L", "L", "L", "L", "X"},
+                        {"X", "L", "L", "L", "L", "L", "X"},
+                        {"X", "L", "L", "L", "L", "L", "X"},
+                        {"X", "L", "L", "L", "L", "F", "X"},
                         {"X", "X", "X", "X", "X", "X", "X"},
                 };
                 this.InicioI = 1; this.InicioJ = 1;
@@ -407,9 +351,9 @@ public class Labirinto {
                 System.out.println("Level inexistente. Será atribuido o level 1!");
                 matriz = new String[][] {
                         {"X", "X", "X", "X", "X"},
-                        {"X", "O", " ", " ", "X"},
-                        {"X", " ", " ", " ", "X"},
-                        {"X", " ", " ", "F", "X"},
+                        {"X", "O", "L", "L", "X"},
+                        {"X", "L", "L", "L", "X"},
+                        {"X", "L", "L", "F", "X"},
                         {"X", "X", "X", "X", "X"},
                 };
                 this.InicioI = 1; this.InicioJ = 1;
@@ -426,35 +370,44 @@ public class Labirinto {
         }
     }
 
+    public void imprimirLabirinto() {
+        for (int i = 0; i < estruturaLabirinto.size(); i++) {
+            for (int j = 0; j < estruturaLabirinto.get(i).size(); j++) {
+                String c = estruturaLabirinto.get(i).get(j);
 
-    public void imprimirLabirinto(Aventureiro jogador) {
-        //Verifica qual labirinto está ativo
-        Labirinto labAtual = this.emSubLabirinto ? this.subLabirintoAtual : this;
+                // Verifica se há um tesouro nesta posição
+                boolean temTesouro = false;
+                for (Tesouros tesouro : listaTesouros) {
+                    if (tesouro.getLinha() == i && tesouro.getColuna() == j) {
+                        temTesouro = true;
+                        break;
+                    }
+                }
 
-        if (labAtual == null) {
-            System.out.println("Erro: Labirinto atual não existe!");
-            return;
-        }
-
-        System.out.println("=== Labirinto " + (emSubLabirinto ? "Secreto" : "Principal") + " ID: " + labAtual.getID() + " ===");
-
-        for (int i = 0; i < labAtual.estruturaLabirinto.size(); i++) {
-            for (int j = 0; j < labAtual.estruturaLabirinto.get(i).size(); j++) {
-                if (jogador != null && i == jogador.getPosI() && j == jogador.getPosJ()) {
-                    System.out.print("O ");
-                } else {
-                    String c = labAtual.estruturaLabirinto.get(i).get(j);
-                    System.out.print((c == null || c.equals(".")) ? "  " : c + " ");
+                if (temTesouro) {
+                    System.out.print("T ");
+                }
+                // Mostra espaço vazio no lugar do L
+                else if (c.equals("L")) {
+                    System.out.print("  ");
+                }
+                // Mostra espaço duplo para células vazias
+                else if (c.equals(" ")) {
+                    System.out.print("  ");
+                }
+                // Mostra normalmente os outros caracteres
+                else {
+                    System.out.print(c + " ");
                 }
             }
             System.out.println();
         }
     }
 
-    private void adicionarTesouroAleatorio() {
-        Random rand = new Random();
+    public void adicionarTesourosAleatorios(int quantidade) {
         List<int[]> posicoesValidas = new ArrayList<>();
 
+        // Encontra posições válidas (espaços vazios)
         for (int i = 0; i < estruturaLabirinto.size(); i++) {
             for (int j = 0; j < estruturaLabirinto.get(i).size(); j++) {
                 String celula = estruturaLabirinto.get(i).get(j);
@@ -464,10 +417,39 @@ public class Labirinto {
             }
         }
 
-        if (!posicoesValidas.isEmpty()) {
-            int[] posicao = posicoesValidas.get(rand.nextInt(posicoesValidas.size()));
-            estruturaLabirinto.get(posicao[0]).set(posicao[1], "T");
-            listaTesouros.add(new Tesouros("TesouroAleatorio", posicao[0], posicao[1], "ouro"));
+        // Adiciona os tesouros
+        for (int n = 0; n < quantidade && !posicoesValidas.isEmpty(); n++) {
+            int indice = rand.nextInt(posicoesValidas.size());
+            int[] posicao = posicoesValidas.remove(indice);
+            int i = posicao[0];
+            int j = posicao[1];
+
+            Tesouros tesouro = criarTesouroAleatorio(i, j);
+            estruturaLabirinto.get(i).set(j, "T");
+            listaTesouros.add(tesouro);
+        }
+    }
+
+    private Tesouros criarTesouroAleatorio(int i, int j) {
+        Random rand = new Random();
+        String[] tipos = {"ouro", "prata", "rubi", "esmeralda", "diamante"};
+        String tipo = tipos[rand.nextInt(tipos.length)];
+
+        if (rand.nextDouble() < 0.3) {
+            return new ItemEquipavel(
+                    "Arma de " + tipo,
+                    i,
+                    j,
+                    tipo,
+                    rand.nextInt(20) + 10,
+                    rand.nextDouble() * 0.2,
+                    rand.nextInt(10) + 5,
+                    rand.nextInt(5) + 1
+            );
+        } else if (rand.nextDouble() < 0.5) {
+            return new ItemComum("Baú de " + tipo, i, j, tipo);
+        } else {
+            return new Tesouros("Tesouro de " + tipo, i, j, tipo);
         }
     }
 
@@ -499,21 +481,28 @@ public class Labirinto {
     }
 }
 
-/* imprimirlabirinto antigo
-public void imprimirLabirinto() {
-    for (int i = 0; i < estruturaLabirinto.size(); i++) {
-        for (int j = 0; j < estruturaLabirinto.get(i).size(); j++) {
-            String c = estruturaLabirinto.get(i).get(j);
-            if (c == null || c.equals(".")) // para espaços vazios ou células nulas
-                System.out.print("  "); // espaço duplo pra alinhar melhor
-            else
-                System.out.print(c + " ");
+/* IMPRIMIRLABIRINTO ANTIGO
+public void imprimirLabirinto(Aventureiro jogador) {
+    //Verifica qual labirinto está ativo
+    Labirinto labAtual = this.emSubLabirinto ? this.subLabirintoAtual : this;
+
+    if (labAtual == null) {
+        System.out.println("Erro: Labirinto atual não existe!");
+        return;
+    }
+
+    System.out.println("=== Labirinto " + (emSubLabirinto ? "Secreto" : "Principal") + " ID: " + labAtual.getID() + " ===");
+
+    for (int i = 0; i < labAtual.estruturaLabirinto.size(); i++) {
+        for (int j = 0; j < labAtual.estruturaLabirinto.get(i).size(); j++) {
+            if (jogador != null && i == jogador.getPosI() && j == jogador.getPosJ()) {
+                System.out.print("O ");
+            } else {
+                String c = labAtual.estruturaLabirinto.get(i).get(j);
+                System.out.print((c == null || c.equals(".")) ? "  " : c + " ");
+            }
         }
         System.out.println();
     }
-}*/
-
-/* get estrutura antigo
-    public ArrayList<ArrayList<String>> getEstrutura(){
-        return estruturaLabirinto;
-    }*/
+}
+*/

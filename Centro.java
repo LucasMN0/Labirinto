@@ -6,55 +6,61 @@ public class Centro {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
 
-        System.out.println("Escolha o nível do labirinto:");
+        // Configuração inicial
+        System.out.println("Escolha a dificuldade do mapa:");
         System.out.println("1 - Fácil");
         System.out.println("2 - Médio");
         System.out.println("3 - Difícil");
-        System.out.print("Digite o número do nível: ");
-        int nivel = sc.nextInt();
+        System.out.print("Digite a dificuldade: ");
+        int dificuldadeMapa = sc.nextInt();
+        sc.nextLine(); // Limpa o buffer
 
+        // Criação do mapa principal
+        Labirinto mapaPrincipal = new Labirinto(0, dificuldadeMapa, true);
+        mapaPrincipal.gerar_Mapa(dificuldadeMapa);
 
-        // Cria o mapa base (nível fácil/médio/difícil)
-        Labirinto lab = new Labirinto(nivel);
-        lab.gerar_Mapa(nivel);
+        if (mapaPrincipal.getInicioI() < 0 ||
+                mapaPrincipal.getInicioJ() < 0 ||
+                mapaPrincipal.getInicioI() >= mapaPrincipal.getEstrutura().size() ||
+                mapaPrincipal.getInicioJ() >= mapaPrincipal.getEstrutura().get(0).size()) {
+            System.out.println("Posição inicial inválida no mapa principal!");
+            return;
+        }
 
         ArrayList<String> tesourosEncontrados = new ArrayList<>();
-        Aventureiro jogador = new Aventureiro("Lucas", tesourosEncontrados, lab, lab.getInicioI(), lab.getInicioJ());
+        Aventureiro jogador = new Aventureiro("Lucas", tesourosEncontrados, mapaPrincipal,
+                mapaPrincipal.getInicioI(), mapaPrincipal.getInicioJ());
 
-        lab.imprimirLabirinto(jogador);
+        // Game loop principal
+        while (true) {
+            // Exibe o mapa/labirinto atual
+            System.out.println("\n=== Mapa Atual ===");
+            jogador.getLabirintoAtual().imprimirLabirinto();
 
-        char direcao;
-        do {
-            System.out.print("Digite a direção (W/A/S/D) ou Q para sair: ");
-            direcao = sc.next().toUpperCase().charAt(0);
-
-            if (lab.getEstrutura() == null) {
-                System.out.println("Erro: Labirinto principal não foi gerado corretamente!");
-                System.exit(1);
-            }
-
-            if (direcao == 'Q') {
-                System.out.println("Jogo encerrado.");
+            // Verifica se chegou na sala do boss final
+            if (jogador.getLabirintoAtual() == mapaPrincipal &&
+                    mapaPrincipal.getEstrutura().get(jogador.getPosI()).get(jogador.getPosJ()).equals("F")) {
+                System.out.println("\n=== VOCÊ ENCONTROU O BOSS FINAL! ===");
                 break;
             }
 
-            if (jogador.mover(direcao)) {
-                System.out.println("Posição atual: (" + jogador.getPosI() + ", " + jogador.getPosJ() + ")");
+            // Input do jogador
+            System.out.print("\nDigite a direção (W A S D), M para Menu ou Q para sair: ");
+            char comando = sc.next().toUpperCase().charAt(0);
+            sc.nextLine(); // Limpa o buffer
 
-                // Verifica se entrou em sub-labirinto (apenas no mapa de nível)
-                if (lab.isEmSubLabirinto()) {
-                    System.out.println("Você entrou em uma sala secreta!");
-                    System.out.println("Encontre a saída (S) para voltar ao mapa principal");
-                }
+            if (comando == 'Q') break;
 
-                lab.imprimirLabirinto(jogador);
-            } else {
-                System.out.println("Movimento inválido!");
+            if (comando == 'M') {
+                jogador.mostrarMenu();
+                continue;
             }
 
-        } while (!jogador.sair());
-
-        sc.close();
+            // Movimento
+            if (!jogador.mover(comando)) {
+                System.out.println("Movimento inválido!");
+            }
+        }
     }
 }
 

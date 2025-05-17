@@ -6,10 +6,14 @@ class   Aventureiro {
     private String nome;
     private int posJ;
     private int posI;
+    private int ultimaPosicaoMapaI;
+    private int ultimaPosicaoMapaJ;
+    private static final Scanner sc = new Scanner(System.in);
     private ArrayList<String> tesourosEncontrados;
     private List<Tesouros> listaTesouros;
     private List<ItemEquipavel> equipamentos = new ArrayList<>();
     private Labirinto labirintoAtual;
+    private Labirinto mapaPrincipal;
 
     // Novos atributos de combate
     private int vida;              // Vida atual
@@ -22,6 +26,8 @@ class   Aventureiro {
         this.nome = nome;
         this.tesourosEncontrados = tesourosEncontrados;
         this.labirintoAtual = labirinto;
+        this.listaTesouros = labirinto.getListaTesouros();
+        this.mapaPrincipal = labirinto;
         this.posI = i;
         this.posJ = j;
         this.equipamentos = new ArrayList<>();
@@ -61,10 +67,10 @@ class   Aventureiro {
 
     public void mostrarStatus() {
         System.out.println("===== STATUS DE " + nome + " =====");
-        System.out.println("Vida: " + vida + "/" + vidaMaxima);
-        System.out.println("Dano de ataque: " + danoAtaque);
-        System.out.println("Dano verdadeiro: " + danoVerdadeiro);
-        System.out.println("Armadura: " + (int)(armadura * 100) + "%");
+        System.out.println("Vida: " + vida + "/" + getVidaMaximaTotal());
+        System.out.println("Dano de ataque: " + getDanoAtaqueTotal());
+        System.out.println("Dano verdadeiro: " + getDanoVerdadeiroTotal());
+        System.out.println("Armadura: " + (int)(getArmaduraTotal() * 100) + "%");
         System.out.println("Tesouros encontrados: " + tesourosEncontrados);
         System.out.println("===================================");
     }
@@ -111,108 +117,230 @@ class   Aventureiro {
         return total;
     }
 
+    public void mostrarMenu() {
+        while (true) {
+            System.out.println("\n\n=== MENU ===");
+            System.out.println("1 - Mostrar Status");
+            System.out.println("2 - Mostrar Mapa");
+            System.out.println("3 - Voltar ao Jogo");
+            System.out.print("Escolha uma opção: ");
+            String opcao = sc.nextLine();
+
+            switch(opcao) {
+                case "1":
+                    mostrarStatus();
+                    break;
+                case "2":
+                    labirintoAtual.imprimirLabirinto();
+                    break;
+                case "3":
+                    return;
+                default:
+                    System.out.println("Opção inválida!");
+            }
+        }
+    }
+
+    public void setLabirintoAtual(Labirinto novoLabirinto) {
+        if (novoLabirinto == null) {
+            throw new IllegalArgumentException("Labirinto não pode ser null");
+        }
+        this.labirintoAtual = novoLabirinto;
+        this.listaTesouros = novoLabirinto.getListaTesouros();
+    }
+
+    public void setPosicao(int i, int j) {
+        // Verifica se as coordenadas são válidas
+        if (i < 0 || i >= labirintoAtual.getEstrutura().size() ||
+                j < 0 || j >= labirintoAtual.getEstrutura().get(0).size()) {
+            System.out.println("Posição inválida! (" + i + "," + j + ")");
+            return;
+        }
+
+        // Limpa a posição anterior se estiver dentro dos limites
+        if (posI >= 0 && posI < labirintoAtual.getEstrutura().size() &&
+                posJ >= 0 && posJ < labirintoAtual.getEstrutura().get(0).size()) {
+            labirintoAtual.getEstrutura().get(posI).set(posJ, " ");
+        }
+
+        // Atualiza a nova posição
+        this.posI = i;
+        this.posJ = j;
+
+        // Marca a nova posição no labirinto
+        labirintoAtual.getEstrutura().get(i).set(j, "O");
+    }
+
+    public void setUltimaPosicaoMapa(int i, int j) {
+        this.ultimaPosicaoMapaI = i;
+        this.ultimaPosicaoMapaJ = j;
+    }
+
+    public int getUltimaPosicaoMapaI() {
+        return ultimaPosicaoMapaI;
+    }
+
+    public int getUltimaPosicaoMapaJ() {
+        return ultimaPosicaoMapaJ;
+    }
+
+    public Labirinto getLabirintoAtual() {
+        return this.labirintoAtual;
+    }
+
     public List<Tesouros> getListaTesouros() {
         return listaTesouros;
     }
-        private Labirinto encontrarLabirintoPrincipal(Labirinto atual) {
-        if (!atual.isEmSubLabirinto()) {
-            return atual;
-        }
-        if (atual.getLabirintoPai() != null) {
-            return encontrarLabirintoPrincipal(atual.getLabirintoPai());
-        }
-        return atual;
-    }
 
-public boolean mover(char direcao) {
-    char direcaoUpper = Character.toUpperCase(direcao);
-
-    if (direcaoUpper != 'W' && direcaoUpper != 'A' && direcaoUpper != 'S' && direcaoUpper != 'D') {
-        System.out.println("Direção inválida! Use W A S D");
-        return false;
-    }
-
-    int novoI = posI;
-    int novoJ = posJ;
-
-    switch (direcaoUpper) {
-        case 'W': novoI--; break;
-        case 'S': novoI++; break;
-        case 'A': novoJ--; break;
-        case 'D': novoJ++; break;
-    }
-
-    if (labirintoAtual.getEstrutura() == null) {
-        System.out.println("Erro: Estrutura do labirinto não existe!");
-        return false;
-    }
-
-    // Verificação de limites com null safety
-    if (novoI < 0 || novoI >= labirintoAtual.getEstrutura().size() ||
-        novoJ < 0 || novoJ >= labirintoAtual.getEstrutura().get(novoI).size()) {
-        return false;
-    }
-
-    String celulaDestino = labirintoAtual.getEstrutura().get(novoI).get(novoJ);
-
-    // Saída do sub-labirinto
-    if (labirintoAtual.isEmSubLabirinto() && celulaDestino.equals("S")) {
-        System.out.println("Você encontrou a saída do labirinto secreto!");
-
-        Labirinto labPrincipal = encontrarLabirintoPrincipal(labirintoAtual);
-
-        if (labPrincipal != null && labPrincipal.getPosicaoEntradaSubLabirinto() != null) {
-            int[] posEntrada = labPrincipal.getPosicaoEntradaSubLabirinto();
-            this.labirintoAtual = labPrincipal;
-            this.posI = posEntrada[0];
-            this.posJ = posEntrada[1];
-        } else {
-            this.posI = 0;
-            this.posJ = 0;
-            System.out.println("Aviso: Posição de retorno padrão utilizada");
+    public boolean mover(char direcao) {
+        char direcaoUpper = Character.toUpperCase(direcao);
+        if (direcaoUpper != 'W' && direcaoUpper != 'A' && direcaoUpper != 'S' && direcaoUpper != 'D') {
+            System.out.println("Direção inválida! Use W A S D");
+            return false;
         }
 
-        labPrincipal.sairDoSubLabirinto();
-        return true;
-    }
+        int novoI = posI;
+        int novoJ = posJ;
 
-    // Verificação para entrada em sub-labirinto (APENAS no lobby principal)
-    if (!labirintoAtual.isEmSubLabirinto() && labirintoAtual.deveGerarSubLabirinto() && celulaDestino.equals(" ")) {
-        System.out.print("Você encontrou uma entrada secreta! Deseja entrar? (S/N): ");
-        Scanner sc = new Scanner(System.in);
-        String resposta = sc.nextLine().toUpperCase();
-
-        if (resposta.equals("S")) {
-            labirintoAtual.entrarSubLabirinto(posI, posJ);
-            this.labirintoAtual = labirintoAtual.getSubLabirintoAtual();
-            this.posI = this.labirintoAtual.getInicioI();
-            this.posJ = this.labirintoAtual.getInicioJ();
-            return true;
+        switch (direcaoUpper) {
+            case 'W': novoI--; break;
+            case 'S': novoI++; break;
+            case 'A': novoJ--; break;
+            case 'D': novoJ++; break;
         }
-        return false;
-    }
 
-    // Movimento normal
-    if (celulaDestino.equals(" ") || celulaDestino.equals("T") ||
-        celulaDestino.equals("°") || celulaDestino.equals("S")) {
+        // Verifica limites
+        if (novoI < 0 || novoI >= labirintoAtual.getEstrutura().size() ||
+                novoJ < 0 || novoJ >= labirintoAtual.getEstrutura().get(0).size()) {
+            return false;
+        }
 
-        // Atualiza posição anterior
-        String marcadorAnterior = labirintoAtual.isEmSubLabirinto() ? " " : "°";
-        labirintoAtual.getEstrutura().get(posI).set(posJ, marcadorAnterior);
+        // Verifica se pode mover para a célula
+        String celula = labirintoAtual.getEstrutura().get(novoI).get(novoJ);
+        if (!celula.equals(" ") && !celula.equals("F") &&
+                !celula.equals("S") && !celula.equals("T") &&
+                !celula.equals("O") && !celula.equals("L")) {
+            return false;
+        }
 
-        // Atualiza nova posição
+        // Atualiza posição
+        labirintoAtual.getEstrutura().get(posI).set(posJ, " ");
         posI = novoI;
         posJ = novoJ;
-        labirintoAtual.getEstrutura().get(posI).set(posJ, "O");
 
         verificarTesouro();
+
+        // Verifica se está em uma entrada de labirinto (L)
+        if (celula.equals("L") && labirintoAtual.isMapaPrincipal()) {
+            System.out.println("\nVocê encontrou uma entrada para um labirinto!");
+
+            String resposta;
+            do {
+                System.out.print("Deseja entrar? (s/n): ");
+                resposta = sc.nextLine().trim().toLowerCase();
+            } while (!resposta.equals("s") && !resposta.equals("n"));
+
+            if (resposta.equalsIgnoreCase("s")) {
+                entrarNoLabirinto();
+                return true;
+            } else {
+                // Se não quiser entrar, volta para a posição anterior
+                labirintoAtual.getEstrutura().get(posI).set(posJ, "L");
+                posI = posI; // Mantém na posição atual (que é a do L)
+                posJ = posJ;
+                labirintoAtual.getEstrutura().get(posI).set(posJ, "O");
+                return true;
+            }
+        }
+
+        // Verifica se está na saída do labirinto (S)
+        if (celula.equals("S") && !labirintoAtual.isMapaPrincipal()) {
+            sairDoLabirinto();
+            return true;
+        }
+
+        labirintoAtual.getEstrutura().get(posI).set(posJ, "O");
         return true;
     }
-    return false;
+
+    private void entrarNoLabirinto() {
+        System.out.println("\n--- ENTRANDO NO LABIRINTO ---");
+
+        // Guarda a posição atual no mapa principal
+        setUltimaPosicaoMapa(posI, posJ);
+
+        // Gera um labirinto aleatório
+        int labirintoID = new Random().nextInt(12) + 1;
+        Labirinto labirintoAleatorio = new Labirinto(labirintoID, 0, false);
+        labirintoAleatorio.gerar_labirinto(labirintoID);
+
+        // Entra no labirinto
+        setLabirintoAtual(labirintoAleatorio);
+        setPosicao(labirintoAleatorio.getInicioI(), labirintoAleatorio.getInicioJ());
+
+        System.out.println("Você entrou no Labirinto " + labirintoID + "!");
+    }
+
+    private void sairDoLabirinto() {
+        System.out.println("\n--- SAINDO DO LABIRINTO ---");
+
+        // Verifica se as últimas posições no mapa principal são válidas
+        int novaPosI = getUltimaPosicaoMapaI();
+        int novaPosJ = getUltimaPosicaoMapaJ();
+
+        // Se as posições forem inválidas, usa a posição inicial do mapa principal
+        if (novaPosI < 0 || novaPosI >= mapaPrincipal.getEstrutura().size() ||
+                novaPosJ < 0 || novaPosJ >= mapaPrincipal.getEstrutura().get(0).size()) {
+            novaPosI = mapaPrincipal.getInicioI();
+            novaPosJ = mapaPrincipal.getInicioJ();
+            System.out.println("Posição inválida, retornando ao início do mapa principal");
+        }
+
+        setLabirintoAtual(mapaPrincipal);
+        setPosicao(novaPosI, novaPosJ);
+        System.out.println("Você voltou para o mapa principal!");
+    }
+
+    private void verificarTesouro() {
+        // Verifica se há um tesouro na posição atual
+        for (Tesouros tesouro : new ArrayList<>(labirintoAtual.getListaTesouros())) {
+            if (tesouro.getLinha() == posI && tesouro.getColuna() == posJ) {
+                System.out.println("\n=== VOCÊ ENCONTROU UM TESOURO ===");
+                System.out.println("Tipo: " + tesouro.getTipo());
+                System.out.println("Nome: " + tesouro.getNome());
+
+                if (tesouro instanceof ItemEquipavel) {
+                    ItemEquipavel item = (ItemEquipavel) tesouro;
+                    System.out.println("\n[ITEM EQUIPÁVEL]");
+                    System.out.println("Vida: +" + item.getBonusVida());
+                    System.out.println("Ataque: +" + item.getBonusAtaque());
+                    System.out.println("Armadura: +" + (int)(item.getBonusArmadura() * 100) + "%");
+                    System.out.println("Dano Verdadeiro: +" + item.getBonusVerdadeiro());
+
+                    System.out.print("\nDeseja equipar este item? (s/n): ");
+                    String resposta = sc.nextLine();
+                    if (resposta.equalsIgnoreCase("s")) {
+                        equipar(item);
+                    }
+                } else if (tesouro instanceof ItemComum) {
+                    ItemComum item = (ItemComum) tesouro;
+                    System.out.println("\n[ITEM COMUM]");
+                    System.out.println("Valor: " + item.getValor() + " moedas");
+                } else {
+                    System.out.println("\n[TESOURO]");
+                    System.out.println("Você encontrou um tesouro básico!");
+                }
+
+                tesourosEncontrados.add(tesouro.getNome());
+                labirintoAtual.getListaTesouros().remove(tesouro);
+                return; // Sai do loop após encontrar o tesouro
+            }
+        }
+    }
 }
 
-
-    public boolean sair() {
+/* metodos antigos de sair e pode mover
+public boolean sair() {
         // Verificação completa de null safety
         if (labirintoAtual == null) {
             return false;
@@ -234,68 +362,4 @@ public boolean mover(char direcao) {
         String celula = labirintoAtual.getEstrutura().get(i).get(j);
         return celula.equals(" ") || celula.equals("S") || celula.equals("T");
     }
-
-
-    private void verificarTesouro() {
-        for (Tesouros tesouro : labirintoAtual.getListaTesouros()) {
-            if (tesouro.getLinha() == posI && tesouro.getColuna() == posJ) {
-                System.out.println("Você encontrou: " + tesouro.getNome());
-
-                if (tesouro instanceof ItemEquipavel) {
-                    ItemEquipavel item = (ItemEquipavel) tesouro;
-                    System.out.println("Este item é equipável! Deseja equipar? (s/n)");
-                    Scanner sc = new Scanner(System.in);
-                    String resposta = sc.nextLine();
-                    if (resposta.equalsIgnoreCase("s")) {
-                        equipar(item);
-                    }
-                }
-                } else if (tesouro instanceof ItemComum) {
-                    System.out.println("Hmm... parece só um " + tesouro.getNome() + ". Nada útil.");
-                }
-
-                tesourosEncontrados.add(tesouro.getNome());
-
-                // Limpa o tesouro do mapa
-                labirintoAtual.getEstrutura().get(posI).set(posJ, "O");
-
-                return;
-            }
-        }
-}
-
-// //metodo antigo de mover
-//     public boolean mover(char direcao) {
-//         char direcaoUpper = Character.toUpperCase(direcao);
-
-//         if (direcaoUpper != 'W' && direcaoUpper != 'A' && direcaoUpper != 'S' && direcaoUpper != 'D') {
-//             System.out.println("Direção inválida! Use W A S D");
-//             return false;
-//         }
-
-//         int novoI = posI;
-//         int novoJ = posJ;
-
-//         switch (direcaoUpper) {
-//             case 'W': novoI--; break;
-//             case 'S': novoI++; break;
-//             case 'A': novoJ--; break;
-//             case 'D': novoJ++; break;
-//         }
-
-//         if (novoI < 0 || novoI >= labirintoAtual.getEstrutura().size()) {
-//             return false;
-//         }
-
-//         if (podeMover(novoJ, novoI)) {
-//             labirintoAtual.getEstrutura().get(posI).set(posJ, " ");
-//             posI = novoI;
-//             posJ = novoJ;
-//             labirintoAtual.getEstrutura().get(posI).set(posJ, "O");
-//             verificarTesouro();
-//             return true;
-//         }
-
-//         return false;
-//     }
-// }
+ */
