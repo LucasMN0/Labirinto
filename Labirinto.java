@@ -49,6 +49,10 @@ public class Labirinto {
         gerar_labirinto(labirintoID);
     }
 
+    public void restaurarMapaPrincipal() {
+        gerar_Mapa(this.dificuldade);
+    }
+
     public int getInicioI() {
         return InicioI;
     }
@@ -67,6 +71,10 @@ public class Labirinto {
 
     public int getID() {
         return this.ID;
+    }
+
+    public int getDificuldade() {
+        return this.dificuldade;
     }
 
     public ArrayList<ArrayList<String>> getEstrutura(){
@@ -371,6 +379,16 @@ public class Labirinto {
     }
 
     public void imprimirLabirinto() {
+        long countO = estruturaLabirinto.stream()
+                .flatMap(List::stream)
+                .filter(c -> c.equals("O"))
+                .count();
+
+        if (countO > 1) {
+            System.err.println("ERRO GRAVE: " + countO + " 'O' encontrados no mapa!");
+            new Exception().printStackTrace(); // Mostra onde está ocorrendo o problema
+        }
+
         for (int i = 0; i < estruturaLabirinto.size(); i++) {
             for (int j = 0; j < estruturaLabirinto.get(i).size(); j++) {
                 String c = estruturaLabirinto.get(i).get(j);
@@ -457,15 +475,6 @@ public class Labirinto {
         } else {
             return new Tesouros("Tesouro de " + tipo, i, j, tipo);
         }
-    }
-
-    public Tesouros getTesouroPorSimbolo(String simbolo) {
-        for (Tesouros t : listaTesouros) {
-            if (t.getNome().equals(simbolo)) {
-                return t;
-            }
-        }
-        return null;
     }
 
     public List<Tesouros> getListaTesouros() {

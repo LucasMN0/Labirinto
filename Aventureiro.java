@@ -118,11 +118,14 @@ class   Aventureiro {
     }
 
     public void mostrarMenu() {
+        Loja loja = new Loja(this); // Cria a loja
+
         while (true) {
             System.out.println("\n\n=== MENU ===");
             System.out.println("1 - Mostrar Status");
             System.out.println("2 - Mostrar Mapa");
-            System.out.println("3 - Voltar ao Jogo");
+            System.out.println("3 - Acessar Loja");
+            System.out.println("4 - Voltar ao Jogo");
             System.out.print("Escolha uma opção: ");
             String opcao = sc.nextLine();
 
@@ -134,6 +137,9 @@ class   Aventureiro {
                     labirintoAtual.imprimirLabirinto();
                     break;
                 case "3":
+                    loja.mostrarMenuLoja();
+                    break;
+                case "4":
                     return;
                 default:
                     System.out.println("Opção inválida!");
@@ -150,30 +156,53 @@ class   Aventureiro {
     }
 
     public void setPosicao(int i, int j) {
-        // Verifica se as coordenadas são válidas
-        if (i < 0 || i >= labirintoAtual.getEstrutura().size() ||
-                j < 0 || j >= labirintoAtual.getEstrutura().get(0).size()) {
-            System.out.println("Posição inválida! (" + i + "," + j + ")");
-            return;
+        System.out.println("DEBUG: Setando posição - i: " + i + ", j: " + j);
+        // Garante que a posição anterior seja limpa
+        if (posI >= 0 && posJ >= 0 &&
+                posI < labirintoAtual.getEstrutura().size() &&
+                posJ < labirintoAtual.getEstrutura().get(0).size()) {
+
+            String celulaAtual = labirintoAtual.getEstrutura().get(posI).get(posJ);
+            if (celulaAtual.equals("O")) {
+                labirintoAtual.getEstrutura().get(posI).set(posJ, " ");
+            }
         }
 
-        // Limpa a posição anterior se estiver dentro dos limites
-        if (posI >= 0 && posI < labirintoAtual.getEstrutura().size() &&
-                posJ >= 0 && posJ < labirintoAtual.getEstrutura().get(0).size()) {
-            labirintoAtual.getEstrutura().get(posI).set(posJ, " ");
-        }
-
-        // Atualiza a nova posição
+        // Atualiza as coordenadas
         this.posI = i;
         this.posJ = j;
 
-        // Marca a nova posição no labirinto
-        labirintoAtual.getEstrutura().get(i).set(j, "O");
+        // Marca a nova posição se for válida
+        if (i >= 0 && j >= 0 &&
+                i < labirintoAtual.getEstrutura().size() &&
+                j < labirintoAtual.getEstrutura().get(0).size()) {
+
+            String celula = labirintoAtual.getEstrutura().get(i).get(j);
+            if (celula.equals(" ") || celula.equals("L") || celula.equals("T")) {
+                labirintoAtual.getEstrutura().get(i).set(j, "O");
+            }
+        }
+    }
+
+    private void limparPosicaoAnterior() {
+        // Limpa todos os "O" que não deveriam existir
+        for (int i = 0; i < labirintoAtual.getEstrutura().size(); i++) {
+            for (int j = 0; j < labirintoAtual.getEstrutura().get(i).size(); j++) {
+                String celula = labirintoAtual.getEstrutura().get(i).get(j);
+                if (celula.equals("O") && (i != posI || j != posJ)) {
+                    labirintoAtual.getEstrutura().get(i).set(j, " ");
+                }
+            }
+        }
     }
 
     public void setUltimaPosicaoMapa(int i, int j) {
         this.ultimaPosicaoMapaI = i;
         this.ultimaPosicaoMapaJ = j;
+    }
+
+    public ArrayList<String> getTesourosEncontrados() {
+        return tesourosEncontrados;
     }
 
     public int getUltimaPosicaoMapaI() {
@@ -198,7 +227,7 @@ class   Aventureiro {
             System.out.println("Direção inválida! Use W A S D");
             return false;
         }
-
+        System.out.println("DEBUG: Direção recebida: '" + direcao + "'");
         int novoI = posI;
         int novoJ = posJ;
 
@@ -222,6 +251,8 @@ class   Aventureiro {
                 !celula.equals("O") && !celula.equals("L")) {
             return false;
         }
+
+        limparPosicaoAnterior();
 
         // Atualiza posição
         labirintoAtual.getEstrutura().get(posI).set(posJ, " ");
@@ -260,21 +291,21 @@ class   Aventureiro {
         }
 
         labirintoAtual.getEstrutura().get(posI).set(posJ, "O");
+        setPosicao(novoI, novoJ);
         return true;
     }
 
     private void entrarNoLabirinto() {
         System.out.println("\n--- ENTRANDO NO LABIRINTO ---");
 
-        // Guarda a posição atual no mapa principal
+        // Guarda a posição CORRETA (i=linha, j=coluna)
         setUltimaPosicaoMapa(posI, posJ);
 
-        // Gera um labirinto aleatório
+        // Restante do metodo permanece igual...
         int labirintoID = new Random().nextInt(12) + 1;
         Labirinto labirintoAleatorio = new Labirinto(labirintoID, 0, false);
         labirintoAleatorio.gerar_labirinto(labirintoID);
 
-        // Entra no labirinto
         setLabirintoAtual(labirintoAleatorio);
         setPosicao(labirintoAleatorio.getInicioI(), labirintoAleatorio.getInicioJ());
 
@@ -284,21 +315,36 @@ class   Aventureiro {
     private void sairDoLabirinto() {
         System.out.println("\n--- SAINDO DO LABIRINTO ---");
 
-        // Verifica se as últimas posições no mapa principal são válidas
-        int novaPosI = getUltimaPosicaoMapaI();
-        int novaPosJ = getUltimaPosicaoMapaJ();
+        // 1. Restaura o mapa principal
+        mapaPrincipal.gerar_Mapa(mapaPrincipal.getDificuldade());
 
-        // Se as posições forem inválidas, usa a posição inicial do mapa principal
+        // 2. Obtém a posição CORRETA (sem inverter)
+        int novaPosI = getUltimaPosicaoMapaI(); // LINHA (i)
+        int novaPosJ = getUltimaPosicaoMapaJ(); // COLUNA (j)
+
+        // 3. Verificação de limites
         if (novaPosI < 0 || novaPosI >= mapaPrincipal.getEstrutura().size() ||
-                novaPosJ < 0 || novaPosJ >= mapaPrincipal.getEstrutura().get(novaPosI).size()) {
+                novaPosJ < 0 || novaPosJ >= mapaPrincipal.getEstrutura().get(0).size()) {
             novaPosI = mapaPrincipal.getInicioI();
             novaPosJ = mapaPrincipal.getInicioJ();
-            System.out.println("Posição inválida, retornando ao início do mapa principal");
         }
 
+        // 4. Atualiza posição SEM inverter
         setLabirintoAtual(mapaPrincipal);
-        setPosicao(novaPosI, novaPosJ);
+        limparTodosOsOJogador();
+        setPosicao(novaPosI, novaPosJ); // CORRETO: mantém a ordem i, j
+
         System.out.println("Você voltou para o mapa principal!");
+    }
+
+    private void limparTodosOsOJogador() {
+        for (int i = 0; i < labirintoAtual.getEstrutura().size(); i++) {
+            for (int j = 0; j < labirintoAtual.getEstrutura().get(i).size(); j++) {
+                if (labirintoAtual.getEstrutura().get(i).get(j).equals("O")) {
+                    labirintoAtual.getEstrutura().get(i).set(j, " ");
+                }
+            }
+        }
     }
 
     private void verificarTesouro() {
