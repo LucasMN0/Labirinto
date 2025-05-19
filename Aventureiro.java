@@ -282,11 +282,39 @@ class   Aventureiro {
                 labirintoAtual.getEstrutura().get(posI).set(posJ, "O");
                 return true;
             }
+        }        
+        if (celula.equals("F") && labirintoAtual.isMapaPrincipal()) {
+            System.out.println("\nVocê encontrou uma entrada para a sala do BOSS!");
+
+            String resposta;
+            do {
+                System.out.print("Deseja entrar? (s/n): ");
+                resposta = sc.nextLine().trim().toLowerCase();
+            } while (!resposta.equals("s") && !resposta.equals("n"));
+
+            if (resposta.equalsIgnoreCase("s")) {
+                entrarNoBOSS();
+                return true;
+            } else {
+                // Se não quiser entrar, volta para a posição anterior
+                labirintoAtual.getEstrutura().get(posI).set(posJ, "F");
+                posI = posI; // Mantém na posição atual (que é a do F)
+                posJ = posJ;
+                labirintoAtual.getEstrutura().get(posI).set(posJ, "O");
+                return true;
+            }
         }
 
         // Verifica se está na saída do labirinto (S)
         if (celula.equals("S") && !labirintoAtual.isMapaPrincipal()) {
             sairDoLabirinto();
+            labirintoAtual.limparTerminal();
+            return true;
+        }
+
+        if (celula.equals("S") && labirintoAtual.isMapaPrincipal()) {
+            sairDoLabirinto();
+            labirintoAtual.limparTerminal();
             return true;
         }
 
@@ -300,7 +328,6 @@ class   Aventureiro {
 
         // Guarda a posição CORRETA (i=linha, j=coluna)
         setUltimaPosicaoMapa(posI, posJ);
-
         // Restante do metodo permanece igual...
         int labirintoID = new Random().nextInt(12) + 1;
         Labirinto labirintoAleatorio = new Labirinto(labirintoID, 0, false);
@@ -310,6 +337,22 @@ class   Aventureiro {
         setPosicao(labirintoAleatorio.getInicioI(), labirintoAleatorio.getInicioJ());
 
         System.out.println("Você entrou no Labirinto " + labirintoID + "!");
+    }
+
+    private void entrarNoBOSS() {
+        System.out.println("\n--- ENTRANDO NA SALA DO BOSS ---");
+
+        // Guarda a posição CORRETA (i=linha, j=coluna)
+        setUltimaPosicaoMapa(posI, posJ);
+        // Restante do metodo permanece igual...
+        int labirintoID = 11;
+        Labirinto labirintoAleatorio = new Labirinto(labirintoID, 0, false);
+        labirintoAleatorio.gerar_labirinto(labirintoID);
+
+        setLabirintoAtual(labirintoAleatorio);
+        setPosicao(labirintoAleatorio.getInicioI(), labirintoAleatorio.getInicioJ());
+
+        System.out.println("Você entrou na sala do BOSS !");
     }
 
     private void sairDoLabirinto() {

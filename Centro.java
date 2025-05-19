@@ -33,16 +33,20 @@ public class Centro {
 
         // Game loop principal
         while (true) {
+            // Verifica se chegou na sala do boss final
+            if (jogador.getLabirintoAtual() == mapaPrincipal &&
+                    jogador.getPosI() == mapaPrincipal.getFimI() && jogador.getPosJ() == mapaPrincipal.getFimJ()) {
+                System.out.println("\n====PARABÉNS, VOCÊ TERMINOU O LABIRINTO====");
+                //System.out.println("\n=== VOCÊ ENCONTROU O BOSS FINAL! ===");
+                break;
+            }
+            
+            
+            
             // Exibe o mapa/labirinto atual
             System.out.println("\n=== Mapa Atual ===");
             jogador.getLabirintoAtual().imprimirLabirinto();
 
-            // Verifica se chegou na sala do boss final
-            if (jogador.getLabirintoAtual() == mapaPrincipal &&
-                    mapaPrincipal.getEstrutura().get(jogador.getPosI()).get(jogador.getPosJ()).equals("F")) {
-                System.out.println("\n=== VOCÊ ENCONTROU O BOSS FINAL! ===");
-                break;
-            }
 
             // Input do jogador
             System.out.print("\nDigite a direção (W A S D), M para Menu ou Q para sair: ");
