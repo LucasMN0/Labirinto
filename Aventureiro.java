@@ -146,6 +146,43 @@ class   Aventureiro {
         this.podeComprarNaLoja = podeComprar;
     }
 
+    public int calcularMusica(){
+        int x = mapaPrincipal.getInicioI() + mapaPrincipal.getInicioJ();
+        int levelMusica;
+        switch(mapaPrincipal.getDificuldade()){
+                case 1: 
+                    if(x<=4){
+                        levelMusica = 1;
+                    } else if(4<x && x<6){
+                        levelMusica =2;
+                    } else{
+                        levelMusica=3;
+                    }
+                    break;
+                case 2:
+                    if(x<=5){
+                        levelMusica = 1;
+                    } else if(5<x && x<8){
+                        levelMusica =2;
+                    } else{
+                        levelMusica=3;
+                    }
+                    break;
+                case 3:
+                    if(x<=7){
+                        levelMusica = 1;
+                    } else if(7<x && x<10){
+                        levelMusica =2;
+                    } else{
+                        levelMusica=3;
+                    }
+                    break;
+                default:
+                    levelMusica=1;
+        }
+        return levelMusica;
+    }
+
     public void mostrarMenu() {
         Loja loja = new Loja(this); // Cria a loja
 
@@ -364,13 +401,13 @@ class   Aventureiro {
 
         setLabirintoAtual(labirintoAleatorio);
         setPosicao(labirintoAleatorio.getInicioI(), labirintoAleatorio.getInicioJ());
-
         System.out.println("Você entrou no Labirinto " + labirintoID + "!");
+        int x = calcularMusica();
+        mapaPrincipal.setMusica(x);
     }
 
     private void entrarNoBOSS() {
         System.out.println("\n--- ENTRANDO NA SALA DO BOSS ---");
-
         // Guarda a posição CORRETA (i=linha, j=coluna)
         setUltimaPosicaoMapa(posI, posJ);
         // Restante do metodo permanece igual...
@@ -382,10 +419,12 @@ class   Aventureiro {
         setPosicao(labirintoAleatorio.getInicioI(), labirintoAleatorio.getInicioJ());
 
         System.out.println("Você entrou na sala do BOSS !");
+        mapaPrincipal.setMusica(3);
     }
 
     private void sairDoLabirinto() {
         System.out.println("\n--- SAINDO DO LABIRINTO ---");
+        mapaPrincipal.paraMusica();
 
         // 1. Restaura o mapa principal
         mapaPrincipal.gerar_Mapa(mapaPrincipal.getDificuldade());
@@ -407,6 +446,7 @@ class   Aventureiro {
         setPosicao(novaPosI, novaPosJ); // CORRETO: mantém a ordem i, j
         setPodeComprarNaLoja(true);
         System.out.println("Você voltou para o mapa principal!");
+
     }
 
     private void limparTodosOsOJogador() {

@@ -12,6 +12,7 @@ public class Labirinto {
     private ArrayList<String> listaPerigos;
     private int InicioI, InicioJ;
     private int FimI, FimJ;
+    private Musica music;
     Random rand = new Random();
 
     public Labirinto(int ID, int dificuldade, boolean isMapaPrincipal) {
@@ -21,6 +22,7 @@ public class Labirinto {
         this.estruturaLabirinto = new ArrayList<>();
         this.listaTesouros = new ArrayList<>();
         this.listaPerigos = new ArrayList<>();
+        this.music = new Musica();
 
         if (isMapaPrincipal) {
             gerar_Mapa(dificuldade);  // Usando seu metodo existente
@@ -29,9 +31,16 @@ public class Labirinto {
             adicionarTesourosAleatorios(0 + rand.nextInt(3));
         }
     }
+    public void setMusica(int levelMusic){
+        music.playLevel(levelMusic);
+    }
+
+    public void paraMusica(){
+        music.stop();
+    }
 
     public boolean isMapaPrincipal() {
-        return this.isMapaPrincipal; // Use o campo que você já tem na classe
+        return this.isMapaPrincipal;
     }
 
     public boolean isEntradaLabirinto(int i, int j) {
@@ -482,7 +491,7 @@ public class Labirinto {
     }
 
     public void limparTerminal(){
-        for(int i=0;i<15;++i){
+        for(int i=0;i<40;++i){
             System.out.println();
         }
     }

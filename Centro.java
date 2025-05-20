@@ -30,7 +30,7 @@ public class Centro {
         ArrayList<String> tesourosEncontrados = new ArrayList<>();
         Aventureiro jogador = new Aventureiro("Lucas", tesourosEncontrados, mapaPrincipal,
                 mapaPrincipal.getInicioI(), mapaPrincipal.getInicioJ());
-
+        
         // Game loop principal
         while (true) {
             // Verifica se chegou na sala do boss final
