@@ -4,11 +4,24 @@ import java.util.Random;
 
 public class ItemComum extends Tesouros {
     private int valor;
-    Random rand = new Random();
 
     public ItemComum(String nome, int linha, int coluna, String tipo) {
         super(nome, linha, coluna, tipo);
-        this.valor = new Random().nextInt(50) + 20; // Valor entre 20-70
+
+        // Defina valores diferentes baseados no tipo de item
+        switch(tipo.toLowerCase()) {
+            case "consumível":
+                this.valor = 30;
+                break;
+            case "utilidade":
+                this.valor = 50;
+                break;
+            case "chave":
+                this.valor = 70;
+                break;
+            default:
+                this.valor = 20;
+        }
     }
 
     public int getValor() {

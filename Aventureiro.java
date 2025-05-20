@@ -20,7 +20,9 @@ class   Aventureiro {
     private int vidaMaxima;        // Vida máxima
     private int danoAtaque;        // Dano padrão
     private int danoVerdadeiro;    // Dano que ignora armadura
+    private int moedas;
     private double armadura;       // Porcentagem de redução de dano (ex: 0.2 = 20%)
+    private boolean podeComprarNaLoja = true;
 
     public Aventureiro(String nome, ArrayList<String> tesourosEncontrados, Labirinto labirinto, int i, int j) {
         this.nome = nome;
@@ -37,6 +39,7 @@ class   Aventureiro {
         this.vida = vidaMaxima;
         this.danoAtaque = 20;
         this.danoVerdadeiro = 5;
+        this.moedas = tesourosEncontrados.size() * 50;
         this.armadura = 0.2; // 20% de redução de dano
     }
 
@@ -115,6 +118,32 @@ class   Aventureiro {
             total += item.getBonusVerdadeiro();
         }
         return total;
+    }
+
+    public int getMoedas() {
+        return moedas;
+    }
+
+    public void adicionarMoedas(int quantidade) {
+        if (quantidade > 0) {
+            moedas += quantidade;
+        }
+    }
+
+    public boolean removerMoedas(int quantidade) {
+        if (quantidade > 0 && moedas >= quantidade) {
+            moedas -= quantidade;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean podeComprarNaLoja() {
+        return podeComprarNaLoja;
+    }
+
+    public void setPodeComprarNaLoja(boolean podeComprar) {
+        this.podeComprarNaLoja = podeComprar;
     }
 
     public void mostrarMenu() {
@@ -282,7 +311,7 @@ class   Aventureiro {
                 labirintoAtual.getEstrutura().get(posI).set(posJ, "O");
                 return true;
             }
-        }        
+        }
         if (celula.equals("F") && labirintoAtual.isMapaPrincipal()) {
             System.out.println("\nVocê encontrou uma entrada para a sala do BOSS!");
 
@@ -376,7 +405,7 @@ class   Aventureiro {
         setLabirintoAtual(mapaPrincipal);
         limparTodosOsOJogador();
         setPosicao(novaPosI, novaPosJ); // CORRETO: mantém a ordem i, j
-
+        setPodeComprarNaLoja(true);
         System.out.println("Você voltou para o mapa principal!");
     }
 
@@ -427,28 +456,3 @@ class   Aventureiro {
         }
     }
 }
-
-/* metodos antigos de sair e pode mover
-public boolean sair() {
-        // Verificação completa de null safety
-        if (labirintoAtual == null) {
-            return false;
-        }
-
-        int currentFimI = labirintoAtual.getFimI();
-        int currentFimJ = labirintoAtual.getFimJ();
-
-        return posI == currentFimI && posJ == currentFimJ;
-    }
-
-    private boolean podeMover(int j, int i) {
-        // Verifica limites
-        if (i < 0 || i >= labirintoAtual.getEstrutura().size() ||
-                j < 0 || j >= labirintoAtual.getEstrutura().get(i).size()) {
-            return false;
-        }
-
-        String celula = labirintoAtual.getEstrutura().get(i).get(j);
-        return celula.equals(" ") || celula.equals("S") || celula.equals("T");
-    }
- */

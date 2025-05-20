@@ -10,6 +10,7 @@ public class Loja {
     private List<ItemComum> itensComunsAVenda;
     private Aventureiro jogador;
     private Scanner sc;
+    private boolean itemComprado = false;
 
     public Loja(Aventureiro jogador) {
         this.jogador = jogador;
@@ -36,11 +37,16 @@ public class Loja {
     public void mostrarMenuLoja() {
         while (true) {
             System.out.println("\n=== LOJA ===");
-            System.out.println("Moedas: " + calcularMoedasJogador());
+            System.out.println("Moedas: " + jogador.getMoedas());
             System.out.println("1 - Comprar Itens Equipáveis");
             System.out.println("2 - Comprar Itens Comuns");
             System.out.println("3 - Vender Itens");
             System.out.println("4 - Sair da Loja");
+            if (!jogador.podeComprarNaLoja()) {
+                System.out.println("\nAVISO: Você só pode comprar um item por visita à loja!");
+                System.out.println("Saia e entre novamente de um labirinto para comprar mais.");
+            }
+
             System.out.print("Escolha uma opção: ");
 
             String opcao = sc.nextLine();
@@ -63,15 +69,9 @@ public class Loja {
         }
     }
 
-    private int calcularMoedasJogador() {
-        // Simulação - você pode implementar um sistema de moedas real no jogador
-        // Por enquanto, vamos usar o número de tesouros encontrados * 50 como moedas
-        return jogador.getTesourosEncontrados().size() * 50;
-    }
-
     private void mostrarItensEquipaveis() {
         System.out.println("\n=== ITENS EQUIPÁVEIS ===");
-        System.out.println("Moedas disponíveis: " + calcularMoedasJogador());
+        System.out.println("Moedas disponíveis: " + jogador.getMoedas());
 
         for (int i = 0; i < itensAVenda.size(); i++) {
             ItemEquipavel item = itensAVenda.get(i);
@@ -94,7 +94,7 @@ public class Loja {
 
     private void mostrarItensComuns() {
         System.out.println("\n=== ITENS COMUNS ===");
-        System.out.println("Moedas disponíveis: " + calcularMoedasJogador());
+        System.out.println("Moedas disponíveis: " + jogador.getMoedas());
 
         for (int i = 0; i < itensComunsAVenda.size(); i++) {
             ItemComum item = itensComunsAVenda.get(i);
@@ -124,38 +124,42 @@ public class Loja {
     }
 
     private void comprarItemEquipavel(int indice) {
+        if (!jogador.podeComprarNaLoja()) {
+            System.out.println("\nVocê já comprou um item nesta visita à loja!");
+            System.out.println("Saia e complete um labirinto para comprar novamente.");
+            return;
+        }
+
         ItemEquipavel item = itensAVenda.get(indice);
         int preco = calcularPrecoItem(item);
-        int moedas = calcularMoedasJogador();
 
-        if (moedas >= preco) {
+        if (jogador.removerMoedas(preco)) {
             System.out.println("\nVocê comprou: " + item.getNome() + " por " + preco + " moedas!");
-
-            // Adiciona o item ao inventário do jogador
             jogador.equipar(item);
-
-            // Remove moedas (implementação fictícia - você precisaria adicionar um sistema de moedas real)
-            System.out.println("Moedas restantes: " + (moedas - preco));
+            System.out.println("Moedas restantes: " + jogador.getMoedas());
+            jogador.setPodeComprarNaLoja(false); // Impede novas compras
         } else {
-            System.out.println("\nMoedas insuficientes! Você precisa de mais " + (preco - moedas) + " moedas.");
+            System.out.println("\nMoedas insuficientes! Você precisa de mais " + (preco - jogador.getMoedas()) + " moedas.");
         }
     }
 
     private void comprarItemComum(int indice) {
+        if (!jogador.podeComprarNaLoja()) {
+            System.out.println("\nVocê já comprou um item nesta visita à loja!");
+            System.out.println("Saia e complete um labirinto para comprar novamente.");
+            return;
+        }
+
         ItemComum item = itensComunsAVenda.get(indice);
         int preco = calcularPrecoItemComum(item);
-        int moedas = calcularMoedasJogador();
 
-        if (moedas >= preco) {
+        if (jogador.removerMoedas(preco)) {
             System.out.println("\nVocê comprou: " + item.getNome() + " por " + preco + " moedas!");
-
-            // Adiciona o item aos tesouros encontrados
             jogador.getTesourosEncontrados().add(item.getNome());
-
-            // Remove moedas (implementação fictícia)
-            System.out.println("Moedas restantes: " + (moedas - preco));
+            System.out.println("Moedas restantes: " + jogador.getMoedas());
+            jogador.setPodeComprarNaLoja(false); // Impede novas compras
         } else {
-            System.out.println("\nMoedas insuficientes! Você precisa de mais " + (preco - moedas) + " moedas.");
+            System.out.println("\nMoedas insuficientes! Você precisa de mais " + (preco - jogador.getMoedas()) + " moedas.");
         }
     }
 
@@ -175,13 +179,14 @@ public class Loja {
 
         System.out.print("\nDigite o número do item para vender ou 0 para voltar: ");
         int escolha = sc.nextInt();
-        sc.nextLine(); // Limpar buffer
+        sc.nextLine();
 
         if (escolha > 0 && escolha <= jogador.getTesourosEncontrados().size()) {
             String itemVendido = jogador.getTesourosEncontrados().remove(escolha - 1);
             int valorRecebido = new Random().nextInt(30) + 10;
+            jogador.adicionarMoedas(valorRecebido);
             System.out.println("\nVocê vendeu " + itemVendido + " por " + valorRecebido + " moedas!");
-            // Aqui você adicionaria as moedas ao jogador em uma implementação real
+            System.out.println("Moedas totais: " + jogador.getMoedas());
         }
     }
 }
