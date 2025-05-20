@@ -11,6 +11,7 @@ public class Loja {
     private Aventureiro jogador;
     private Scanner sc;
     private boolean itemComprado = false;
+    
 
     public Loja(Aventureiro jogador) {
         this.jogador = jogador;
@@ -113,10 +114,7 @@ public class Loja {
 
     private int calcularPrecoItem(ItemEquipavel item) {
         // Preço baseado nos atributos do item
-        return (item.getBonusVida() * 2) +
-                (item.getBonusAtaque() * 3) +
-                (int)(item.getBonusArmadura() * 200) +
-                (item.getBonusVerdadeiro() * 4);
+        return item.getValor();
     }
 
     private int calcularPrecoItemComum(ItemComum item) {

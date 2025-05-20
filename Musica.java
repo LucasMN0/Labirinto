@@ -25,19 +25,19 @@ public class Musica {
 
             switch (level) {
                 case 1: // Longe do boss
-                    tempo = 80;
+                    tempo = 10000000000;
                     notes = new int[]{60, 62, 64, 67}; // C, D, E, G
                     break;
                 case 2: // Meio do caminho
-                    tempo = 120;
+                    tempo = 10000000000;
                     notes = new int[]{60, 62, 64, 65, 67}; // C, D, E, F, G
                     break;
                 case 3: // Perto do boss
-                    tempo = 160;
+                    tempo = 10000000000;
                     notes = new int[]{60, 61, 62, 63, 64, 65, 66, 67}; // Crescente rápida
                     break;
                 default:
-                    tempo = 100;
+                    tempo = 10000000000;
                     notes = new int[]{60, 62, 64};
                     break;
             }
