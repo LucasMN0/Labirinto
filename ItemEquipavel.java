@@ -5,19 +5,16 @@ public class ItemEquipavel extends Tesouros {
     private double bonusArmadura;
     private int bonusAtaque;
     private int bonusVerdadeiro;
-    private int valor;
 
-    // Construtor completo
     public ItemEquipavel(String nome, int linha, int coluna, String tipo,
-                         int bonusVida, double bonusArmadura, int bonusAtaque, int bonusVerdadeiro) {
-        super(nome, linha, coluna, tipo);
+                         int bonusVida, double bonusArmadura, int bonusAtaque, int bonusVerdadeiro, int valor) {
+        super(nome, linha, coluna, tipo, valor);
         this.bonusVida = bonusVida;
         this.bonusArmadura = bonusArmadura;
         this.bonusAtaque = bonusAtaque;
         this.bonusVerdadeiro = bonusVerdadeiro;
-        this.valor = bonusVida*2 + bonusAtaque*3 + bonusVerdadeiro*4;
+        this.valor = bonusVida * 2 + bonusAtaque * 3 + bonusVerdadeiro * 4;
     }
-
 
     // Getters
     public int getBonusVida() { return bonusVida; }

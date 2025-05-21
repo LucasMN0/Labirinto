@@ -32,7 +32,8 @@ public class Centro {
                 mapaPrincipal.getInicioI(), mapaPrincipal.getInicioJ());
         
         // Game loop principal
-        while (true) {
+        boolean jogando = true;
+        while (jogando) {
             // Verifica se chegou na sala do boss final
             if (jogador.getLabirintoAtual() == mapaPrincipal &&
                     jogador.getPosI() == mapaPrincipal.getFimI() && jogador.getPosJ() == mapaPrincipal.getFimJ()) {
@@ -40,29 +41,33 @@ public class Centro {
                 //System.out.println("\n=== VOCÊ ENCONTROU O BOSS FINAL! ===");
                 break;
             }
-            
-            
-            
+
             // Exibe o mapa/labirinto atual
             System.out.println("\n=== Mapa Atual ===");
             jogador.getLabirintoAtual().imprimirLabirinto();
 
 
             // Input do jogador
-            System.out.print("\nDigite a direção (W A S D), M para Menu ou Q para sair: ");
+            System.out.print("\nDigite a direção (W A S D), M para Menu ou Q para sair do jogo: ");
             char comando = sc.next().toUpperCase().charAt(0);
             sc.nextLine(); // Limpa o buffer
 
-            if (comando == 'Q') break;
-
-            if (comando == 'M') {
-                jogador.mostrarMenu();
-                continue;
-            }
-
-            // Movimento
-            if (!jogador.mover(comando)) {
-                System.out.println("Movimento inválido!");
+            switch (comando) {
+                case 'Q':
+                    System.out.print("Deseja realmente sair? (S/N): ");
+                    char confirmacao = sc.next().toUpperCase().charAt(0);
+                    if (confirmacao == 'S') {
+                        jogando = false;
+                    }
+                    System.out.println("Saindo do jogo...");
+                    System.exit(0);
+                case 'M':
+                    jogador.mostrarMenu(); break;
+                default:
+                    // Movimento
+                    if (!jogador.mover(comando)) {
+                        System.out.println("Movimento inválido!");
+                    }
             }
         }
     }

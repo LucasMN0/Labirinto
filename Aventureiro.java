@@ -225,7 +225,6 @@ class   Aventureiro {
     }
 
     public void setPosicao(int i, int j) {
-        System.out.println("DEBUG: Setando posição - i: " + i + ", j: " + j);
         // Garante que a posição anterior seja limpa
         if (posI >= 0 && posJ >= 0 &&
                 posI < labirintoAtual.getEstrutura().size() &&
@@ -296,7 +295,6 @@ class   Aventureiro {
             System.out.println("Direção inválida! Use W A S D");
             return false;
         }
-        System.out.println("DEBUG: Direção recebida: '" + direcao + "'");
         int novoI = posI;
         int novoJ = posJ;
 
@@ -485,11 +483,10 @@ class   Aventureiro {
                     }
                 } else if (tesouro instanceof ItemComum) {
                     ItemComum item = (ItemComum) tesouro;
-                    System.out.println("\n[ITEM COMUM]");
                     System.out.println("Valor: " + item.getValor() + " moedas");
-                } else {
-                    System.out.println("\n[TESOURO]");
-                    System.out.println("Você encontrou um tesouro básico!");
+                    if(item.getTipo().equals("Consumível")){
+                        System.out.print("Esse item pode recuperar sua vida!\n");
+                    }
                 }
 
                 tesourosEncontrados.add(tesouro);

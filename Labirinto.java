@@ -25,9 +25,9 @@ public class Labirinto {
         this.music = new Musica();
 
         if (isMapaPrincipal) {
-            gerar_Mapa(dificuldade);  // Usando seu metodo existente
+            gerar_Mapa(dificuldade);  // Usando o seu metodo existente
         } else {
-            gerar_labirinto(ID);  // Usando seu metodo existente
+            gerar_labirinto(ID);  // Usando o seu metodo existente
             adicionarTesourosAleatorios(rand.nextInt(3) + 1);
         }
     }
@@ -465,35 +465,29 @@ public class Labirinto {
 
     private Tesouros criarTesouroAleatorio(int i, int j) {
         Random rand = new Random();
-        String[] tipos = {"ouro", "prata", "rubi", "esmeralda", "diamante"};
-        String tipo = tipos[rand.nextInt(tipos.length)];
 
-        if (rand.nextDouble() < 0.3) {
+        if (rand.nextDouble() < 0.4) {
+            ItemEquipavel original = Tesouros.getItemEquipavelAleatorio();
             return new ItemEquipavel(
-                    "Arma de " + tipo,
+                    original.getNome(),
                     i,
                     j,
-                    tipo,
-                    rand.nextInt(20) + 10,
-                    rand.nextDouble() * 0.2,
-                    rand.nextInt(10) + 5,
-                    rand.nextInt(5) + 1
+                    original.getTipo(),
+                    original.getBonusVida(),
+                    original.getBonusArmadura(),
+                    original.getBonusAtaque(),
+                    original.getBonusVerdadeiro(),
+                    original.getValor() // Mantém o valor original
             );
-        } else if (rand.nextDouble() < 0.5) {
-            return new ItemComum("Baú de " + tipo, i, j, tipo);
         } else {
-            return new Tesouros("Tesouro de " + tipo, i, j, tipo) {
-
-                @Override
-                public int getValor() {
-                    return 0;
-                }
-
-                @Override
-                public int getValorVenda() {
-                    return 0;
-                }
-            };
+            ItemComum original = Tesouros.getItemComumAleatorio();
+            return new ItemComum(
+                    original.getNome(),
+                    i,
+                    j,
+                    original.getTipo(),
+                    original.getValor() // Mantém o valor original
+            );
         }
     }
 

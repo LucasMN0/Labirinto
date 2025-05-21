@@ -10,8 +10,6 @@ public class Loja {
     private List<ItemComum> itensComunsAVenda;
     private Aventureiro jogador;
     private Scanner sc;
-    private boolean itemComprado = false;
-    
 
     public Loja(Aventureiro jogador) {
         this.jogador = jogador;
@@ -20,19 +18,8 @@ public class Loja {
     }
 
     private void inicializarItens() {
-        itensAVenda = new ArrayList<>();
-        itensComunsAVenda = new ArrayList<>();
-
-        // Itens equipáveis
-        itensAVenda.add(new ItemEquipavel("Espada de Ferro", 0, 0, "Arma", 0, 0, 15, 0));
-        itensAVenda.add(new ItemEquipavel("Armadura de Couro", 0, 0, "Armadura", 30, 0.15, 0, 0));
-        itensAVenda.add(new ItemEquipavel("Anel do Poder", 0, 0, "Acessório", 20, 0.1, 10, 5));
-        itensAVenda.add(new ItemEquipavel("Botas Velozes", 0, 0, "Calçado", 10, 0.05, 0, 0));
-
-        // Itens comuns
-        itensComunsAVenda.add(new ItemComum("Poção de Vida", 0, 0, "Consumível"));
-        itensComunsAVenda.add(new ItemComum("Mapa do Tesouro", 0, 0, "Utilidade"));
-        itensComunsAVenda.add(new ItemComum("Chave Mestra", 0, 0, "Chave"));
+        itensAVenda = Tesouros.getItensEquipaveisAleatorios(4); // Pega 4 aleatórios
+        itensComunsAVenda = Tesouros.getItensComunsAleatorios(3); // Pega 3 aleatórios
     }
 
     public void mostrarMenuLoja() {
@@ -113,7 +100,6 @@ public class Loja {
     }
 
     private int calcularPrecoItem(ItemEquipavel item) {
-        // Preço baseado nos atributos do item
         return item.getValor();
     }
 
@@ -161,31 +147,43 @@ public class Loja {
         }
     }
 
-    private void venderItens() {
-        System.out.println("\n=== VENDER ITENS ===");
+    public void venderItens() {
+        List<Tesouros> tesouros = jogador.getTesourosEncontrados();
 
-        if (jogador.getTesourosEncontrados().isEmpty()) {
+        if (tesouros.isEmpty()) {
             System.out.println("Você não tem itens para vender!");
             return;
         }
 
-        System.out.println("Seus tesouros:");
-        for (int i = 0; i < jogador.getTesourosEncontrados().size(); i++) {
-            Tesouros item = jogador.getTesourosEncontrados().get(i);
-            System.out.println((i+1) + " - " + item.getNome() +
-                    " (Valor: " + item.getValorVenda() + " moedas)");
-        }
+        while (true) {
+            System.out.println("\n=== VENDER ITENS ===");
+            System.out.println("Seus tesouros:");
+            int i = 1;
+            for (Tesouros t : tesouros) {
+                System.out.println(i + " - " + t.getNome() + " (Valor de venda: " + t.getValorVenda() + " moedas)");
+                i++;
+            }
 
-        System.out.print("\nDigite o número do item para vender ou 0 para voltar: ");
-        int escolha = sc.nextInt();
-        sc.nextLine();
+            System.out.print("\nDigite o número do item para vender ou 0 para voltar: ");
+            int escolha = sc.nextInt();
+            sc.nextLine(); // Limpar buffer
 
-        if (escolha > 0 && escolha <= jogador.getTesourosEncontrados().size()) {
-            Tesouros itemVendido = jogador.getTesourosEncontrados().remove(escolha - 1);
-            int valorRecebido = itemVendido.getValor();
-            jogador.adicionarMoedas(itemVendido.getValorVenda());
-            System.out.println("\nVocê vendeu " + itemVendido.getNome() + " por " + valorRecebido + " moedas!");
-            System.out.println("Moedas totais: " + jogador.getMoedas());
+            if (escolha == 0) {
+                break;
+            }
+
+            if (escolha > 0 && escolha <= tesouros.size()) {
+                Tesouros item = tesouros.get(escolha - 1);
+                int valorVenda = item.getValorVenda();
+
+                jogador.adicionarMoedas(valorVenda);
+                tesouros.remove(escolha - 1);
+
+                System.out.println("\nVocê vendeu " + item.getNome() + " por " + valorVenda + " moedas!");
+                System.out.println("Moedas totais: " + jogador.getMoedas());
+            } else {
+                System.out.println("Opção inválida!");
+            }
         }
     }
 }
