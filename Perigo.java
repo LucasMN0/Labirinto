@@ -82,8 +82,8 @@ public class Perigo{
                 );
         public final Inimigo anjo_sem_asas = new Inimigo(
                 "anjo sem asas",
-                "A eras, quandos os proprios deuses ainda dormiam\n" +
-                        "um deles teve um sonho um ############## foi dito que\n"+
+                "A eras, quandos o proprio poder ainda dormia\n" +
+                        "um ele teve um sonho um ############## foi dito que\n"+
                         "alguns dos lapsos da vontade divina personificados escolheram o melhor dos lados\n"+
                         "dessa forma a ira encarnada dos deuses veio a suas asas cortar",
                 "forçados por forças maiores a viveram em carne e osso, são humanos comuns\n"+
@@ -109,7 +109,54 @@ public class Perigo{
                 17
 
         );
+        public final Inimigo litch = new Inimigo(
+                "litch",
+                "uma vez foi dito que os sonhos de um homem não tem fim, portanto sua ambição \n" +
+                        "desconhece a finitude, personificando a gula e a sede pelo conhecimento\n"+
+                        "muitos se corromperam ao bisbilhotar conhecimentos antigos portanto,\n" +
+                        "quanto menos se sabe mais se vive e os imortais? enlouquecem\n" +
+                        "o conhecimento da imortalidade lhe custa tudo o que é mortal, seus osso, carne, sangue e mente",
+                "um esqueleto humano, ainda vivo, suas orbitas oculares são escuras\n"+
+                        "tem a mior parte do corpo coberto por um pano longo e preto",
+                4,
+                15,
+                7,
+                10,
+                20
+        );
 
+        public final Inimigo anjo = new Inimigo(
+                "anjo",
+                "em um vazio sem forma antes da propria existencia, surgiu uma vontade\n"+
+                        "da vontade surgiu algo sem nome cor ou foma, a propria força, o proprio poder\n"+
+                        "o poder dormia no vazio sem forma, mas sua simples presença mudava o rumo de todas as coisas\n"+
+                        "lapsos de sua vontade, pedaços de sua força deu origem a seres com formas e com um fardo\n"+
+                        "assima de tudo, uma sina",
+                "seres de forma mutavel e variavel quase como se fluidos, poderiam ser enchames de olhos\n" +
+                        "espadas em fogo, ou mesmo um urso de pelucia, mas nunca se deixe enganar"+
+                        "anjos não são mais humanos",
+                5,
+                24,
+                20,
+                20,
+                30
+        );
+
+        public final Inimigo diabo = new Inimigo(
+                "diabo",
+                "Os anjos vinheram do proprio poder e os diabos vinheram ##############\n" +
+                        "herdeiros do proprio ##############, nasceram com seus destino traçado\n" +
+                        "o destino de serem odiados pelos herdeiros do poder\n"+
+                        "o destino de serem destituidos do seu direito de herança\n" +
+                        "nascidos como herdeiros de algo inominavel e com o destino de serem esquecidos\n" +
+                        "buscam tomar de volta aquilo que é seu por direito, o ceus e a terra um dia farão parte de seu reino",
+                "tem uma aparencia humana com parte de animais, como pernas de bode ou chifres, porem isso é por ecolha propria\n",
+                6,
+                30,
+                10,
+                6,
+                30
+        );
     }
 }
 
