@@ -27,7 +27,7 @@ public class Centro {
             return;
         }
 
-        ArrayList<String> tesourosEncontrados = new ArrayList<>();
+        List<Tesouros> tesourosEncontrados = new ArrayList<>();
         Aventureiro jogador = new Aventureiro("Lucas", tesourosEncontrados, mapaPrincipal,
                 mapaPrincipal.getInicioI(), mapaPrincipal.getInicioJ());
         

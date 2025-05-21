@@ -1,6 +1,6 @@
 package LABIRINTO;
 
-public class Tesouros {
+public abstract class Tesouros {
     private String nome;
     private int linha;
     private int coluna;
@@ -16,16 +16,16 @@ public class Tesouros {
     public String getTipo() {
         return tipo;
     }
-
     public String getNome() {
         return nome;
     }
-
     public int getLinha() {
         return linha;
     }
-
     public int getColuna() {
         return coluna;
     }
+    public abstract int getValor();
+    public abstract int getValorVenda();
+
 }

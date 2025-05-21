@@ -28,7 +28,7 @@ public class Labirinto {
             gerar_Mapa(dificuldade);  // Usando seu metodo existente
         } else {
             gerar_labirinto(ID);  // Usando seu metodo existente
-            adicionarTesourosAleatorios(0 + rand.nextInt(3));
+            adicionarTesourosAleatorios(rand.nextInt(3) + 1);
         }
     }
     public void setMusica(int levelMusic){
@@ -482,7 +482,18 @@ public class Labirinto {
         } else if (rand.nextDouble() < 0.5) {
             return new ItemComum("Baú de " + tipo, i, j, tipo);
         } else {
-            return new Tesouros("Tesouro de " + tipo, i, j, tipo);
+            return new Tesouros("Tesouro de " + tipo, i, j, tipo) {
+
+                @Override
+                public int getValor() {
+                    return 0;
+                }
+
+                @Override
+                public int getValorVenda() {
+                    return 0;
+                }
+            };
         }
     }
 
@@ -504,29 +515,3 @@ public class Labirinto {
         this.listaPerigos.removeAll(listaPerigos);
     }
 }
-
-/* IMPRIMIRLABIRINTO ANTIGO
-public void imprimirLabirinto(Aventureiro jogador) {
-    //Verifica qual labirinto está ativo
-    Labirinto labAtual = this.emSubLabirinto ? this.subLabirintoAtual : this;
-
-    if (labAtual == null) {
-        System.out.println("Erro: Labirinto atual não existe!");
-        return;
-    }
-
-    System.out.println("=== Labirinto " + (emSubLabirinto ? "Secreto" : "Principal") + " ID: " + labAtual.getID() + " ===");
-
-    for (int i = 0; i < labAtual.estruturaLabirinto.size(); i++) {
-        for (int j = 0; j < labAtual.estruturaLabirinto.get(i).size(); j++) {
-            if (jogador != null && i == jogador.getPosI() && j == jogador.getPosJ()) {
-                System.out.print("O ");
-            } else {
-                String c = labAtual.estruturaLabirinto.get(i).get(j);
-                System.out.print((c == null || c.equals(".")) ? "  " : c + " ");
-            }
-        }
-        System.out.println();
-    }
-}
-*/

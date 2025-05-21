@@ -1,7 +1,5 @@
 package LABIRINTO;
 
-import java.util.Random;
-
 public class ItemComum extends Tesouros {
     private int valor;
 
@@ -24,7 +22,14 @@ public class ItemComum extends Tesouros {
         }
     }
 
-    public int getValor() {
+    @Override
+    public int getValor(){
         return valor;
     }
+
+    @Override
+    public int getValorVenda() {
+        return (int) (getValor() * 0.8);
+    }
+
 }

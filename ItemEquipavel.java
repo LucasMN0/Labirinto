@@ -24,8 +24,15 @@ public class ItemEquipavel extends Tesouros {
     public double getBonusArmadura() { return bonusArmadura; }
     public int getBonusAtaque() { return bonusAtaque; }
     public int getBonusVerdadeiro() { return bonusVerdadeiro; }
-    public int getValor() {return valor;}
 
+    @Override
+    public int getValor(){
+        return valor;
+    }
 
-    
+    @Override
+    public int getValorVenda() {
+        return (int)(valor * 0.6);
+    }
+
 }

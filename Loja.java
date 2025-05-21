@@ -153,7 +153,7 @@ public class Loja {
 
         if (jogador.removerMoedas(preco)) {
             System.out.println("\nVocê comprou: " + item.getNome() + " por " + preco + " moedas!");
-            jogador.getTesourosEncontrados().add(item.getNome());
+            jogador.getTesourosEncontrados().add(item);
             System.out.println("Moedas restantes: " + jogador.getMoedas());
             jogador.setPodeComprarNaLoja(false); // Impede novas compras
         } else {
@@ -171,8 +171,9 @@ public class Loja {
 
         System.out.println("Seus tesouros:");
         for (int i = 0; i < jogador.getTesourosEncontrados().size(); i++) {
-            System.out.println((i+1) + " - " + jogador.getTesourosEncontrados().get(i) +
-                    " (Valor: " + (new Random().nextInt(30) + 10 + " moedas)"));
+            Tesouros item = jogador.getTesourosEncontrados().get(i);
+            System.out.println((i+1) + " - " + item.getNome() +
+                    " (Valor: " + item.getValorVenda() + " moedas)");
         }
 
         System.out.print("\nDigite o número do item para vender ou 0 para voltar: ");
@@ -180,10 +181,10 @@ public class Loja {
         sc.nextLine();
 
         if (escolha > 0 && escolha <= jogador.getTesourosEncontrados().size()) {
-            String itemVendido = jogador.getTesourosEncontrados().remove(escolha - 1);
-            int valorRecebido = new Random().nextInt(30) + 10;
-            jogador.adicionarMoedas(valorRecebido);
-            System.out.println("\nVocê vendeu " + itemVendido + " por " + valorRecebido + " moedas!");
+            Tesouros itemVendido = jogador.getTesourosEncontrados().remove(escolha - 1);
+            int valorRecebido = itemVendido.getValor();
+            jogador.adicionarMoedas(itemVendido.getValorVenda());
+            System.out.println("\nVocê vendeu " + itemVendido.getNome() + " por " + valorRecebido + " moedas!");
             System.out.println("Moedas totais: " + jogador.getMoedas());
         }
     }

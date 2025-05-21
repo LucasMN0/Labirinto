@@ -9,9 +9,9 @@ class   Aventureiro {
     private int ultimaPosicaoMapaI;
     private int ultimaPosicaoMapaJ;
     private static final Scanner sc = new Scanner(System.in);
-    private ArrayList<String> tesourosEncontrados;
+    private List<Tesouros> tesourosEncontrados =  new ArrayList<>();
     private List<Tesouros> listaTesouros;
-    private List<ItemEquipavel> equipamentos = new ArrayList<>();
+    private List<ItemEquipavel> equipamentos;
     private Labirinto labirintoAtual;
     private Labirinto mapaPrincipal;
 
@@ -24,7 +24,7 @@ class   Aventureiro {
     private double armadura;       // Porcentagem de redução de dano (ex: 0.2 = 20%)
     private boolean podeComprarNaLoja = true;
 
-    public Aventureiro(String nome, ArrayList<String> tesourosEncontrados, Labirinto labirinto, int i, int j) {
+    public Aventureiro(String nome, List<Tesouros> tesourosEncontrados, Labirinto labirinto, int i, int j) {
         this.nome = nome;
         this.tesourosEncontrados = tesourosEncontrados;
         this.labirintoAtual = labirinto;
@@ -74,7 +74,10 @@ class   Aventureiro {
         System.out.println("Dano de ataque: " + getDanoAtaqueTotal());
         System.out.println("Dano verdadeiro: " + getDanoVerdadeiroTotal());
         System.out.println("Armadura: " + (int)(getArmaduraTotal() * 100) + "%");
-        System.out.println("Tesouros encontrados: " + tesourosEncontrados);
+        System.out.println("Tesouros encontrados:");
+        for (Tesouros t : tesourosEncontrados) {
+            System.out.println("- " + t.getNome() + " (" + t.getTipo() + ")");
+        }
         System.out.println("===================================");
     }
 
@@ -267,7 +270,7 @@ class   Aventureiro {
         this.ultimaPosicaoMapaJ = j;
     }
 
-    public ArrayList<String> getTesourosEncontrados() {
+    public List<Tesouros> getTesourosEncontrados() {
         return tesourosEncontrados;
     }
 
@@ -489,7 +492,7 @@ class   Aventureiro {
                     System.out.println("Você encontrou um tesouro básico!");
                 }
 
-                tesourosEncontrados.add(tesouro.getNome());
+                tesourosEncontrados.add(tesouro);
                 labirintoAtual.getListaTesouros().remove(tesouro);
                 return; // Sai do loop após encontrar o tesouro
             }
