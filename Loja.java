@@ -68,7 +68,8 @@ public class Loja {
             System.out.println("   Vida: +" + item.getBonusVida() +
                     " | Ataque: +" + item.getBonusAtaque() +
                     " | Armadura: +" + (int)(item.getBonusArmadura() * 100) + "%" +
-                    " | Dano Verdadeiro: +" + item.getBonusVerdadeiro());
+                    " | Dano Verdadeiro: +" + item.getBonusVerdadeiro() +
+                    " | Velocidade: +" + item.getBonusVelocidade());
         }
 
         System.out.print("\nDigite o número do item para comprar ou 0 para voltar: ");

@@ -5,14 +5,16 @@ public class ItemEquipavel extends Tesouros {
     private double bonusArmadura;
     private int bonusAtaque;
     private int bonusVerdadeiro;
+    private int bonusVelocidade;
 
     public ItemEquipavel(String nome, int linha, int coluna, String tipo,
-                         int bonusVida, double bonusArmadura, int bonusAtaque, int bonusVerdadeiro, int valor) {
+                         int bonusVida, double bonusArmadura, int bonusAtaque, int bonusVerdadeiro, int bonusVelocidade, int valor) {
         super(nome, linha, coluna, tipo, valor);
         this.bonusVida = bonusVida;
         this.bonusArmadura = bonusArmadura;
         this.bonusAtaque = bonusAtaque;
         this.bonusVerdadeiro = bonusVerdadeiro;
+        this.bonusVelocidade = bonusVelocidade;
         this.valor = bonusVida * 2 + bonusAtaque * 3 + bonusVerdadeiro * 4;
     }
 
@@ -21,6 +23,7 @@ public class ItemEquipavel extends Tesouros {
     public double getBonusArmadura() { return bonusArmadura; }
     public int getBonusAtaque() { return bonusAtaque; }
     public int getBonusVerdadeiro() { return bonusVerdadeiro; }
+    public int getBonusVelocidade() { return bonusVelocidade; }
 
     @Override
     public int getValor(){

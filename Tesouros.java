@@ -21,16 +21,17 @@ public abstract class Tesouros {
 
     private static final List<ItemEquipavel> itensEquipaveis = Arrays.asList(
             // Armas
-            new ItemEquipavel("Espada de Onix", 0, 0, "Arma", 0, 0.00, 30, 1, rd.nextInt(51) + 5),
-            new ItemEquipavel("Machado Quebrado", 0, 0, "Arma", 0, 0.0, 5, 0, rd.nextInt(6) + 1),
-            new ItemEquipavel("Cajado de Mago", 0, 0, "Arma", 0, 0.0, 10, 30, rd.nextInt(41) + 5),
+            new ItemEquipavel("Espada de Onix", 0, 0, "Arma", 0, 0.00, 30, 1, 0, rd.nextInt(51) + 5),
+            new ItemEquipavel("Machado Quebrado", 0, 0, "Arma", 0, 0.0, 5, 0, 0, rd.nextInt(6) + 1),
+            new ItemEquipavel("Cajado de Mago", 0, 0, "Arma", 0, 0.0, 10, 30, -1, rd.nextInt(41) + 5),
 
             // Armaduras
-            new ItemEquipavel("Armadura de Ouro", 0, 0, "Armadura", 15, 0.05, 0, 0, rd.nextInt(21) + 5),
-            new ItemEquipavel("Peitoral de Ferro", 0, 0, "Armadura", 35, 0.15, -5, 0, rd.nextInt(31) + 5),
+            new ItemEquipavel("Armadura de Ouro", 0, 0, "Armadura", 15, 0.05, 0, 0, 0, rd.nextInt(21) + 5),
+            new ItemEquipavel("Peitoral de Ferro", 0, 0, "Armadura", 35, 0.15, -5, 0, -1, rd.nextInt(31) + 5),
+            new ItemEquipavel("Asas", 0, 0, "Armadura", 3, 0.05, 0, 0, 5, rd.nextInt(41) + 3),
 
             // Acessórios
-            new ItemEquipavel("Anel de Rubi", 0, 0, "Acessorio", 5, 0.0, 5, 5, rd.nextInt(71) + 1)
+            new ItemEquipavel("Anel de Rubi", 0, 0, "Acessorio", 5, 0.0, 5, 5, 2,rd.nextInt(71) + 1)
     );
 
     private static final List<ItemComum> itensComuns = Arrays.asList(

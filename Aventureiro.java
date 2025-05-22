@@ -21,6 +21,7 @@ class   Aventureiro {
     private int danoAtaque;        // Dano padrão
     private int danoVerdadeiro;    // Dano que ignora armadura
     private int moedas;
+    private int velocidade;
     private double armadura;       // Porcentagem de redução de dano (ex: 0.2 = 20%)
     private boolean podeComprarNaLoja = true;
 
@@ -41,6 +42,7 @@ class   Aventureiro {
         this.danoVerdadeiro = 5;
         this.moedas = tesourosEncontrados.size() * 50;
         this.armadura = 0.2; // 20% de redução de dano
+        this.velocidade = 1;
     }
 
     public int getPosJ() { return posJ; }
@@ -74,6 +76,7 @@ class   Aventureiro {
         System.out.println("Dano de ataque: " + getDanoAtaqueTotal());
         System.out.println("Dano verdadeiro: " + getDanoVerdadeiroTotal());
         System.out.println("Armadura: " + (int)(getArmaduraTotal() * 100) + "%");
+        System.out.println("Velocidade: " + getVelocidade());
         System.out.println("Tesouros encontrados:");
         for (Tesouros t : tesourosEncontrados) {
             System.out.println("- " + t.getNome() + " (" + t.getTipo() + ")");
@@ -85,12 +88,14 @@ class   Aventureiro {
         equipamentos.add(item);
         System.out.println(nome + " equipou: " + item.getNome());
     }
-
     public void desequipar(ItemEquipavel item) {
         equipamentos.remove(item);
         System.out.println(nome + " removeu: " + item.getNome());
     }
 
+    public String getNome() {
+        return nome;
+    }
     public int getVidaMaximaTotal() {
         int total = vidaMaxima;
         for (ItemEquipavel item : equipamentos) {
@@ -98,7 +103,6 @@ class   Aventureiro {
         }
         return total;
     }
-
     public double getArmaduraTotal() {
         double total = armadura;
         for (ItemEquipavel item : equipamentos) {
@@ -106,7 +110,6 @@ class   Aventureiro {
         }
         return total;
     }
-
     public int getDanoAtaqueTotal() {
         int total = danoAtaque;
         for (ItemEquipavel item : equipamentos) {
@@ -114,7 +117,6 @@ class   Aventureiro {
         }
         return total;
     }
-
     public int getDanoVerdadeiroTotal() {
         int total = danoVerdadeiro;
         for (ItemEquipavel item : equipamentos) {
@@ -122,7 +124,13 @@ class   Aventureiro {
         }
         return total;
     }
-
+    public int getVelocidade() {
+        int total = velocidade;
+        for (ItemEquipavel item : equipamentos) {
+            total += item.getBonusVelocidade();
+        }
+        return total;
+    }
     public int getMoedas() {
         return moedas;
     }
@@ -132,7 +140,6 @@ class   Aventureiro {
             moedas += quantidade;
         }
     }
-
     public boolean removerMoedas(int quantidade) {
         if (quantidade > 0 && moedas >= quantidade) {
             moedas -= quantidade;
@@ -144,7 +151,6 @@ class   Aventureiro {
     public boolean podeComprarNaLoja() {
         return podeComprarNaLoja;
     }
-
     public void setPodeComprarNaLoja(boolean podeComprar) {
         this.podeComprarNaLoja = podeComprar;
     }
@@ -285,10 +291,6 @@ class   Aventureiro {
         return this.labirintoAtual;
     }
 
-    public List<Tesouros> getListaTesouros() {
-        return listaTesouros;
-    }
-
     public boolean mover(char direcao) {
         char direcaoUpper = Character.toUpperCase(direcao);
         if (direcaoUpper != 'W' && direcaoUpper != 'A' && direcaoUpper != 'S' && direcaoUpper != 'D') {
@@ -327,6 +329,8 @@ class   Aventureiro {
         posJ = novoJ;
 
         verificarTesouro();
+
+        verificarPerigo();
 
         // Verifica se está em uma entrada de labirinto (L)
         if (celula.equals("L") && labirintoAtual.isMapaPrincipal()) {
@@ -475,6 +479,7 @@ class   Aventureiro {
                     System.out.println("Ataque: +" + item.getBonusAtaque());
                     System.out.println("Armadura: +" + (int)(item.getBonusArmadura() * 100) + "%");
                     System.out.println("Dano Verdadeiro: +" + item.getBonusVerdadeiro());
+                    System.out.println("Velocidade: +" + item.getBonusVelocidade());
 
                     System.out.print("\nDeseja equipar este item? (s/n): ");
                     String resposta = sc.nextLine();
@@ -492,6 +497,22 @@ class   Aventureiro {
                 tesourosEncontrados.add(tesouro);
                 labirintoAtual.getListaTesouros().remove(tesouro);
                 return; // Sai do loop após encontrar o tesouro
+            }
+        }
+    }
+
+    private void verificarPerigo() {
+        for (Perigo perigo : labirintoAtual.getListaPerigos()) {
+            if (perigo.getLinha() == posI && perigo.getColuna() == posJ) {
+                if (perigo instanceof Perigo.Inimigo) {
+                    SistemaCombate.encontrarInimigo(this, (Perigo.Inimigo) perigo);
+                } else if (perigo instanceof Perigo.Armadilha) {
+                    SistemaCombate.encontrarArmadilha(this, (Perigo.Armadilha) perigo);
+                }
+
+                // Remove o perigo após ser encontrado
+                labirintoAtual.getListaPerigos().remove(perigo);
+                return;
             }
         }
     }

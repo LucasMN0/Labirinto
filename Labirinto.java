@@ -9,7 +9,7 @@ public class Labirinto {
     private int dificuldade; // 0 para labirintos, 1-3 para mapas
     private ArrayList<ArrayList<String>> estruturaLabirinto;
     private ArrayList<Tesouros> listaTesouros;
-    private ArrayList<String> listaPerigos;
+    private ArrayList<Perigo> listaPerigos;
     private int InicioI, InicioJ;
     private int FimI, FimJ;
     private Musica music;
@@ -29,6 +29,7 @@ public class Labirinto {
         } else {
             gerar_labirinto(ID);  // Usando o seu metodo existente
             adicionarTesourosAleatorios(rand.nextInt(3) + 1);
+            adicionarPerigosAleatorios(rand.nextInt(2) + 1);
         }
     }
     public void setMusica(int levelMusic){
@@ -99,7 +100,7 @@ public class Labirinto {
                 matriz = new String[][] {
                         {"X", "X", "S", "X", "X"},
                         {"X", " ", " ", " ", "X"},
-                        {"X", " ", " ", " ", "X"},
+                        {"X", "P", " ", " ", "X"},
                         {"X", " ", "O", " ", "X"},
                         {"X", "X", "E", "X", "X"},
                 };
@@ -477,6 +478,7 @@ public class Labirinto {
                     original.getBonusArmadura(),
                     original.getBonusAtaque(),
                     original.getBonusVerdadeiro(),
+                    original.getBonusVelocidade(),
                     original.getValor() // Mantém o valor original
             );
         } else {
@@ -501,11 +503,69 @@ public class Labirinto {
         }
     }
 
-    public void adicionarPerigo(ArrayList<String> listaPerigos) {
-        this.listaPerigos.addAll(listaPerigos);
+    public List<Perigo> getListaPerigos() {
+        return listaPerigos;
     }
 
-    public void removerPerigo(ArrayList<String> listaPerigos) {
-        this.listaPerigos.removeAll(listaPerigos);
+    public void adicionarPerigosAleatorios(int quantidade) {
+        List<int[]> posicoesValidas = new ArrayList<>();
+
+        // Encontra posições válidas (espaços vazios e que não têm tesouros)
+        for (int i = 0; i < estruturaLabirinto.size(); i++) {
+            for (int j = 0; j < estruturaLabirinto.get(i).size(); j++) {
+                String celula = estruturaLabirinto.get(i).get(j);
+                int finalI = i;
+                int finalJ = j;
+                boolean temTesouro = listaTesouros.stream()
+                        .anyMatch(t -> t.getLinha() == finalI && t.getColuna() == finalJ);
+
+                if (celula.equals(" ") && !temTesouro) {
+                    posicoesValidas.add(new int[]{i, j});
+                }
+            }
+        }
+
+        // Adiciona os perigos
+        for (int n = 0; n < quantidade && !posicoesValidas.isEmpty(); n++) {
+            int indice = rand.nextInt(posicoesValidas.size());
+            int[] posicao = posicoesValidas.remove(indice);
+            int i = posicao[0];
+            int j = posicao[1];
+
+            Perigo perigo = criarPerigoAleatorio(i, j);
+            listaPerigos.add(perigo);
+        }
+    }
+
+    private Perigo criarPerigoAleatorio(int i, int j) {
+        Perigo perigo = Perigo.criarPerigoAleatorio(rand);
+
+        // Configura a posição do perigo
+        if (perigo instanceof Perigo.Armadilha) {
+            Perigo.Armadilha armadilha = (Perigo.Armadilha) perigo;
+            return new Perigo.Armadilha(
+                    armadilha.getNome(),
+                    armadilha.getHistoria(),
+                    armadilha.getDescricao(),
+                    armadilha.getIDP(),
+                    armadilha.getDano(),
+                    armadilha.getVelocidade()
+            );
+        } else {
+            Perigo.Inimigo inimigo = (Perigo.Inimigo) perigo;
+            return new Perigo.Inimigo(
+                    inimigo.getNome(),
+                    inimigo.getHistoria(),
+                    inimigo.getDescricao(),
+                    inimigo.getIDP(),
+                    inimigo.getDano(),
+                    inimigo.getVelocidade(),
+                    inimigo.getArmadura(),
+                    inimigo.getVida(),
+                    inimigo.getDanoVerdadeiro(),
+                    i,  // Linha atual
+                    j   // Coluna atual
+            );
+        }
     }
 }
