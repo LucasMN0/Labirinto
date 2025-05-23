@@ -100,7 +100,7 @@ public class Labirinto {
                 matriz = new String[][] {
                         {"X", "X", "S", "X", "X"},
                         {"X", " ", " ", " ", "X"},
-                        {"X", "P", " ", " ", "X"},
+                        {"X", " ", " ", " ", "X"},
                         {"X", " ", "O", " ", "X"},
                         {"X", "X", "E", "X", "X"},
                 };
@@ -540,7 +540,6 @@ public class Labirinto {
     private Perigo criarPerigoAleatorio(int i, int j) {
         Perigo perigo = Perigo.criarPerigoAleatorio(rand);
 
-        // Configura a posição do perigo
         if (perigo instanceof Perigo.Armadilha) {
             Perigo.Armadilha armadilha = (Perigo.Armadilha) perigo;
             return new Perigo.Armadilha(
@@ -549,7 +548,9 @@ public class Labirinto {
                     armadilha.getDescricao(),
                     armadilha.getIDP(),
                     armadilha.getDano(),
-                    armadilha.getVelocidade()
+                    armadilha.getVelocidade(),
+                    i,
+                    j
             );
         } else {
             Perigo.Inimigo inimigo = (Perigo.Inimigo) perigo;
@@ -563,8 +564,8 @@ public class Labirinto {
                     inimigo.getArmadura(),
                     inimigo.getVida(),
                     inimigo.getDanoVerdadeiro(),
-                    i,  // Linha atual
-                    j   // Coluna atual
+                    i,  // Linha
+                    j   // Coluna
             );
         }
     }

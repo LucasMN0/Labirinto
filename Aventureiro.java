@@ -12,8 +12,10 @@ class   Aventureiro {
     private List<Tesouros> tesourosEncontrados =  new ArrayList<>();
     private List<Tesouros> listaTesouros;
     private List<ItemEquipavel> equipamentos;
+    private List<ItemComum> consumiveis = new ArrayList<>();
     private Labirinto labirintoAtual;
     private Labirinto mapaPrincipal;
+    private Monstruario monstruario;
 
     // Novos atributos de combate
     private int vida;              // Vida atual
@@ -31,6 +33,7 @@ class   Aventureiro {
         this.labirintoAtual = labirinto;
         this.listaTesouros = labirinto.getListaTesouros();
         this.mapaPrincipal = labirinto;
+        this.monstruario = new Monstruario();
         this.posI = i;
         this.posJ = j;
         this.equipamentos = new ArrayList<>();
@@ -53,11 +56,12 @@ class   Aventureiro {
     public int getDanoVerdadeiro() { return danoVerdadeiro; }
     public double getArmadura() { return armadura; }
 
+
     public void receberDano(int danoRecebido) {
         int danoComReducao = (int)(danoRecebido * (1 - armadura));
         vida -= danoComReducao;
         if (vida < 0) vida = 0;
-        System.out.println(nome + " recebeu " + danoComReducao + " de dano (reduzido por armadura). Vida atual: " + vida);
+        System.out.println("\n" + nome + " recebeu " + danoComReducao + " de dano (reduzido pela armadura). Vida atual: " + vida);
     }
 
     public void receberDanoVerdadeiro(int dano) {
@@ -71,16 +75,13 @@ class   Aventureiro {
     }
 
     public void mostrarStatus() {
-        System.out.println("===== STATUS DE " + nome + " =====");
+        System.out.println("\n===== STATUS DE " + nome + " =====");
         System.out.println("Vida: " + vida + "/" + getVidaMaximaTotal());
         System.out.println("Dano de ataque: " + getDanoAtaqueTotal());
         System.out.println("Dano verdadeiro: " + getDanoVerdadeiroTotal());
         System.out.println("Armadura: " + (int)(getArmaduraTotal() * 100) + "%");
         System.out.println("Velocidade: " + getVelocidade());
-        System.out.println("Tesouros encontrados:");
-        for (Tesouros t : tesourosEncontrados) {
-            System.out.println("- " + t.getNome() + " (" + t.getTipo() + ")");
-        }
+        System.out.println("Tesouros encontrados: " + tesourosEncontrados.size() + " itens");
         System.out.println("===================================");
     }
 
@@ -100,13 +101,6 @@ class   Aventureiro {
         int total = vidaMaxima;
         for (ItemEquipavel item : equipamentos) {
             total += item.getBonusVida();
-        }
-        return total;
-    }
-    public double getArmaduraTotal() {
-        double total = armadura;
-        for (ItemEquipavel item : equipamentos) {
-            total += item.getBonusArmadura();
         }
         return total;
     }
@@ -134,7 +128,19 @@ class   Aventureiro {
     public int getMoedas() {
         return moedas;
     }
-
+    public double getArmaduraTotal() {
+        double total = armadura;
+        for (ItemEquipavel item : equipamentos) {
+            total += item.getBonusArmadura();
+        }
+        return total;
+    }
+    public List<ItemComum> getConsumiveis() {
+        return consumiveis;
+    }
+    public Monstruario getMonstruario() {
+        return monstruario;
+    }
     public void adicionarMoedas(int quantidade) {
         if (quantidade > 0) {
             moedas += quantidade;
@@ -146,6 +152,43 @@ class   Aventureiro {
             return true;
         }
         return false;
+    }
+
+    public boolean usarConsumivel(int index) {
+        if (index >= 0 && index < consumiveis.size()) {
+            ItemComum consumivel = consumiveis.get(index);
+            if (consumivel.getTipo().equals("Consumível")) {
+                if (vida >= getVidaMaximaTotal()) {
+                    System.out.println("Sua vida já está cheia! Não é necessário usar este consumível.");
+                    return false;
+                }
+                int cura = consumivel.getValor();
+                vida = Math.min(vida + cura, getVidaMaximaTotal());
+                System.out.println("Você usou " + consumivel.getNome() + " e recuperou " + cura + " de vida!");
+                consumiveis.remove(index);
+            }
+        }
+        return false;
+    }
+
+    public void listarConsumiveis() {
+        if (consumiveis.isEmpty()) {
+            System.out.println("Você não tem consumíveis no inventário!");
+            return;
+        }
+
+        System.out.println("\n=== CONSUMÍVEIS ===");
+        for (int i = 0; i < consumiveis.size(); i++) {
+            ItemComum item = consumiveis.get(i);
+            System.out.println((i+1) + " - " + item.getNome() + " (+" + item.getValor() + " HP)");
+        }
+    }
+
+    public void adicionarConsumivel(ItemComum item) {
+        if (item.getTipo().equals("Consumível")) {
+            consumiveis.add(item);
+            System.out.println(item.getNome() + " foi adicionado ao seu inventário de consumíveis!");
+        }
     }
 
     public boolean podeComprarNaLoja() {
@@ -193,15 +236,19 @@ class   Aventureiro {
     }
 
     public void mostrarMenu() {
-        Loja loja = new Loja(this); // Cria a loja
+        Loja loja = new Loja(this);
 
         while (true) {
             System.out.println("\n\n=== MENU ===");
             System.out.println("1 - Mostrar Status");
             System.out.println("2 - Mostrar Mapa");
             System.out.println("3 - Acessar Loja");
-            System.out.println("4 - Voltar ao Jogo");
+            System.out.println("4 - Usar Consumível");
+            System.out.println("5 - Ver Tesouros Encontrados");
+            System.out.println("6 - Ver Monstruário");
+            System.out.println("7 - Voltar ao Jogo");
             System.out.print("Escolha uma opção: ");
+
             String opcao = sc.nextLine();
 
             switch(opcao) {
@@ -212,14 +259,70 @@ class   Aventureiro {
                     labirintoAtual.imprimirLabirinto();
                     break;
                 case "3":
-                    loja.mostrarMenuLoja();
+                    if (labirintoAtual.isMapaPrincipal()) {
+                        loja.mostrarMenuLoja();
+                    } else {
+                        System.out.println("O comerciante não se aventura em lugares perigosos como este.");
+                        System.out.println("Volte ao mapa principal para acessar a loja.");
+                    }
                     break;
                 case "4":
+                    listarConsumiveis();
+                    if (!consumiveis.isEmpty()) {
+                        System.out.print("Escolha o consumível para usar (0 para cancelar): ");
+                        try {
+                            int escolha = Integer.parseInt(sc.nextLine()) - 1;
+                            if (escolha >= 0 && escolha < consumiveis.size()) {
+                                usarConsumivel(escolha);
+                            }
+                        } catch (NumberFormatException e) {
+                            System.out.println("Entrada inválida!");
+                        }
+                    }
+                    break;
+                case "5":
+                    mostrarTesourosEncontrados();
+                    break;
+                case "6":
+                    if (monstruario.temRegistros()) {
+                        monstruario.mostrarMonstruario();
+                    } else {
+                        System.out.println("Seu monstruário está vazio. Encontre inimigos e armadilhas para registrá-los!");
+                    }
+                    break;
+                case "7":
                     return;
                 default:
                     System.out.println("Opção inválida!");
             }
         }
+    }
+
+    public void mostrarTesourosEncontrados() {
+        if (tesourosEncontrados.isEmpty()) {
+            System.out.println("Você ainda não encontrou nenhum tesouro!");
+            return;
+        }
+
+        // Agrupa os tesouros por nome e conta as ocorrências
+        Map<String, Integer> contagemTesouros = new HashMap<>();
+        Map<String, String> tiposTesouros = new HashMap<>();
+
+        for (Tesouros tesouro : tesourosEncontrados) {
+            String nome = tesouro.getNome();
+            contagemTesouros.put(nome, contagemTesouros.getOrDefault(nome, 0) + 1);
+            tiposTesouros.put(nome, tesouro.getTipo());
+        }
+
+        System.out.println("\n=== TESOUROS ENCONTRADOS ===");
+        for (Map.Entry<String, Integer> entry : contagemTesouros.entrySet()) {
+            String nome = entry.getKey();
+            int quantidade = entry.getValue();
+            String tipo = tiposTesouros.get(nome);
+
+            System.out.println("- " + nome + " (" + tipo + ") " + quantidade + "x");
+        }
+        System.out.println("===================================");
     }
 
     public void setLabirintoAtual(Labirinto novoLabirinto) {
@@ -229,7 +332,6 @@ class   Aventureiro {
         this.labirintoAtual = novoLabirinto;
         this.listaTesouros = novoLabirinto.getListaTesouros();
     }
-
     public void setPosicao(int i, int j) {
         // Garante que a posição anterior seja limpa
         if (posI >= 0 && posJ >= 0 &&
@@ -257,7 +359,6 @@ class   Aventureiro {
             }
         }
     }
-
     private void limparPosicaoAnterior() {
         // Limpa todos os "O" que não deveriam existir
         for (int i = 0; i < labirintoAtual.getEstrutura().size(); i++) {
@@ -269,24 +370,19 @@ class   Aventureiro {
             }
         }
     }
-
     public void setUltimaPosicaoMapa(int i, int j) {
         this.ultimaPosicaoMapaI = i;
         this.ultimaPosicaoMapaJ = j;
     }
-
     public List<Tesouros> getTesourosEncontrados() {
         return tesourosEncontrados;
     }
-
     public int getUltimaPosicaoMapaI() {
         return ultimaPosicaoMapaI;
     }
-
     public int getUltimaPosicaoMapaJ() {
         return ultimaPosicaoMapaJ;
     }
-
     public Labirinto getLabirintoAtual() {
         return this.labirintoAtual;
     }
@@ -465,7 +561,6 @@ class   Aventureiro {
     }
 
     private void verificarTesouro() {
-        // Verifica se há um tesouro na posição atual
         for (Tesouros tesouro : new ArrayList<>(labirintoAtual.getListaTesouros())) {
             if (tesouro.getLinha() == posI && tesouro.getColuna() == posJ) {
                 System.out.println("\n=== VOCÊ ENCONTROU UM TESOURO ===");
@@ -486,17 +581,27 @@ class   Aventureiro {
                     if (resposta.equalsIgnoreCase("s")) {
                         equipar(item);
                     }
-                } else if (tesouro instanceof ItemComum) {
+                    tesourosEncontrados.add(tesouro);
+                }
+                else if (tesouro instanceof ItemComum) {
                     ItemComum item = (ItemComum) tesouro;
-                    System.out.println("Valor: " + item.getValor() + " moedas");
                     if(item.getTipo().equals("Consumível")){
-                        System.out.print("Esse item pode recuperar sua vida!\n");
+                        System.out.println("\nValor: " + item.getValor() + " moedas");
+                        System.out.println("Este item recupera " + item.getValor() + " de vida!\n");
+                        System.out.print("Deseja pegar este consumível? (s/n): ");
+                        String resposta = sc.nextLine();
+                        if (resposta.equalsIgnoreCase("s")) {
+                            adicionarConsumivel(item);
+                            tesourosEncontrados.add(tesouro);
+                        }
+                    }else{
+                        System.out.println("Valor: " + item.getValor() + " moedas\n");
+                        tesourosEncontrados.add(tesouro);
                     }
                 }
 
-                tesourosEncontrados.add(tesouro);
                 labirintoAtual.getListaTesouros().remove(tesouro);
-                return; // Sai do loop após encontrar o tesouro
+                return;
             }
         }
     }

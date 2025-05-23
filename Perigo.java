@@ -38,11 +38,23 @@ public class Perigo{
         }
     }
 
+    public Perigo copiar() {
+        if (this instanceof Armadilha) {
+            Armadilha a = (Armadilha) this;
+            return new Armadilha(nome, historia, descricao, IDP, dano, a.getVelocidade(), 0, 0);
+        } else if (this instanceof Inimigo) {
+            Inimigo i = (Inimigo) this;
+            return new Inimigo(nome, historia, descricao, IDP, dano, i.getVelocidade(),
+                    i.getArmadura(), i.getVida(), i.getDanoVerdadeiro(), 0, 0);
+        }
+        return null;
+    }
+
     public static class Armadilha extends Perigo {
         private int velocidade;
 
-        public Armadilha(String nome, String historia, String descricao, int IDP, int dano, int velocidade) {
-            super(nome, historia, descricao, IDP, dano, 0, 0);
+        public Armadilha(String nome, String historia, String descricao, int IDP, int dano, int velocidade, int linha, int coluna) {
+            super(nome, historia, descricao, IDP, dano, linha, coluna);
             this.velocidade = velocidade;
         }
 
@@ -60,21 +72,21 @@ public class Perigo{
                             "por isso varios aventureiros assim como voce morreram aqui",
                     "O chão tem varios furinhos estranhos o que será que é isso?\n" +
                             "espinhos enormes surgem do chão penetrando fundo em sua carne",
-                    1, 15, 5
+                    1, 15, 5,0,0
             ));
 
             Armadilhas.add(new Armadilha(
                     "Armadilha de Flechas",
                     "Mecanismo antigo que dispara flechas envenenadas...",
                     "Você ouve um clique e flechas voam em sua direção",
-                    2, 20, 7
+                    2, 20, 7,0 ,0
             ));
 
             Armadilhas.add(new Armadilha(
                     "Poço Oculto",
                     "Covil de criaturas subterrâneas famintas...",
                     "O chão cede sob seus pés e você cai em um poço escuro",
-                    3, 25, 3
+                    3, 25, 3,0 ,0
             ));
         }
     }

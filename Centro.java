@@ -58,9 +58,10 @@ public class Centro {
                     char confirmacao = sc.next().toUpperCase().charAt(0);
                     if (confirmacao == 'S') {
                         jogando = false;
+                        System.out.println("Saindo do jogo...");
+                        System.exit(0);
                     }
-                    System.out.println("Saindo do jogo...");
-                    System.exit(0);
+                    break;
                 case 'M':
                     jogador.mostrarMenu(); break;
                 default:

@@ -2,38 +2,31 @@ package LABIRINTO;
 
 import java.util.Random;
 import java.util.Scanner;
+import java.util.Map;
 
 public class SistemaCombate {
     private static final Scanner sc = new Scanner(System.in);
     private static final Random rand = new Random();
 
     public static void encontrarPerigo(Aventureiro jogador) {
-        if (rand.nextInt(100) < 30) {
-            if (rand.nextBoolean()) {
-                Perigo.Armadilha armadilha = Perigo.Armadilha.Armadilhas.get(
-                        rand.nextInt(Perigo.Armadilha.Armadilhas.size())
-                );
-                encontrarArmadilha(jogador, armadilha);
+        if (rand.nextInt(100) < 30) { // 30% de chance de encontrar perigo
+            Perigo perigo = Perigo.criarPerigoAleatorio(rand);
+
+            if (perigo instanceof Perigo.Armadilha) {
+                encontrarArmadilha(jogador, (Perigo.Armadilha) perigo);
             } else {
-                Perigo.Inimigo inimigo = Perigo.Inimigo.Inimigos.get(
-                        rand.nextInt(Perigo.Inimigo.Inimigos.size())
-                );
-                encontrarInimigo(jogador, inimigo);
+                encontrarInimigo(jogador, (Perigo.Inimigo) perigo);
             }
         }
     }
 
     public static void encontrarArmadilha(Aventureiro jogador, Perigo.Armadilha armadilha) {
-        armadilha = Perigo.Armadilha.Armadilhas.get(
-                rand.nextInt(Perigo.Armadilha.Armadilhas.size())
-        );
-
         System.out.println("\n=== PERIGO ===");
         System.out.println("Você caiu em uma " + armadilha.getNome());
-        System.out.println("\nHistória: " + armadilha.getHistoria());
+        esperar(3500);
         System.out.println("\nDescrição: " + armadilha.getDescricao());
+        esperar(3500);
 
-        // Verifica se o jogador consegue evitar a armadilha
         if (jogador.getVelocidade() > armadilha.getVelocidade()) {
             System.out.println("\nVocê foi rápido o suficiente para evitar a armadilha!");
         } else {
@@ -42,24 +35,21 @@ public class SistemaCombate {
             System.out.println("\nVocê não conseguiu evitar a armadilha e sofreu " + dano + " de dano!");
         }
 
+        jogador.getMonstruario().registrarArmadilha(armadilha);
         System.out.println("\nPressione ENTER para continuar...");
         sc.nextLine();
     }
 
     public static void encontrarInimigo(Aventureiro jogador, Perigo.Inimigo inimigo) {
-        inimigo = Perigo.Inimigo.Inimigos.get(
-                new Random().nextInt(Perigo.Inimigo.Inimigos.size())
-        );
-
         System.out.println("\n=== COMBATE ===");
         System.out.println("Você encontrou um " + inimigo.getNome() + "!");
-        System.out.println("\nHistória: " + inimigo.getHistoria());
+        esperar(3500);
         System.out.println("\nDescrição: " + inimigo.getDescricao());
+        esperar(3500);
 
-        // Verifica se o jogador pode fugir
-        boolean jogadorComeca = jogador.getVelocidade() > inimigo.getVelocidade();
+        boolean jogadorPodeFugir = jogador.getVelocidade() > inimigo.getVelocidade();
 
-        if (jogadorComeca) {
+        if (jogadorPodeFugir) {
             System.out.println("\nVocê é mais rápido e pode tentar fugir!");
             System.out.print("Deseja fugir? (s/n): ");
             String escolha = sc.nextLine().toLowerCase();
@@ -70,8 +60,10 @@ public class SistemaCombate {
             }
         }
 
-        // Inicia o combate por turnos
         combatePorTurnos(jogador, inimigo);
+        if (inimigo.getVida() <= 0) {
+            jogador.getMonstruario().registrarInimigo(inimigo);
+        }
     }
 
     private static void combatePorTurnos(Aventureiro jogador, Perigo.Inimigo inimigo) {
@@ -87,10 +79,9 @@ public class SistemaCombate {
 
             turnoJogador = !turnoJogador;
 
-            // Mostra status após cada turno
             System.out.println("\n=== STATUS ===");
             System.out.println(jogador.getNome() + ": " + jogador.getVida() + "/" + jogador.getVidaMaximaTotal());
-            System.out.println(inimigo.getNome() + ": " + inimigo.getVida() + "/" + inimigo.getVida());
+            System.out.println(inimigo.getNome() + ": " + Math.max(0, inimigo.getVida()) + "/" + getVidaMaximaInimigo(inimigo));
 
             if (jogador.estaVivo() && inimigo.getVida() > 0) {
                 System.out.println("\nPressione ENTER para continuar o combate...");
@@ -103,41 +94,66 @@ public class SistemaCombate {
             System.exit(0);
         } else {
             System.out.println("\nVocê derrotou o " + inimigo.getNome() + "!");
-            // Podemos adicionar recompensas aqui
         }
     }
 
     private static void turnoJogador(Aventureiro jogador, Perigo.Inimigo inimigo) {
-        System.out.println("\n=== SEU TURNO ===");
-        System.out.println("1 - Atacar");
-        System.out.println("2 - Usar consumível");
-        System.out.println("3 - Mostrar menu");
-        System.out.println("4 - Sair do jogo");
-        System.out.print("Escolha uma ação: ");
+        boolean turnoConcluido = false;
+        boolean consumivelUsado = false;
 
-        String escolha = sc.nextLine();
+        while (!turnoConcluido) {
+            System.out.println("\n=== SEU TURNO ===");
+            System.out.println("1 - Atacar");
 
-        switch (escolha) {
-            case "1":
+            if (!consumivelUsado && !jogador.getConsumiveis().isEmpty()) {
+                System.out.println("2 - Usar consumível");
+            }
+
+            System.out.println("3 - Mostrar Status");
+            System.out.println("4 - Sair do jogo");
+            System.out.print("Escolha uma ação: ");
+
+            String escolha = sc.nextLine();
+
+            switch (escolha) {
+                case "1":
+                    atacar(jogador, inimigo);
+                    turnoConcluido = true;
+                    break;
+
+                case "2":
+                    if (!consumivelUsado && !jogador.getConsumiveis().isEmpty()) {
+                        if (usarConsumivelCombate(jogador)) {
+                            consumivelUsado = true;
+                            System.out.println("Você ainda pode atacar neste turno!");
+                        }
+                    }
+                    break;
+
+                case "3":
+                    jogador.mostrarStatus();
+                    break;
+
+                case "4":
+                    System.out.println("Saindo do jogo...");
+                    System.exit(0);
+                    break;
+
+                default:
+                    System.out.println("Ação inválida! Tente novamente.");
+            }
+
+            // Força o ataque se usou consumível e não fez outra ação
+            if (consumivelUsado && !turnoConcluido) {
+                System.out.println("Pressione ENTER para atacar...");
+                sc.nextLine();
                 atacar(jogador, inimigo);
-                break;
-            case "2":
-                usarConsumivel(jogador);
-                break;
-            case "3":
-                jogador.mostrarMenu();
-                break;
-            case "4":
-                System.out.println("Saindo do jogo...");
-                System.exit(0);
-                break;
-            default:
-                System.out.println("Ação inválida! Você perdeu o turno.");
+                turnoConcluido = true;
+            }
         }
     }
 
     private static void atacar(Aventureiro jogador, Perigo.Inimigo inimigo) {
-        // Calcula dano base (reduzido pela armadura do inimigo)
         int danoBase = (int)(jogador.getDanoAtaqueTotal() * (1 - (inimigo.getArmadura() / 100.0)));
         int danoVerdadeiro = jogador.getDanoVerdadeiroTotal();
         int danoTotal = danoBase + danoVerdadeiro;
@@ -145,14 +161,9 @@ public class SistemaCombate {
         inimigo.setVida(inimigo.getVida() - danoTotal);
 
         System.out.println("\nVocê atacou o " + inimigo.getNome() + "!");
-        System.out.println("Dano base: " + danoBase + " (reduzido por armadura)");
+        System.out.println("Dano base: " + danoBase);
         System.out.println("Dano verdadeiro: " + danoVerdadeiro);
         System.out.println("Dano total: " + danoTotal);
-    }
-
-    private static void usarConsumivel(Aventureiro jogador) {
-        // Implementar lógica para usar consumíveis
-        System.out.println("\nVocê não tem consumíveis no momento!");
     }
 
     private static void turnoInimigo(Aventureiro jogador, Perigo.Inimigo inimigo) {
@@ -166,8 +177,54 @@ public class SistemaCombate {
         jogador.receberDano(danoTotal);
 
         System.out.println(inimigo.getNome() + " atacou você!");
-        System.out.println("Dano base: " + danoBase + " (reduzido por armadura)");
+        System.out.println("Dano base: " + danoBase);
         System.out.println("Dano verdadeiro: " + danoVerdadeiro);
         System.out.println("Dano total: " + danoTotal);
+    }
+
+    private static int getVidaMaximaInimigo(Perigo.Inimigo inimigo) {
+        Map<String, Integer> vidaMaximaInimigos = Map.of(
+                "Pato Armado", 5,
+                "sombra_errante", 20,
+                "anjo sem asas", 20,
+                "ambição de outrora", 17,
+                "litch", 20,
+                "anjo", 30,
+                "diabo", 30
+        );
+        return vidaMaximaInimigos.getOrDefault(inimigo.getNome(), 30);
+    }
+
+    private static boolean usarConsumivelCombate(Aventureiro jogador) {
+        if (jogador.getVida() >= jogador.getVidaMaximaTotal()) {
+            System.out.println("Sua vida já está cheia! Não é necessário usar consumíveis.");
+            return false;
+        }
+
+        jogador.listarConsumiveis();
+        System.out.print("Escolha o consumível para usar (0 para cancelar): ");
+        try {
+            int escolha = Integer.parseInt(sc.nextLine()) - 1;
+            if (escolha >= 0 && escolha < jogador.getConsumiveis().size()) {
+                return jogador.usarConsumivel(escolha);
+            } else if (escolha == -1) {
+                System.out.println("Uso de consumível cancelado.");
+                return false;
+            } else {
+                System.out.println("Opção inválida!");
+                return false;
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Digite um número válido!");
+            return false;
+        }
+    }
+
+    private static void esperar(int milissegundos) {
+        try {
+            Thread.sleep(milissegundos);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 }
