@@ -16,7 +16,6 @@ class   Aventureiro {
     private Labirinto labirintoAtual;
     private Labirinto mapaPrincipal;
     private ArrayList<ArrayList<String>> copiaMapaPrincipal;
-
     private Monstruario monstruario;
 
     // Novos atributos de combate
@@ -389,108 +388,117 @@ class   Aventureiro {
         return this.labirintoAtual;
     }
 
-    public boolean mover(char direcao) {
-        char direcaoUpper = Character.toUpperCase(direcao);
-        if (direcaoUpper != 'W' && direcaoUpper != 'A' && direcaoUpper != 'S' && direcaoUpper != 'D') {
-            System.out.println("Direção inválida! Use W A S D");
-            return false;
+public boolean mover(char direcao) {
+    char direcaoUpper = Character.toUpperCase(direcao);
+    if (direcaoUpper != 'W' && direcaoUpper != 'A' && direcaoUpper != 'S' && direcaoUpper != 'D') {
+        System.out.println("Direção inválida! Use W A S D");
+        return false;
+    }
+
+    int novoI = posI;
+    int novoJ = posJ;
+
+    switch (direcaoUpper) {
+        case 'W': novoI--; break;
+        case 'S': novoI++; break;
+        case 'A': novoJ--; break;
+        case 'D': novoJ++; break;
+    }
+
+    // Verifica limites
+    if (novoI < 0 || novoI >= labirintoAtual.getEstrutura().size() ||
+        novoJ < 0 || novoJ >= labirintoAtual.getEstrutura().get(novoI).size()) {
+        return false;
+    }
+
+    String celula = labirintoAtual.getEstrutura().get(novoI).get(novoJ);
+
+    if (!celula.equals(" ") && !celula.equals("F") && !celula.equals("S") &&
+        !celula.equals("T") && !celula.equals("O") && !celula.equals("L")) {
+        return false;
+    }
+
+    // Verifica se encontrou um labirinto (L)
+    if (celula.equals("L") && labirintoAtual.isMapaPrincipal()) {
+        System.out.println("\nVocê encontrou uma entrada para um labirinto!");
+
+        String resposta;
+        do {
+            System.out.print("Deseja entrar? (s/n): ");
+            resposta = sc.nextLine().trim().toLowerCase();
+        } while (!resposta.equals("s") && !resposta.equals("n"));
+
+        if (resposta.equals("s")) {
+            // Limpa a posição anterior
+            labirintoAtual.getEstrutura().get(posI).set(posJ, " ");
+            posI = novoI;
+            posJ = novoJ;
+            labirintoAtual.getEstrutura().get(posI).set(posJ, "O");
+
+            // Substitui L por espaço
+            labirintoAtual.getEstrutura().get(novoI).set(novoJ, " ");
+
+            entrarNoLabirinto();
         }
-        int novoI = posI;
-        int novoJ = posJ;
 
-        switch (direcaoUpper) {
-            case 'W': novoI--; break;
-            case 'S': novoI++; break;
-            case 'A': novoJ--; break;
-            case 'D': novoJ++; break;
+        // Se disser "n", não move. Apenas mantém a posição atual.
+        return true;
+    }
+
+    // Verifica se encontrou a sala do BOSS (F)
+    if (celula.equals("F") && labirintoAtual.isMapaPrincipal()) {
+        System.out.println("\nVocê encontrou uma entrada para a sala do BOSS!");
+
+        String resposta;
+        do {
+            System.out.print("Deseja entrar? (s/n): ");
+            resposta = sc.nextLine().trim().toLowerCase();
+        } while (!resposta.equals("s") && !resposta.equals("n"));
+
+        if (resposta.equals("s")) {
+            labirintoAtual.getEstrutura().get(posI).set(posJ, " ");
+            posI = novoI;
+            posJ = novoJ;
+            labirintoAtual.getEstrutura().get(posI).set(posJ, "O");
+
+            entrarNoBOSS();
         }
+        return true;
+    }
 
-        // Verifica limites
-        if (novoI < 0 || novoI >= labirintoAtual.getEstrutura().size() ||
-                novoJ < 0 || novoJ >= labirintoAtual.getEstrutura().get(novoI).size()) {
-            return false;
-        }
-
-        // Verifica se pode mover para a célula
-        String celula = labirintoAtual.getEstrutura().get(novoI).get(novoJ);
-        if (!celula.equals(" ") && !celula.equals("F") &&
-                !celula.equals("S") && !celula.equals("T") &&
-                !celula.equals("O") && !celula.equals("L")) {
-            return false;
-        }
-
-        limparPosicaoAnterior();
-
-        // Atualiza posição
+    // Verifica se está na saída do labirinto (S)
+    if (celula.equals("S") && !labirintoAtual.isMapaPrincipal()) {
         labirintoAtual.getEstrutura().get(posI).set(posJ, " ");
         posI = novoI;
         posJ = novoJ;
-
-        //verificarTesouro();
-
-        //verificarPerigo();
-
-        // Verifica se está em uma entrada de labirinto (L)
-        if (celula.equals("L") && labirintoAtual.isMapaPrincipal()) {
-            System.out.println("\nVocê encontrou uma entrada para um labirinto!");
-
-            String resposta;
-            do {
-                System.out.print("Deseja entrar? (s/n): ");
-                resposta = sc.nextLine().trim().toLowerCase();
-            } while (!resposta.equals("s") && !resposta.equals("n"));
-
-            if (resposta.equalsIgnoreCase("s")) {
-                entrarNoLabirinto();
-                return true;
-            } else {
-                // Se não quiser entrar, volta para a posição anterior
-                labirintoAtual.getEstrutura().get(posI).set(posJ, "L");
-                posI = posI; // Mantém na posição atual (que é a do L)
-                posJ = posJ;
-                labirintoAtual.getEstrutura().get(posI).set(posJ, "O");
-                return true;
-            }
-        }
-        if (celula.equals("F") && labirintoAtual.isMapaPrincipal()) {
-            System.out.println("\nVocê encontrou uma entrada para a sala do BOSS!");
-
-            String resposta;
-            do {
-                System.out.print("Deseja entrar? (s/n): ");
-                resposta = sc.nextLine().trim().toLowerCase();
-            } while (!resposta.equals("s") && !resposta.equals("n"));
-
-            if (resposta.equalsIgnoreCase("s")) {
-                entrarNoBOSS();
-                return true;
-            } else {
-                // Se não quiser entrar, volta para a posição anterior
-                labirintoAtual.getEstrutura().get(posI).set(posJ, "F");
-                posI = posI; // Mantém na posição atual (que é a do F)
-                posJ = posJ;
-                labirintoAtual.getEstrutura().get(posI).set(posJ, "O");
-                return true;
-            }
-        }
-
-        // Verifica se está na saída do labirinto (S)
-        if (celula.equals("S") && !labirintoAtual.isMapaPrincipal()) {
-            sairDoLabirinto();
-            labirintoAtual.limparTerminal();
-            return true;
-        }
-
-        if (celula.equals("S") && labirintoAtual.isMapaPrincipal()) {
-            sairDoLabirinto();
-            labirintoAtual.limparTerminal();
-            return true;
-        }
-
         labirintoAtual.getEstrutura().get(posI).set(posJ, "O");
-        setPosicao(novoI, novoJ);
+
+        sairDoLabirinto();
+        labirintoAtual.limparTerminal();
         return true;
     }
+
+    if (celula.equals("S") && labirintoAtual.isMapaPrincipal()) {
+        labirintoAtual.getEstrutura().get(posI).set(posJ, " ");
+        posI = novoI;
+        posJ = novoJ;
+        labirintoAtual.getEstrutura().get(posI).set(posJ, "O");
+
+        sairDoLabirinto();
+        labirintoAtual.limparTerminal();
+        return true;
+    }
+    // Movimento normal
+    labirintoAtual.getEstrutura().get(posI).set(posJ, " ");
+    posI = novoI;
+    posJ = novoJ;
+    labirintoAtual.getEstrutura().get(posI).set(posJ, "O");
+    labirintoAtual.limparTerminal();
+    verificarTesouro();
+    verificarPerigo();
+
+    return true;
+}
 
     private void entrarNoLabirinto() {
         System.out.println("\n--- ENTRANDO NO LABIRINTO ---");
@@ -501,7 +509,6 @@ class   Aventureiro {
         int labirintoID = new Random().nextInt(11);
         Labirinto labirintoAleatorio = new Labirinto(labirintoID, 0, false);
         labirintoAleatorio.gerar_labirinto(labirintoID);
-
 
         // Salva o estado atual do mapa principal antes de entrar
         copiaMapaPrincipal = new ArrayList<>();
