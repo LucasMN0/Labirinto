@@ -91,6 +91,10 @@ public class Labirinto {
         return estruturaLabirinto;
     }
 
+    public void setEstrutura(ArrayList<ArrayList<String>> labirinto){
+        this.estruturaLabirinto = labirinto;
+    }
+
     public void gerar_labirinto(int ID){
         estruturaLabirinto.clear();
         String[][] matriz;
@@ -430,9 +434,9 @@ public class Labirinto {
                     System.out.print("T ");
                 }
                 // Mostra espaço vazio no lugar do L
-                else if (c.equals("L")) {
-                    System.out.print("  ");
-                }
+                // else if (c.equals("L")) {
+                //     System.out.print("  ");
+                // }
                 // Mostra espaço duplo para células vazias
                 else if (c.equals(" ")) {
                     System.out.print("  ");
