@@ -25,11 +25,11 @@ public class Musica {
 
             switch (level) {
                 case 1: // Longe do boss
-                    tempo = 200;
+                    tempo = 80;
                     notes = new int[]{60, 62, 64, 67}; // C, D, E, G
                     break;
                 case 2: // Meio do caminho
-                    tempo = 200;
+                    tempo = 150;
                     notes = new int[]{60, 62, 64, 65, 67}; // C, D, E, F, G
                     break;
                 case 3: // Perto do boss
@@ -43,7 +43,7 @@ public class Musica {
             }
 
             int tick = 0;
-            for (int i = 0; i < 16; i++) {
+            for (int i = 0; i < 64; i++) {
                 for (int note : notes) {
                     track.add(createNoteOnEvent(note, tick));
                     track.add(createNoteOffEvent(note, tick + 1));

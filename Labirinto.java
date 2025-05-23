@@ -96,6 +96,20 @@ public class Labirinto {
         String[][] matriz;
 
         switch(ID){
+            case 0: 
+                matriz = new String[][] {
+                        {"X", "X", "X", "X", "X", "X", "X"},
+                        {"X", " ", " ", " ", " ", " ", "X"},
+                        {"X", " ", "X", "X", "X", " ", "X"},
+                        {"X", " ", " ", " ", "X", " ", "X"},
+                        {"X", "X", "X", " ", "X", " ", "X"},
+                        {"X", "O", " ", " ", "X", " ", "X"},
+                        {"X", "E", "X", "X", "X", "S", "X"},
+                };
+                this.InicioI = 5;
+                this.InicioJ = 1;
+                this.FimI = 5;
+                this.FimJ = 6;
             case 1:
                 matriz = new String[][] {
                         {"X", "X", "S", "X", "X"},

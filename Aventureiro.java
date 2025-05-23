@@ -417,17 +417,6 @@ class   Aventureiro {
             return false;
         }
 
-        limparPosicaoAnterior();
-
-        // Atualiza posição
-        labirintoAtual.getEstrutura().get(posI).set(posJ, " ");
-        posI = novoI;
-        posJ = novoJ;
-
-        verificarTesouro();
-
-        verificarPerigo();
-
         // Verifica se está em uma entrada de labirinto (L)
         if (celula.equals("L") && labirintoAtual.isMapaPrincipal()) {
             System.out.println("\nVocê encontrou uma entrada para um labirinto!");
@@ -439,17 +428,23 @@ class   Aventureiro {
             } while (!resposta.equals("s") && !resposta.equals("n"));
 
             if (resposta.equalsIgnoreCase("s")) {
+                limparPosicaoAnterior();
+
+                // Atualiza posição
+                labirintoAtual.getEstrutura().get(posI).set(posJ, " ");
+                posI = novoI;
+                posJ = novoJ;
+
                 entrarNoLabirinto();
+                labirintoAtual.limparTerminal();
                 return true;
             } else {
                 // Se não quiser entrar, volta para a posição anterior
-                labirintoAtual.getEstrutura().get(posI).set(posJ, "L");
-                posI = posI; // Mantém na posição atual (que é a do L)
-                posJ = posJ;
-                labirintoAtual.getEstrutura().get(posI).set(posJ, "O");
+
                 return true;
             }
         }
+
         if (celula.equals("F") && labirintoAtual.isMapaPrincipal()) {
             System.out.println("\nVocê encontrou uma entrada para a sala do BOSS!");
 
@@ -464,13 +459,20 @@ class   Aventureiro {
                 return true;
             } else {
                 // Se não quiser entrar, volta para a posição anterior
-                labirintoAtual.getEstrutura().get(posI).set(posJ, "F");
-                posI = posI; // Mantém na posição atual (que é a do F)
-                posJ = posJ;
-                labirintoAtual.getEstrutura().get(posI).set(posJ, "O");
                 return true;
             }
         }
+
+        labirintoAtual.limparTerminal();
+        limparPosicaoAnterior();
+
+        // Atualiza posição
+        labirintoAtual.getEstrutura().get(posI).set(posJ, " ");
+        posI = novoI;
+        posJ = novoJ;
+        verificarTesouro();
+
+        verificarPerigo();
 
         // Verifica se está na saída do labirinto (S)
         if (celula.equals("S") && !labirintoAtual.isMapaPrincipal()) {
@@ -496,7 +498,7 @@ class   Aventureiro {
         // Guarda a posição CORRETA (i=linha, j=coluna)
         setUltimaPosicaoMapa(posI, posJ);
         // Restante do metodo permanece igual...
-        int labirintoID = new Random().nextInt(12) + 1;
+        int labirintoID = new Random().nextInt(11);
         Labirinto labirintoAleatorio = new Labirinto(labirintoID, 0, false);
         labirintoAleatorio.gerar_labirinto(labirintoID);
 
