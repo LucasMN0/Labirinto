@@ -393,6 +393,7 @@ class   Aventureiro {
             System.out.println("Direção inválida! Use W A S D");
             return false;
         }
+
         int novoI = posI;
         int novoJ = posJ;
 
@@ -409,8 +410,9 @@ class   Aventureiro {
             return false;
         }
 
-        // Verifica se pode mover para a célula
         String celula = labirintoAtual.getEstrutura().get(novoI).get(novoJ);
+
+        // Verifica se pode mover para a célula
         if (!celula.equals(" ") && !celula.equals("F") &&
                 !celula.equals("S") && !celula.equals("T") &&
                 !celula.equals("O") && !celula.equals("L")) {
@@ -427,86 +429,60 @@ class   Aventureiro {
                 resposta = sc.nextLine().trim().toLowerCase();
             } while (!resposta.equals("s") && !resposta.equals("n"));
 
-            if (resposta.equalsIgnoreCase("s")) {
-                limparPosicaoAnterior();
+            if (resposta.equals("s")) {
+                // Guarda a posição do L antes de entrar
+                setUltimaPosicaoMapa(novoI, novoJ);
 
-                // Atualiza posição
-                labirintoAtual.getEstrutura().get(posI).set(posJ, " ");
-                posI = novoI;
-                posJ = novoJ;
+                // Remove o L do mapa principal
+                labirintoAtual.getEstrutura().get(novoI).set(novoJ, " ");
 
                 entrarNoLabirinto();
-                labirintoAtual.limparTerminal();
                 return true;
             } else {
-                // Se não quiser entrar, volta para a posição anterior
-
+                // Move normalmente para a posição do L (agora espaço vazio)
+                realizarMovimento(novoI, novoJ);
                 return true;
             }
         }
 
-        if (celula.equals("F") && labirintoAtual.isMapaPrincipal()) {
-            System.out.println("\nVocê encontrou uma entrada para a sala do BOSS!");
+        // Movimento normal
+        realizarMovimento(novoI, novoJ);
+        return true;
+    }
 
-            String resposta;
-            do {
-                System.out.print("Deseja entrar? (s/n): ");
-                resposta = sc.nextLine().trim().toLowerCase();
-            } while (!resposta.equals("s") && !resposta.equals("n"));
-
-            if (resposta.equalsIgnoreCase("s")) {
-                entrarNoBOSS();
-                return true;
-            } else {
-                // Se não quiser entrar, volta para a posição anterior
-                return true;
-            }
-        }
-
+    private void realizarMovimento(int novoI, int novoJ) {
         labirintoAtual.limparTerminal();
         limparPosicaoAnterior();
-
-        // Atualiza posição
         labirintoAtual.getEstrutura().get(posI).set(posJ, " ");
         posI = novoI;
         posJ = novoJ;
-        verificarTesouro();
 
+        verificarTesouro();
         verificarPerigo();
 
-        // Verifica se está na saída do labirinto (S)
+        String celula = labirintoAtual.getEstrutura().get(posI).get(posJ);
         if (celula.equals("S") && !labirintoAtual.isMapaPrincipal()) {
             sairDoLabirinto();
-            labirintoAtual.limparTerminal();
-            return true;
+        } else {
+            labirintoAtual.getEstrutura().get(posI).set(posJ, "O");
         }
-
-        if (celula.equals("S") && labirintoAtual.isMapaPrincipal()) {
-            sairDoLabirinto();
-            labirintoAtual.limparTerminal();
-            return true;
-        }
-
-        labirintoAtual.getEstrutura().get(posI).set(posJ, "O");
-        setPosicao(novoI, novoJ);
-        return true;
     }
 
     private void entrarNoLabirinto() {
         System.out.println("\n--- ENTRANDO NO LABIRINTO ---");
 
-        // Guarda a posição CORRETA (i=linha, j=coluna)
-        setUltimaPosicaoMapa(posI, posJ);
-        // Restante do metodo permanece igual...
+        // Gera um ID de labirinto aleatório (1-11)
         int labirintoID = new Random().nextInt(11);
+
         Labirinto labirintoAleatorio = new Labirinto(labirintoID, 0, false);
         labirintoAleatorio.gerar_labirinto(labirintoID);
 
         setLabirintoAtual(labirintoAleatorio);
         setPosicao(labirintoAleatorio.getInicioI(), labirintoAleatorio.getInicioJ());
-        System.out.println("Você entrou no Labirinto " + labirintoID + "!");
+
         int x = calcularMusica();
         mapaPrincipal.setMusica(x);
+        System.out.println("Você entrou no Labirinto " + labirintoID + "!");
     }
 
     private void entrarNoBOSS() {
@@ -529,27 +505,23 @@ class   Aventureiro {
         System.out.println("\n--- SAINDO DO LABIRINTO ---");
         mapaPrincipal.paraMusica();
 
-        // 1. Restaura o mapa principal
-        mapaPrincipal.gerar_Mapa(mapaPrincipal.getDificuldade());
+        // Obtém a posição exata do L onde entrou
+        int posL_I = getUltimaPosicaoMapaI();
+        int posL_J = getUltimaPosicaoMapaJ();
 
-        // 2. Obtém a posição CORRETA (sem inverter)
-        int novaPosI = getUltimaPosicaoMapaI(); // LINHA (i)
-        int novaPosJ = getUltimaPosicaoMapaJ(); // COLUNA (j)
-
-        // 3. Verificação de limites
-        if (novaPosI < 0 || novaPosI >= mapaPrincipal.getEstrutura().size() ||
-                novaPosJ < 0 || novaPosJ >= mapaPrincipal.getEstrutura().get(0).size()) {
-            novaPosI = mapaPrincipal.getInicioI();
-            novaPosJ = mapaPrincipal.getInicioJ();
+        // Verifica se a posição é válida
+        if (posL_I < 0 || posL_I >= mapaPrincipal.getEstrutura().size() ||
+                posL_J < 0 || posL_J >= mapaPrincipal.getEstrutura().get(0).size()) {
+            posL_I = mapaPrincipal.getInicioI();
+            posL_J = mapaPrincipal.getInicioJ();
         }
 
-        // 4. Atualiza posição SEM inverter
+        // Posiciona o jogador exatamente onde estava o L
         setLabirintoAtual(mapaPrincipal);
         limparTodosOsOJogador();
-        setPosicao(novaPosI, novaPosJ); // CORRETO: mantém a ordem i, j
+        setPosicao(posL_I, posL_J);
         setPodeComprarNaLoja(true);
         System.out.println("Você voltou para o mapa principal!");
-
     }
 
     private void limparTodosOsOJogador() {
