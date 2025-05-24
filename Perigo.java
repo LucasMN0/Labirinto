@@ -207,7 +207,7 @@ public class Perigo{
                 Inimigos.add(new Inimigo(
                         "anjo",
                         "em um vazio sem forma antes da propria existencia, surgiu uma vontade\n" +
-                        "da vontade surgiu algo sem nome cor ou foma, a propria força, o proprio poder\n" +
+                        "da vontade surgiu algo sem nome cor ou forma, a propria força, o proprio poder\n" +
                         "o poder dormia no vazio sem forma, mas sua simples presença mudava o rumo de todas as coisas\n" +
                         "lapsos de sua vontade, pedaços de sua força deu origem a seres com formas e com um fardo\n" +
                         "assima de tudo, uma sina",
@@ -242,7 +242,91 @@ public class Perigo{
                         0,
                         0
                 ));
+                //primeiro boss
+                Inimigos.add(new Inimigo(
+                        "Prometheus",
+                        "Os anjos vieram do poder, os diabos do ##############\n"+
+                                "sua união profana deu origem aos titãs, e entre os titãs houve um rei\n"+
+                                "tão antigo quanto a própria história, tendo presenciado o início dos tempos.\n"+
+                                "Prometheus deu origem aos humanos devido à sua grande ambição de ser como o próprio poder.\n"+
+                                "Prometheus roubou a própria chama da vida do poder, mas as ambições de um rei tolo não têm fim.\n"+
+                                "A gula pela força e conhecimento de Prometheus o fez querer roubar o conhecimento\n"+
+                                "e a vontade de ##############, mas até mesmo a vontade do rei dos titãs encontrou-se diante de seu fim.\n"+
+                                "############## deu sua vontade e conhecimento de bom grado para Prometheus, mas o conhecimento é o maior peso\n"+
+                                "que se pode carregar. Logo, Prometheus desejou esquecer e enterrar a verdade.\n"+
+                                "Lágrimas escorriam do rosto de Prometheus: \"A verdade é a coisa mais enlouquecedora do mundo, ##############,\n"+
+                                "e conhecê-la é um tormento cruel. Portanto, eu desejo esquecê-la e enterrá-la.\"\n"+
+                                "Logo, ############## disse: \"Você quer enterrar a verdade e, portanto, você não a merece.\"\n"+
+                                "Prometheus arruinou seu reino e sua própria vida, enlouquecendo completamente no processo e vagando pelas cinzas da guerra.",
+                        "Você se depara com uma criatura muito semelhante a um humano, mas sua pele era completamente negra,\n"+
+                                "com um brilho metálico, um pouco mais alta que o comum, porém exalando uma aura de puro poder.\n"+
+                                "Seus arredores estão em chamas.",
+                        7,
+                        45,
+                        30,
+                        50,
+                        100,
+                        10,
+                        0,
+                        0
+                ));
+                // boss dois
+                Inimigos.add(new Inimigo(
+                        "mão de deus",
+                        "Diferente de muitos anjos que nasceram ao acaso e se atribuíram nomes\n"+
+                                "até entre eles, criaturas que beiram a divindade, existem exceções. Dentre eles nasceu\n"+
+                                "criado pela própria vontade, atitude e decisão do poder, com um propósito e uma sina.\n"+
+                                "Sem nome, não havia necessidade de pôr nome a ferramentas de destruição. Assim, ele foi chamado de\n"+
+                                "mão de deus, sendo sua vista um prelúdio de destruição e da ação da vontade divina. Após a queda do poder,\n"+
+                                "a maioria dos anjos voltou aos céus, para se refugiar e correr de um perigo avassalador.\n"+
+                                "Mas o poder nunca concedeu a chave dos céus a seu combatente mais forte, portanto lhe restou vagar pelas cinzas.\n"+
+                                "Sendo um dos últimos resquícios da vontade do poder, os anjos foram caçados e exterminados nestas terras de morte e sangue.\n"+
+                                "Os céus haviam caído e o panteão dos novos deuses pereceu há muito tempo. Apenas a mão de deus resistiu a tudo isso,\n"+
+                                "um ato de força e resiliência. Devido à sua fé cega, ele se propôs uma última missão em nome do poder: eliminar ##############\n"+
+                                "e assim garantir que tudo volte ao vazio eterno, imutável. E para isso seria necessário o mais puro caos e destruição.\n"+
+                                "E exatamente para isso o poder o fez e o declarou sua mão, portador de sua vontade.",
+                        "Um ser envolto em uma roupa branca imaculada, carregando consigo uma espada de pura luz.\n"+
+                                "Suas asas parecem traços de explosões solares radiantes. Ele paira acima da terra\n"+
+                                "como se ela não fosse digna de tocar os seus pés.",
+                        8,
+                        45,
+                        20,
+                        30,
+                        200,
+                        10,
+                        0,
+                        0
+                ));
+                // 3 e ultimo boss oldest dream esse nome eu achei muito poggers
+                Inimigos.add(new Inimigo(
+                        "Memórias de um Sonho Antigo",
+                        "No início tudo era vazio e sem forma. Do próprio vazio surgiu a vontade; da vontade, o poder.\n"+
+                                "Antes de haver o próprio tempo, o poder dormia envolto no caos que sua própria presença criava.\n"+
+                                "Assim, o poder teve seu primeiro e único sonho: um sonho antigo, que, vindo do poder, carregou sua singularidade com ele.\n"+
+                                "A própria vontade. O sonho antigo criou sua própria vontade; dela, seu próprio povo; dele, seu próprio império; dele, seu próprio poder.\n"+
+                                "No início dos tempos, o poder despertou. Sua vontade e magnitude eram tamanhas que sua simples presença aniquilou seu povo e, como collateral,\n"+
+                                "o império do sonho antigo. Desde então, ele viu o poder como seu adversário e não deixaria barata essa afronta.\n"+
+                                "Éras se passaram. O sonho se fez carne e habitou entre as criações de Prometheus. Lá, criou seu novo império,\n"+
+                                "aproximou-se de diversos humanos e criou afeto por vários deles. Até que a ganância de Prometheus pôs tudo à ruína.\n"+
+                                "Ele quis mais do que cabia em sua boca. Assim, houve algumas retaliações do próprio poder. Entre os reinos destruídos,\n"+
+                                "o do sonho foi um deles. E, nesse dia, ele entendeu que sua sina e seu destino eram solitários, frios e sem cor—apenas mais uma sombra do poder.\n"+
+                                "Portanto, não haveria sombras sem luz. A única maneira de dar fim a tudo isso seria dar fim ao poder.\n"+
+                                "E ele conseguiu. Uma guerra de dimensões inconcebíveis ocorreu, e o sonho saiu vitorioso. Mas, diferente do que ele achava,\n"+
+                                "ele não morreu junto com o poder, e sua imortalidade não o permitia ser morto. Assim, ele separou sua mente em uma persona—você—\n"+
+                                "destinada, a uma hora ou outra, a matar o próprio sonho. Agora você sabe disso. Você deveria estar morto.\n"+
+                                "Que o vazio eterno seja um descanso adequado, sonho de outrora.",
+                        "Uma sombra de formato humano, repleta de pontos de luz em seu interior.\n"+
+                                "Ela estranhamente parece muito com você.",
+                        9,
+                        50,
+                        50,
+                        40,
+                        300,
+                        10,
+                        0,
+                        0
 
+                ));
         }
     }
 }
