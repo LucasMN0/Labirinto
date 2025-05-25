@@ -55,6 +55,18 @@ public abstract class Tesouros {
         Collections.shuffle(itensComuns);
         return new ArrayList<>(itensComuns.subList(0, Math.min(quantidade, itensComuns.size())));
     }
+
+    public static int getValorRecuperacaoConsumivel(String nomeConsumivel) {
+        switch (nomeConsumivel) {
+            case "Galeto Crocante":
+                return 30;
+            case "Poção de Vida":
+                return 30;
+            default:
+                return 0; // Para outros consumíveis não especificados
+        }
+    }
+
     public String getTipo() {
         return tipo;
     }

@@ -1,3 +1,4 @@
+// Monstruario.java
 package LABIRINTO;
 
 import java.util.ArrayList;
@@ -14,16 +15,20 @@ public class Monstruario {
         this.armadilhasRegistradas = new HashMap<>();
     }
 
-    public void registrarInimigo(Perigo.Inimigo inimigo) {
+    public void registrarInimigo(Inimigo inimigo) {
         if (!inimigosRegistrados.containsKey(inimigo.getNome())) {
             inimigosRegistrados.put(inimigo.getNome(), inimigo.copiar());
         }
     }
 
-    public void registrarArmadilha(Perigo.Armadilha armadilha) {
+    public void registrarArmadilha(Armadilha armadilha) {
         if (!armadilhasRegistradas.containsKey(armadilha.getNome())) {
             armadilhasRegistradas.put(armadilha.getNome(), armadilha.copiar());
         }
+    }
+
+    public boolean temRegistros() {
+        return !inimigosRegistrados.isEmpty() || !armadilhasRegistradas.isEmpty();
     }
 
     public void mostrarMonstruario() {
@@ -49,12 +54,8 @@ public class Monstruario {
                 System.out.println("\nNome: " + armadilha.getNome());
                 System.out.println("História: " + armadilha.getHistoria());
                 System.out.println("Descrição: " + armadilha.getDescricao());
-                System.out.println("---------------------");
+                System.out.println("---------------------\n");
             }
         }
-    }
-
-    public boolean temRegistros() {
-        return !inimigosRegistrados.isEmpty() || !armadilhasRegistradas.isEmpty();
     }
 }

@@ -142,6 +142,20 @@ class   Aventureiro {
     public Monstruario getMonstruario() {
         return monstruario;
     }
+
+    // Em Aventureiro.java
+    public int getVelocidadeTotal() {
+        int total = velocidade;
+        for (ItemEquipavel item : equipamentos) {
+            total += item.getBonusVelocidade();
+        }
+        return total;
+    }
+
+    public void setVida(int vida) {
+        this.vida = Math.min(Math.max(0, vida), getVidaMaximaTotal());
+    }
+
     public void adicionarMoedas(int quantidade) {
         if (quantidade > 0) {
             moedas += quantidade;
@@ -627,13 +641,11 @@ public boolean mover(char direcao) {
     private void verificarPerigo() {
         for (Perigo perigo : labirintoAtual.getListaPerigos()) {
             if (perigo.getLinha() == posI && perigo.getColuna() == posJ) {
-                if (perigo instanceof Perigo.Inimigo) {
-                    SistemaCombate.encontrarInimigo(this, (Perigo.Inimigo) perigo);
-                } else if (perigo instanceof Perigo.Armadilha) {
-                    SistemaCombate.encontrarArmadilha(this, (Perigo.Armadilha) perigo);
+                if (perigo instanceof Inimigo) {  // Agora usando a classe Inimigo diretamente
+                    SistemaCombate.encontrarInimigo(this, (Inimigo) perigo);
+                } else if (perigo instanceof Armadilha) {  // Agora usando a classe Armadilha diretamente
+                    SistemaCombate.encontrarArmadilha(this, (Armadilha) perigo);
                 }
-
-                // Remove o perigo após ser encontrado
                 labirintoAtual.getListaPerigos().remove(perigo);
                 return;
             }

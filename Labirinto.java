@@ -100,7 +100,7 @@ public class Labirinto {
         String[][] matriz;
 
         switch(ID){
-            case 0: 
+            case 0:
                 matriz = new String[][] {
                         {"X", "X", "X", "X", "X", "X", "X"},
                         {"X", " ", " ", " ", " ", " ", "X"},
@@ -558,9 +558,9 @@ public class Labirinto {
     private Perigo criarPerigoAleatorio(int i, int j) {
         Perigo perigo = Perigo.criarPerigoAleatorio(rand);
 
-        if (perigo instanceof Perigo.Armadilha) {
-            Perigo.Armadilha armadilha = (Perigo.Armadilha) perigo;
-            return new Perigo.Armadilha(
+        if (perigo instanceof Armadilha) {
+            Armadilha armadilha = (Armadilha) perigo;
+            return new Armadilha(
                     armadilha.getNome(),
                     armadilha.getHistoria(),
                     armadilha.getDescricao(),
@@ -571,8 +571,8 @@ public class Labirinto {
                     j
             );
         } else {
-            Perigo.Inimigo inimigo = (Perigo.Inimigo) perigo;
-            return new Perigo.Inimigo(
+            Inimigo inimigo = (Inimigo) perigo;
+            return new Inimigo(
                     inimigo.getNome(),
                     inimigo.getHistoria(),
                     inimigo.getDescricao(),
@@ -582,8 +582,8 @@ public class Labirinto {
                     inimigo.getArmadura(),
                     inimigo.getVida(),
                     inimigo.getDanoVerdadeiro(),
-                    i,  // Linha
-                    j   // Coluna
+                    i,
+                    j
             );
         }
     }
