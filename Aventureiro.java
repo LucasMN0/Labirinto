@@ -1,6 +1,7 @@
 package LABIRINTO;
 
 import java.util.*;
+import static LABIRINTO.Inimigo.Inimigos;
 
 class   Aventureiro {
     private String nome;
@@ -71,8 +72,13 @@ class   Aventureiro {
         System.out.println(nome + " recebeu " + dano + " de dano verdadeiro. Vida atual: " + vida);
     }
 
-    public boolean estaVivo() {
-        return vida > 0;
+    private static void esperar(int milissegundos) {
+        try {
+            Thread.sleep(milissegundos);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.out.println("O atraso foi interrompido.");
+        }
     }
 
     public void mostrarStatus() {
@@ -428,7 +434,8 @@ public boolean mover(char direcao) {
     String celula = labirintoAtual.getEstrutura().get(novoI).get(novoJ);
 
     if (!celula.equals(" ") && !celula.equals("F") && !celula.equals("S") &&
-        !celula.equals("T") && !celula.equals("O") && !celula.equals("L")) {
+            !celula.equals("T") && !celula.equals("O") && !celula.equals("L") &&
+            !celula.equals("B")) {
         return false;
     }
 
@@ -459,7 +466,6 @@ public boolean mover(char direcao) {
         return true;
     }
 
-    // Verifica se encontrou a sala do BOSS (F)
     if (celula.equals("F") && labirintoAtual.isMapaPrincipal()) {
         System.out.println("\nVocê encontrou uma entrada para a sala do BOSS!");
 
@@ -539,18 +545,93 @@ public boolean mover(char direcao) {
 
     private void entrarNoBOSS() {
         System.out.println("\n--- ENTRANDO NA SALA DO BOSS ---");
-        // Guarda a posição CORRETA (i=linha, j=coluna)
+
         setUltimaPosicaoMapa(posI, posJ);
-        // Restante do metodo permanece igual...
+
         int labirintoID = 11;
-        Labirinto labirintoAleatorio = new Labirinto(labirintoID, 0, false);
-        labirintoAleatorio.gerar_labirinto(labirintoID);
+        Labirinto labirintoBoss = new Labirinto(labirintoID, 0, false);
+        labirintoBoss.gerar_labirinto(labirintoID);
 
-        setLabirintoAtual(labirintoAleatorio);
-        setPosicao(labirintoAleatorio.getInicioI(), labirintoAleatorio.getInicioJ());
+        setLabirintoAtual(labirintoBoss);
+        setPosicao(labirintoBoss.getInicioI(), labirintoBoss.getInicioJ());
 
-        System.out.println("Você entrou na sala do BOSS !");
         mapaPrincipal.setMusica(3);
+
+        System.out.println("Você entrou no labirinto do Boss Final!");
+        labirintoAtual.imprimirLabirinto();
+
+        while (true) {
+            System.out.println("\nAvance até a saida do labirinto para enfrentar o Boss!");
+            System.out.print("Use WASD para mover ou M para menu: ");
+
+            char input = sc.nextLine().toUpperCase().charAt(0);
+
+            if (input == 'M') {
+                mostrarMenu();
+                continue;
+            }
+            if(input == 'Q'){
+                System.out.print("Deseja realmente sair? (S/N): ");
+                char confirmacao = sc.next().toUpperCase().charAt(0);
+                if (confirmacao == 'S') {
+                    System.out.println("Saindo do jogo...");
+                    System.exit(0);
+                }
+            }
+
+            if (!mover(input)) {
+                System.out.println("Movimento inválido!");
+                continue;
+            }
+
+            labirintoAtual.imprimirLabirinto();
+
+            if (posI == 0 && posJ == 6) {
+                iniciarCombateComBoss();
+                break;
+            }
+        }
+    }
+
+    private boolean estaNaPosicaoDoBoss() {
+        return posI == 0 && posJ == 6;
+    }
+
+    private void iniciarCombateComBoss() {
+        labirintoAtual.getEstrutura().get(posI).set(posJ, " ");
+
+        Inimigo boss = switch(mapaPrincipal.getDificuldade()) {
+            case 1 -> Inimigo.getBossByName("Prometheus");
+            case 2 -> Inimigo.getBossByName("mão de deus");
+            case 3 -> Inimigo.getBossByName("Memórias de um Sonho Antigo");
+            default -> Inimigo.getInimigoAleatorio();
+        };
+
+        Inimigo bossFinal = new Inimigo(
+                boss.getNome(),
+                boss.getHistoria(),
+                boss.getDescricao(),
+                boss.getIDP(),
+                boss.getDano(),
+                boss.getVelocidade(),
+                boss.getArmadura(),
+                boss.getVida(),
+                boss.getDanoVerdadeiro(),
+                posI, posJ
+        );
+
+        System.out.println("\n====================================");
+        System.out.println("UM PODEROSO INIMIGO SE APROXIMA!");
+        System.out.println(">> " + bossFinal.getNome().toUpperCase() + " <<");
+        System.out.println("====================================");
+        esperar(2000);
+
+        SistemaCombate.encontrarInimigo(this, bossFinal);
+
+        System.out.println("\nVocê derrotou " + bossFinal.getNome() + "!");
+        System.out.println("O caminho para a saída se abre!");
+
+        labirintoAtual.getEstrutura().get(posI).set(posJ, "S");
     }
 
     private void sairDoLabirinto() {

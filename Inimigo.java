@@ -10,7 +10,7 @@ public class Inimigo extends Perigo {
     private double armadura;
     private int vida;
     private int danoVerdadeiro;
-    private static final List<Inimigo> Inimigos = new ArrayList<>();
+    static final List<Inimigo> Inimigos = new ArrayList<>();
     private static final Random rand = new Random();
 
     static {
@@ -128,7 +128,7 @@ public class Inimigo extends Perigo {
                 9,
                 20,
                 10,
-                3,
+                0.3,
                 5,
                 3,
                 0,
@@ -164,7 +164,7 @@ public class Inimigo extends Perigo {
                 11,
                 15,
                 15,
-                20,
+                0.2,
                 20,
                 3,
                 0,
@@ -182,7 +182,7 @@ public class Inimigo extends Perigo {
                 12,
                 13,
                 12,
-                15,
+                0.15,
                 17,
                 3,
                 0,
@@ -201,7 +201,7 @@ public class Inimigo extends Perigo {
                 13,
                 15,
                 7,
-                10,
+                0.1,
                 20,
                 3,
                 0,
@@ -221,7 +221,7 @@ public class Inimigo extends Perigo {
                 14,
                 24,
                 20,
-                20,
+                0.2,
                 30,
                 3,
                 0,
@@ -240,7 +240,7 @@ public class Inimigo extends Perigo {
                 15,
                 30,
                 10,
-                6,
+                0.3,
                 30,
                 3,
                 0,
@@ -268,7 +268,7 @@ public class Inimigo extends Perigo {
                 45,
                 30,
                 0.7,
-                100,
+                10,
                 10,
                 0,
                 0
@@ -351,6 +351,13 @@ public class Inimigo extends Perigo {
 
     public int getDanoVerdadeiro() {
         return danoVerdadeiro;
+    }
+
+    public static Inimigo getBossByName(String name) {
+        return Inimigos.stream()
+                .filter(i -> i.getNome().equals(name))
+                .findFirst()
+                .orElseThrow();
     }
 
     @Override
