@@ -14,7 +14,7 @@ public class Labirinto {
     private int FimI, FimJ;
     private Musica music;
     Random rand = new Random();
-
+    //a
     public Labirinto(int ID, int dificuldade, boolean isMapaPrincipal) {
         this.ID = ID;
         this.dificuldade = dificuldade;
