@@ -16,7 +16,8 @@ public class Inimigo extends Perigo {
     static {
         Inimigos.add(new Inimigo(
                 "Goblin",
-                "Um pequeno ser verde e astuto.",
+                "Na base da cordilheira ao sul, diversas especies vivem, entre as mais caoticas e astutas estão eles"+
+                        "raça esta que que a muito dão dor de cabeça apra os humanos, mas agora, ate os humanos sairam de cena",
                 "Um goblin fedorento surge do escuro, brandindo uma adaga enferrujada.",
                 1,
                 10,
@@ -29,7 +30,10 @@ public class Inimigo extends Perigo {
         ));
         Inimigos.add(new Inimigo(
                 "Esqueleto",
-                "Os restos animados de um guerreiro caído.",
+                "os corpos daqueles que tinha grande vontade ainda carregam o peso a sina de seu desejo"+
+                        "assim ainda carregam o peso e desejo de estar vivo, para alguns ate a morte é relitava, porem mesmo assim"+
+                        "tudo seu é tirado, lhe restando apenas uma mente deturpada e ossos epoeirados"+
+                        "mesmo assim, osso machucam",
                 "Um esqueleto empoeirado se levanta, com uma espada quebrada na mão.",
                 2,
                 15,
@@ -42,7 +46,9 @@ public class Inimigo extends Perigo {
         ));
         Inimigos.add(new Inimigo(
                 "Lobo Sombrio",
-                "Uma criatura da noite com olhos brilhantes.",
+                "É dito que ao sul, onde enormes cordilheiras aparecem em meio a nevoa cinza e amarela, as vezes é possivel"+
+                        "ouvir ouvios terriveis vindo de seu pico, criaturas medonhas habitam esta area e por isso não se sabe ao certo"+
+                        "o que os emite, porem se sabe que eles são os reis desta região",
                 "Um lobo de pelagem escura e olhos vermelhos salta das sombras, pronto para atacar.",
                 3,
                 12,
@@ -55,7 +61,9 @@ public class Inimigo extends Perigo {
         ));
         Inimigos.add(new Inimigo(
                 "Fantasma",
-                "Uma aparição etérea e assustadora.",
+                "Aqueles que seus corpos ainda residem nestas terras inferteis e ainda tem um espirito para chamar de seu"+
+                        "nunca alcançaram a paz, esta maldita e profana terra da guerra, impede o descanço da queles que um dia foram vivos"+
+                        "sua unica forma de descanço é ter sua alma destruida ou seu corpo livrado da macula destas malditas terras",
                 "Uma forma translúcida flutua em sua direção, emanando um frio mortal.",
                 4,
                 8,
@@ -68,7 +76,9 @@ public class Inimigo extends Perigo {
         ));
         Inimigos.add(new Inimigo(
                 "Ogro",
-                "Uma criatura grande e bruta.",
+                "criaturas filhas dos titãs com os humanos, devido a sua criação profana que vai contra"+
+                        "as leis deste mundo, eles foram banidos a viverem no subsolo, pode agora que as cinzas dominaram estas terras"+
+                        "ate o subsolo esta vazio e escasso, so restou para eles subir a superficie em busca de se manterem vivos",
                 "Um ogro corpulento bloqueia seu caminho, com um olhar faminto.",
                 5,
                 25,
@@ -81,7 +91,9 @@ public class Inimigo extends Perigo {
         ));
         Inimigos.add(new Inimigo(
                 "Aranha Gigante",
-                "Uma aranha monstruosa, com presas venenosas.",
+                "Uma criatura encontrada pelas terras de cinzas e esquecida pelos seus donos"+
+                        "se criou atravez de inumeros massacres a aventureiros desavisados" +
+                        "dizem que sua especie veio de uma estranha ilha ao oeste",
                 "Uma aranha do tamanho de um cão salta de sua teia, com presas pingando veneno.",
                 6,
                 18,
@@ -94,7 +106,9 @@ public class Inimigo extends Perigo {
         ));
         Inimigos.add(new Inimigo(
                 "Golem de Pedra",
-                "Uma criatura elemental feita de rocha.",
+                "Uma criatura elemental feita de rocha. feita pelos antigos buscadores do saber"+
+                        "criado de uma mistura de magia elemental e espiritual carregam a resistencia e força"+
+                        "das rochas, e o sopro da vida reservado aos espiritos",
                 "A terra treme e um golem de pedra maciço se ergue, com punhos pesados.",
                 7,
                 22,
@@ -126,7 +140,7 @@ public class Inimigo extends Perigo {
                         "quem que sonha com um pato com uma doze????\n",
                 "Um pato do tamanho de um pato normal, porem com uma calibre doze em suas azas",
                 9,
-                20,
+                50,
                 10,
                 0.3,
                 5,
@@ -268,7 +282,7 @@ public class Inimigo extends Perigo {
                 45,
                 30,
                 0.7,
-                10,
+                100,
                 10,
                 0,
                 0
