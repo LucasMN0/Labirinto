@@ -337,22 +337,19 @@ public class Inimigo extends Perigo {
         this.danoVerdadeiro = danoVerdadeiro;
     }
 
+    // Getters
     public int getVelocidade() {
         return velocidade;
     }
-
     public double getArmadura() {
         return armadura;
     }
-
     public int getVida() {
         return vida;
     }
-
     public int getDanoVerdadeiro() {
         return danoVerdadeiro;
     }
-
     public static Inimigo getBossByName(String name) {
         return Inimigos.stream()
                 .filter(i -> i.getNome().equals(name))
@@ -366,6 +363,19 @@ public class Inimigo extends Perigo {
     }
 
     public static Inimigo getInimigoAleatorio() {
-        return Inimigos.get(rand.nextInt(Inimigos.size()));
+        List<Inimigo> inimigosNormais = new ArrayList<>();
+        for (Inimigo inimigo : Inimigos) {
+            if (!isBoss(inimigo.getNome())) {
+                inimigosNormais.add(inimigo);
+            }
+        }
+        return inimigosNormais.get(rand.nextInt(inimigosNormais.size()));
     }
+
+    private static boolean isBoss(String nome) {
+        return nome.equals("Prometheus") ||
+                nome.equals("mão de deus") ||
+                nome.equals("Memórias de um Sonho Antigo");
+    }
+
 }

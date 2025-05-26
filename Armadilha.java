@@ -68,7 +68,17 @@ public class Armadilha extends Perigo {
                         "por isso varios aventureiros assim como voce morreram aqui",
                 "O chão tem varios furinhos estranhos o que será que é isso?\n" +
                         "espinhos enormes surgem do chão penetrando fundo em sua carne",
-                1, 15, 5,0,0
+                6, 15, 5,0,0
+        ));
+        Armadilhas.add(new Armadilha(
+                "Mímico",
+                "Você não estára vivo para descobrir a história do mímico.\n",
+                "Um baú!........................................\n" +
+                        "...................................................\n" +
+                        "...................................................\n" +
+                        "...................................................\n" +
+                        "ou não.. DE REPENTE UMA BOCA GIGANTE TE DEVORA E VOCÊ É ENGOLIDO E NUNCA MAIS FOI ENCONTRADO.",
+                7, 100000, 100,0,0
         ));
     }
 

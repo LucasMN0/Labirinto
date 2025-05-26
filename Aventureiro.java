@@ -29,7 +29,7 @@ class   Aventureiro {
     private double armadura;       // Porcentagem de redução de dano (ex: 0.2 = 20%)
     private boolean podeComprarNaLoja = true;
 
-    public Aventureiro(String nome, List<Tesouros> tesourosEncontrados, Labirinto labirinto, int i, int j) {
+    public Aventureiro(String nome, List<Tesouros> tesourosEncontrados, Labirinto labirinto, int i, int j, KitClasse kitClasse) {
         this.nome = nome;
         this.tesourosEncontrados = tesourosEncontrados;
         this.labirintoAtual = labirinto;
@@ -43,11 +43,32 @@ class   Aventureiro {
         // Atributos iniciais
         this.vidaMaxima = 100;
         this.vida = vidaMaxima;
-        this.danoAtaque = 20;
-        this.danoVerdadeiro = 5;
+        this.danoAtaque = 0;
+        this.danoVerdadeiro = 0;
         this.moedas = tesourosEncontrados.size() * 50;
-        this.armadura = 0.2; // 20% de redução de dano
-        this.velocidade = 1;
+        this.armadura = 0.0;
+        this.velocidade = 0;
+
+        if (kitClasse != null) {
+            this.vidaMaxima += kitClasse.getBonusVida();
+            this.vida = vidaMaxima;
+            this.danoAtaque += kitClasse.getBonusAtaque();
+            this.danoVerdadeiro += kitClasse.getBonusDanoVerdadeiro();
+            this.armadura += kitClasse.getBonusArmadura();
+            this.velocidade += kitClasse.getBonusVelocidade();
+
+            ItemEquipavel kitItem = new ItemEquipavel(
+                    "Kit de " + kitClasse.getNome(),
+                    0, 0, "Classe",
+                    kitClasse.getBonusVida(),
+                    kitClasse.getBonusArmadura(),
+                    kitClasse.getBonusAtaque(),
+                    kitClasse.getBonusDanoVerdadeiro(),
+                    kitClasse.getBonusVelocidade(),
+                    0
+            );
+            this.equipamentos.add(kitItem);
+        }
     }
 
     public int getPosJ() { return posJ; }
@@ -64,12 +85,20 @@ class   Aventureiro {
         vida -= danoComReducao;
         if (vida < 0) vida = 0;
         System.out.println("\n" + nome + " recebeu " + danoComReducao + " de dano (reduzido pela armadura). Vida atual: " + vida);
+
+        if (vida <= 0) {
+            System.out.println("\nVocê foi derrotado!");
+        }
     }
 
     public void receberDanoVerdadeiro(int dano) {
         vida -= dano;
         if (vida < 0) vida = 0;
         System.out.println(nome + " recebeu " + dano + " de dano verdadeiro. Vida atual: " + vida);
+
+        if (vida <= 0) {
+            System.out.println("\nVocê foi derrotado!");
+        }
     }
 
     private static void esperar(int milissegundos) {
@@ -96,39 +125,84 @@ class   Aventureiro {
         equipamentos.add(item);
         System.out.println(nome + " equipou: " + item.getNome());
     }
-    public void desequipar(ItemEquipavel item) {
-        equipamentos.remove(item);
-        System.out.println(nome + " removeu: " + item.getNome());
+    public void desequiparItem() {
+        if (equipamentos.isEmpty()) {
+            System.out.println("Você não tem itens equipados!");
+            return;
+        }
+
+        System.out.println("\n=== ITENS EQUIPADOS ===");
+        for (int i = 0; i < equipamentos.size(); i++) {
+            ItemEquipavel item = equipamentos.get(i);
+            System.out.println((i+1) + " - " + item.getNome());
+        }
+
+        System.out.print("\nEscolha o item para desequipar (0 para cancelar): ");
+        try {
+            int escolha = Integer.parseInt(sc.nextLine()) - 1;
+            if (escolha == -1) {
+                return;
+            }
+            if (escolha >= 0 && escolha < equipamentos.size()) {
+                ItemEquipavel item = equipamentos.get(escolha);
+                System.out.println("\nAVISO: Ao desequipar '" + item.getNome() + "', você perderá este item permanentemente!");
+                System.out.print("Tem certeza que deseja desequipar? (s/n): ");
+                String confirmacao = sc.nextLine().toLowerCase();
+
+                if (confirmacao.equals("s")) {
+                    equipamentos.remove(escolha);
+                    System.out.println("Você desequipou e perdeu permanentemente: " + item.getNome());
+                } else {
+                    System.out.println("Operação cancelada.");
+                }
+            } else {
+                System.out.println("Opção inválida!");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Entrada inválida!");
+        }
+    }
+
+    public boolean estaVivo() {
+        return this.vida > 0;
     }
 
     public String getNome() {
         return nome;
     }
     public int getVidaMaximaTotal() {
-        int total = vidaMaxima;
+        int total = vidaMaxima; // Já inclui o bônus da classe
         for (ItemEquipavel item : equipamentos) {
-            total += item.getBonusVida();
+            if (!item.getNome().startsWith("Kit de ")) {
+                total += item.getBonusVida();
+            }
         }
         return total;
     }
     public int getDanoAtaqueTotal() {
         int total = danoAtaque;
         for (ItemEquipavel item : equipamentos) {
-            total += item.getBonusAtaque();
+            if (!item.getNome().startsWith("Kit de ")) {
+                total += item.getBonusAtaque();
+            }
         }
         return total;
     }
     public int getDanoVerdadeiroTotal() {
-        int total = danoVerdadeiro;
+        int total = danoVerdadeiro; // Já inclui o bônus da classe
         for (ItemEquipavel item : equipamentos) {
-            total += item.getBonusVerdadeiro();
+            if (!item.getNome().startsWith("Kit de ")) {
+                total += item.getBonusVerdadeiro();
+            }
         }
         return total;
     }
     public int getVelocidade() {
-        int total = velocidade;
+        int total = velocidade; // Já inclui o bônus da classe
         for (ItemEquipavel item : equipamentos) {
-            total += item.getBonusVelocidade();
+            if (!item.getNome().startsWith("Kit de ")) {
+                total += item.getBonusVelocidade();
+            }
         }
         return total;
     }
@@ -138,7 +212,9 @@ class   Aventureiro {
     public double getArmaduraTotal() {
         double total = armadura;
         for (ItemEquipavel item : equipamentos) {
-            total += item.getBonusArmadura();
+            if (!item.getNome().startsWith("Kit de ")) {
+                total += item.getBonusArmadura();
+            }
         }
         return total;
     }
@@ -148,8 +224,6 @@ class   Aventureiro {
     public Monstruario getMonstruario() {
         return monstruario;
     }
-
-    // Em Aventureiro.java
     public int getVelocidadeTotal() {
         int total = velocidade;
         for (ItemEquipavel item : equipamentos) {
@@ -157,11 +231,9 @@ class   Aventureiro {
         }
         return total;
     }
-
     public void setVida(int vida) {
         this.vida = Math.min(Math.max(0, vida), getVidaMaximaTotal());
     }
-
     public void adicionarMoedas(int quantidade) {
         if (quantidade > 0) {
             moedas += quantidade;
@@ -174,7 +246,6 @@ class   Aventureiro {
         }
         return false;
     }
-
     public boolean usarConsumivel(int index) {
         if (index >= 0 && index < consumiveis.size()) {
             ItemComum consumivel = consumiveis.get(index);
@@ -199,6 +270,7 @@ class   Aventureiro {
         }
 
         System.out.println("\n=== CONSUMÍVEIS ===");
+        System.out.print("\nVida: " + vida + "/" + getVidaMaximaTotal()+ "\n");
         for (int i = 0; i < consumiveis.size(); i++) {
             ItemComum item = consumiveis.get(i);
             System.out.println((i+1) + " - " + item.getNome() + " (+" + item.getValor() + " HP)");
@@ -265,9 +337,10 @@ class   Aventureiro {
             System.out.println("2 - Mostrar Mapa");
             System.out.println("3 - Acessar Loja");
             System.out.println("4 - Usar Consumível");
-            System.out.println("5 - Ver Tesouros Encontrados");
-            System.out.println("6 - Ver Monstruário");
-            System.out.println("7 - Voltar ao Jogo");
+            System.out.println("5 - Desequipar Item");
+            System.out.println("6 - Ver Tesouros Encontrados");
+            System.out.println("7 - Ver Monstruário");
+            System.out.println("8 - Voltar ao Jogo");
             System.out.print("Escolha uma opção: ");
 
             String opcao = sc.nextLine();
@@ -302,16 +375,19 @@ class   Aventureiro {
                     }
                     break;
                 case "5":
-                    mostrarTesourosEncontrados();
+                    desequiparItem();
                     break;
                 case "6":
+                    mostrarTesourosEncontrados();
+                    break;
+                case "7":
                     if (monstruario.temRegistros()) {
                         monstruario.mostrarMonstruario();
                     } else {
                         System.out.println("Seu monstruário está vazio. Encontre inimigos e armadilhas para registrá-los!");
                     }
                     break;
-                case "7":
+                case "8":
                     return;
                 default:
                     System.out.println("Opção inválida!");
@@ -564,19 +640,26 @@ public boolean mover(char direcao) {
             System.out.println("\nAvance até a saida do labirinto para enfrentar o Boss!");
             System.out.print("Use WASD para mover ou M para menu: ");
 
-            char input = sc.nextLine().toUpperCase().charAt(0);
+            String inputStr = sc.nextLine().trim();
+            if (inputStr.isEmpty()) {
+                System.out.println("Digite um comando válido (W, A, S, D, M ou Q)");
+                continue;
+            }
+            char input = inputStr.toUpperCase().charAt(0);
 
             if (input == 'M') {
                 mostrarMenu();
                 continue;
             }
+
             if(input == 'Q'){
                 System.out.print("Deseja realmente sair? (S/N): ");
-                char confirmacao = sc.next().toUpperCase().charAt(0);
-                if (confirmacao == 'S') {
+                String confirmacaoStr = sc.nextLine().trim();
+                if (!confirmacaoStr.isEmpty() && confirmacaoStr.toUpperCase().charAt(0) == 'S') {
                     System.out.println("Saindo do jogo...");
                     System.exit(0);
                 }
+                continue;
             }
 
             if (!mover(input)) {
@@ -628,39 +711,42 @@ public boolean mover(char direcao) {
 
         SistemaCombate.encontrarInimigo(this, bossFinal);
 
-        System.out.println("\nVocê derrotou " + bossFinal.getNome() + "!");
-        System.out.println("O caminho para a saída se abre!");
+        if (estaVivo()) {  // Só continua se o jogador venceu
+            System.out.println("\nVocê derrotou " + bossFinal.getNome() + "!");
+            System.out.println("O caminho para a saída se abre!");
 
-        labirintoAtual.getEstrutura().get(posI).set(posJ, "S");
+            // Marca a posição atual como saída
+            labirintoAtual.getEstrutura().get(posI).set(posJ, "S");
+
+            // Volta para o mapa principal
+            sairDoLabirinto();
+        }
     }
 
     private void sairDoLabirinto() {
         System.out.println("\n--- SAINDO DO LABIRINTO ---");
         mapaPrincipal.paraMusica();
 
-        // 1. Restaura o mapa principal
-        // Restaura a cópia salva com as alterações feitas no mapa principal
+        // Restaura o mapa principal
         mapaPrincipal.setEstrutura(copiaMapaPrincipal);
 
+        // Obtém a posição CORRETA (sem inverter)
+        int novaPosI = getUltimaPosicaoMapaI();
+        int novaPosJ = getUltimaPosicaoMapaJ();
 
-        // 2. Obtém a posição CORRETA (sem inverter)
-        int novaPosI = getUltimaPosicaoMapaI(); // LINHA (i)
-        int novaPosJ = getUltimaPosicaoMapaJ(); // COLUNA (j)
-
-        // 3. Verificação de limites
+        // Verificação de limites
         if (novaPosI < 0 || novaPosI >= mapaPrincipal.getEstrutura().size() ||
                 novaPosJ < 0 || novaPosJ >= mapaPrincipal.getEstrutura().get(0).size()) {
             novaPosI = mapaPrincipal.getInicioI();
             novaPosJ = mapaPrincipal.getInicioJ();
         }
 
-        // 4. Atualiza posição SEM inverter
+        // Atualiza posição SEM inverter
         setLabirintoAtual(mapaPrincipal);
         limparTodosOsOJogador();
-        setPosicao(novaPosI, novaPosJ); // CORRETO: mantém a ordem i, j
+        setPosicao(novaPosI, novaPosJ);
         setPodeComprarNaLoja(true);
         System.out.println("Você voltou para o mapa principal!");
-
     }
 
     private void limparTodosOsOJogador() {
