@@ -1,7 +1,6 @@
 package LABIRINTO;
 
 import java.util.*;
-import static LABIRINTO.Inimigo.Inimigos;
 
 class   Aventureiro {
     private String nome;
@@ -17,7 +16,7 @@ class   Aventureiro {
     private Labirinto labirintoAtual;
     private Labirinto mapaPrincipal;
     private ArrayList<ArrayList<String>> copiaMapaPrincipal;
-    private Monstruario monstruario;
+    private Monstruario monstruario = Monstruario.getInstance();
 
     // Novos atributos de combate
     private int vida;              // Vida atual
@@ -35,7 +34,7 @@ class   Aventureiro {
         this.labirintoAtual = labirinto;
         this.listaTesouros = labirinto.getListaTesouros();
         this.mapaPrincipal = labirinto;
-        this.monstruario = new Monstruario();
+        this.monstruario = Monstruario.getInstance();
         this.posI = i;
         this.posJ = j;
         this.equipamentos = new ArrayList<>();
@@ -231,6 +230,9 @@ class   Aventureiro {
         }
         return total;
     }
+    public void setMonstruario(Monstruario monstruario) {
+        this.monstruario = monstruario;
+    }
     public void setVida(int vida) {
         this.vida = Math.min(Math.max(0, vida), getVidaMaximaTotal());
     }
@@ -258,6 +260,7 @@ class   Aventureiro {
                 vida = Math.min(vida + cura, getVidaMaximaTotal());
                 System.out.println("Você usou " + consumivel.getNome() + " e recuperou " + cura + " de vida!");
                 consumiveis.remove(index);
+                return true;
             }
         }
         return false;
@@ -685,7 +688,7 @@ public boolean mover(char direcao) {
 
         Inimigo boss = switch(mapaPrincipal.getDificuldade()) {
             case 1 -> Inimigo.getBossByName("Prometheus");
-            case 2 -> Inimigo.getBossByName("mão de deus");
+            case 2 -> Inimigo.getBossByName("Mão de Deus");
             case 3 -> Inimigo.getBossByName("Memórias de um Sonho Antigo");
             default -> Inimigo.getInimigoAleatorio();
         };
@@ -715,12 +718,75 @@ public boolean mover(char direcao) {
             System.out.println("\nVocê derrotou " + bossFinal.getNome() + "!");
             System.out.println("O caminho para a saída se abre!");
 
+            // Pergunta se quer trocar de classe
+            System.out.print("\nDeseja trocar de classe? (s/n): ");
+            String resposta = sc.nextLine().trim().toLowerCase();
+            if (resposta.equals("s")) {
+                trocarClasse();
+            }
+
             // Marca a posição atual como saída
             labirintoAtual.getEstrutura().get(posI).set(posJ, "S");
 
             // Volta para o mapa principal
             sairDoLabirinto();
         }
+    }
+
+    private void trocarClasse() {
+        KitClasse[] classes = {
+                new KitClasse("Guerreiro", 15, 15, 2, 0.3, -1),
+                new KitClasse("Mago", 10, 5, 20, 0.15, 2),
+                new KitClasse("Arqueiro", 13, 10, 10, 0.2, 7)
+        };
+
+        System.out.println("\nSelecione sua nova classe:");
+        System.out.println("1 - Guerreiro");
+        System.out.println("   +15 Vida, +15 Ataque, +2 Dano Verdadeiro, +30% Armadura, -1 Velocidade");
+        System.out.println("2 - Mago");
+        System.out.println("   +10 Vida, +5 Ataque, +20 Dano Verdadeiro, +15% Armadura, +2 Velocidade");
+        System.out.println("3 - Arqueiro");
+        System.out.println("   +13 Vida, +10 Ataque, +10 Dano Verdadeiro, +20% Armadura, +7 Velocidade");
+        System.out.print("Escolha (1-3): ");
+
+        int escolhaClasse;
+        while (true) {
+            try {
+                escolhaClasse = Integer.parseInt(sc.nextLine());
+                if (escolhaClasse >= 1 && escolhaClasse <= 3) break;
+                System.out.print("Escolha inválida! Digite 1, 2 ou 3: ");
+            } catch (NumberFormatException e) {
+                System.out.print("Entrada inválida! Digite 1, 2 ou 3: ");
+            }
+        }
+
+        KitClasse novaClasse = classes[escolhaClasse - 1];
+
+        // Remove o kit de classe atual
+        equipamentos.removeIf(item -> item.getNome().startsWith("Kit de "));
+
+        // Aplica os bônus da nova classe
+        this.vidaMaxima = 100 + novaClasse.getBonusVida();
+        this.vida = Math.min(vida, vidaMaxima);
+        this.danoAtaque = novaClasse.getBonusAtaque();
+        this.danoVerdadeiro = novaClasse.getBonusDanoVerdadeiro();
+        this.armadura = novaClasse.getBonusArmadura();
+        this.velocidade = novaClasse.getBonusVelocidade();
+
+        ItemEquipavel kitItem = new ItemEquipavel(
+                "Kit de " + novaClasse.getNome(),
+                0, 0, "Classe",
+                novaClasse.getBonusVida(),
+                novaClasse.getBonusArmadura(),
+                novaClasse.getBonusAtaque(),
+                novaClasse.getBonusDanoVerdadeiro(),
+                novaClasse.getBonusVelocidade(),
+                0
+        );
+        this.equipamentos.add(kitItem);
+
+        System.out.println("\nVocê agora é um " + novaClasse.getNome() + "!");
+        mostrarStatus();
     }
 
     private void sairDoLabirinto() {
@@ -774,6 +840,7 @@ public boolean mover(char direcao) {
                     System.out.println("Armadura: +" + (int)(item.getBonusArmadura() * 100) + "%");
                     System.out.println("Dano Verdadeiro: +" + item.getBonusVerdadeiro());
                     System.out.println("Velocidade: +" + item.getBonusVelocidade());
+                    System.out.println("Valor de venda: " + item.getValorVenda() + " moedas");
 
                     System.out.print("\nDeseja equipar este item? (s/n): ");
                     String resposta = sc.nextLine();
@@ -786,6 +853,7 @@ public boolean mover(char direcao) {
                     ItemComum item = (ItemComum) tesouro;
                     if(item.getTipo().equals("Consumível")){
                         System.out.println("\nValor: " + item.getValor() + " moedas");
+                        System.out.println("Valor de venda: " + item.getValorVenda() + " moedas");
                         System.out.println("Este item recupera " + item.getValor() + " de vida!\n");
                         System.out.print("Deseja pegar este consumível? (s/n): ");
                         String resposta = sc.nextLine();
@@ -794,7 +862,8 @@ public boolean mover(char direcao) {
                             tesourosEncontrados.add(tesouro);
                         }
                     }else{
-                        System.out.println("Valor: " + item.getValor() + " moedas\n");
+                        System.out.println("Valor: " + item.getValor() + " moedas");
+                        System.out.println("Valor de venda: " + item.getValorVenda() + " moedas\n");
                         tesourosEncontrados.add(tesouro);
                     }
                 }

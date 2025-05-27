@@ -1,8 +1,6 @@
 package LABIRINTO;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.Scanner;
 
 public class Loja {
@@ -18,8 +16,8 @@ public class Loja {
     }
 
     private void inicializarItens() {
-        itensAVenda = Tesouros.getItensEquipaveisAleatorios(4); // Pega 4 aleatórios
-        itensComunsAVenda = Tesouros.getItensComunsAleatorios(3); // Pega 3 aleatórios
+        itensAVenda = Tesouros.getItensEquipaveisAleatorios(4);
+        itensComunsAVenda = Tesouros.getItensComunsAleatorios(3);
     }
 
     public void mostrarMenuLoja() {
@@ -74,7 +72,7 @@ public class Loja {
 
         System.out.print("\nDigite o número do item para comprar ou 0 para voltar: ");
         int escolha = sc.nextInt();
-        sc.nextLine(); // Limpar buffer
+        sc.nextLine();
 
         if (escolha > 0 && escolha <= itensAVenda.size()) {
             comprarItemEquipavel(escolha - 1);
@@ -93,7 +91,7 @@ public class Loja {
 
         System.out.print("\nDigite o número do item para comprar ou 0 para voltar: ");
         int escolha = sc.nextInt();
-        sc.nextLine(); // Limpar buffer
+        sc.nextLine();
 
         if (escolha > 0 && escolha <= itensComunsAVenda.size()) {
             comprarItemComum(escolha - 1);
@@ -122,7 +120,7 @@ public class Loja {
             System.out.println("\nVocê comprou: " + item.getNome() + " por " + preco + " moedas!");
             jogador.equipar(item);
             System.out.println("Moedas restantes: " + jogador.getMoedas());
-            jogador.setPodeComprarNaLoja(false); // Impede novas compras
+            jogador.setPodeComprarNaLoja(false);
         } else {
             System.out.println("\nMoedas insuficientes! Você precisa de mais " + (preco - jogador.getMoedas()) + " moedas.");
         }
@@ -142,7 +140,7 @@ public class Loja {
             System.out.println("\nVocê comprou: " + item.getNome() + " por " + preco + " moedas!");
             jogador.getTesourosEncontrados().add(item);
             System.out.println("Moedas restantes: " + jogador.getMoedas());
-            jogador.setPodeComprarNaLoja(false); // Impede novas compras
+            jogador.setPodeComprarNaLoja(false);
         } else {
             System.out.println("\nMoedas insuficientes! Você precisa de mais " + (preco - jogador.getMoedas()) + " moedas.");
         }
@@ -167,7 +165,7 @@ public class Loja {
 
             System.out.print("\nDigite o número do item para vender ou 0 para voltar: ");
             int escolha = sc.nextInt();
-            sc.nextLine(); // Limpar buffer
+            sc.nextLine();
 
             if (escolha == 0) {
                 break;

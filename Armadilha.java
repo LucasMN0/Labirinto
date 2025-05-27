@@ -1,10 +1,12 @@
 package LABIRINTO;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Armadilha extends Perigo {
+public class Armadilha extends Perigo implements Serializable{
+    private static final long serialVersionUID = 1L;
     private int velocidadeNecessaria;
     private static final List<Armadilha> Armadilhas = new ArrayList<>();
     private static final Random rand = new Random();
@@ -86,17 +88,14 @@ public class Armadilha extends Perigo {
         super(nome, historia, descricao, IDP, dano, linha, coluna);
         this.velocidadeNecessaria = velocidadeNecessaria;
     }
-
     public int getVelocidade() {
         return velocidadeNecessaria;
     }
-
+    public static Armadilha getArmadilhaAleatoria() {
+        return Armadilhas.get(rand.nextInt(Armadilhas.size()));
+    }
     @Override
     public Perigo copiar() {
         return new Armadilha(getNome(), getHistoria(), getDescricao(), getIDP(), getDano(), getVelocidade(), getLinha(), getColuna());
-    }
-
-    public static Armadilha getArmadilhaAleatoria() {
-        return Armadilhas.get(rand.nextInt(Armadilhas.size()));
     }
 }

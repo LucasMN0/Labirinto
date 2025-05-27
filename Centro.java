@@ -1,5 +1,6 @@
 package LABIRINTO;
 
+import java.io.*;
 import java.util.*;
 
 public class Centro {
@@ -8,7 +9,7 @@ public class Centro {
 
         // Introdução do jogo
         System.out.println("============================================");
-        System.out.println("|         nome foda do jogo           |");
+        System.out.println("|           Labirintos Misteriósos         |");
         System.out.println("============================================");
         System.out.println("Um jogo de aventura e perigos infinitos...");
         System.out.println("Prepare-se para enfrentar criaturas lendárias!");
@@ -28,38 +29,17 @@ public class Centro {
                 new KitClasse("Arqueiro", 13, 10, 10, 0.2, 7)
         };
 
-        System.out.println("\nSelecione sua classe:");
-        System.out.println("1 - Guerreiro");
-        System.out.println("   +15 Vida, +15 Ataque, +2 Dano Verdadeiro, +30% Armadura, -1 Velocidade");
-        System.out.println("2 - Mago");
-        System.out.println("   +10 Vida, +5 Ataque, +20 Dano Verdadeiro, +15% Armadura, +2 Velocidade");
-        System.out.println("3 - Arqueiro");
-        System.out.println("   +13 Vida, +10 Ataque, +10 Dano Verdadeiro, +20% Armadura, +7 Velocidade");
-        System.out.print("Escolha (1-3): ");
+        // Seleção de classe inicial
+        KitClasse kitEscolhido = selecionarClasse(sc, classes, null); // Passamos null pois é a primeira seleção
 
-        int escolhaClasse;
-        while (true) {
-            try {
-                escolhaClasse = Integer.parseInt(sc.nextLine());
-                if (escolhaClasse >= 1 && escolhaClasse <= 3) break;
-                System.out.print("Escolha inválida! Digite 1, 2 ou 3: ");
-            } catch (NumberFormatException e) {
-                System.out.print("Entrada inválida! Digite 1, 2 ou 3: ");
-            }
-        }
-
-        KitClasse kitEscolhido = classes[escolhaClasse - 1];
-        System.out.println("\nVocê escolheu a classe " + kitEscolhido.getNome() + "!");
-
-        // Variáveis de controle de progresso
         boolean[] niveisCompletados = new boolean[3]; // Fácil, Médio, Difícil
+        carregarProgresso(niveisCompletados);
 
-        // Loop principal do jogo (permite reiniciar após morte/vitória)
         boolean jogando = true;
         while (jogando) {
             // Menu de seleção de dificuldade
             System.out.println("\n====================================");
-            System.out.println("|          MENU PRINCIPAL          |");
+            System.out.println("|           MENU PRINCIPAL         |");
             System.out.println("====================================");
             System.out.println("1 - Jogar no nível Fácil" + (niveisCompletados[0] ? " (COMPLETADO)" : ""));
             System.out.println("2 - Jogar no nível Médio" + (niveisCompletados[1] ? " (COMPLETADO)" : ""));
@@ -77,8 +57,9 @@ public class Centro {
 
             if (opcao == 4) {
                 System.out.println("Até a próxima, " + nomeJogador + "!");
-                jogando = false;
-                System.exit(0);
+                salvarProgresso(niveisCompletados); // Salvar progresso ao sair
+                jogando = false; // Sair do loop principal
+                continue;
             }
 
             if (opcao < 1 || opcao > 3) {
@@ -86,70 +67,78 @@ public class Centro {
                 continue;
             }
 
-            int dificuldadeMapa = opcao; // 1-Fácil, 2-Médio, 3-Difícil
+            int dificuldadeMapa = opcao;
 
-            // Verifica se o jogador já completou esse nível
-            if (niveisCompletados[dificuldadeMapa-1]) {
+            if (niveisCompletados[dificuldadeMapa - 1]) {
                 System.out.print("\nVocê já completou esse nível. Deseja jogar novamente? (S/N): ");
-                char resposta = sc.nextLine().toUpperCase().charAt(0);
-                if (resposta != 'S') {
+                char respostaRejogarCompleto = sc.nextLine().toUpperCase().charAt(0);
+                if (respostaRejogarCompleto != 'S') {
                     continue;
                 }
             }
 
-            // Prepara o jogo
-            boolean reiniciarNivel = true;
-            while (reiniciarNivel) {
-                // Criação do mapa principal
+            boolean reiniciarNivelAtual = true;
+            boolean jogoTerminouParaTrocaClasse = false; // Flag para saber se o jogo terminou (vitoria/derrota sem retry)
+
+            while (reiniciarNivelAtual) {
                 Labirinto mapaPrincipal = new Labirinto(0, dificuldadeMapa, true);
                 mapaPrincipal.gerar_Mapa(dificuldadeMapa);
 
-                // Verifica posição inicial
                 if (mapaPrincipal.getInicioI() < 0 ||
                         mapaPrincipal.getInicioJ() < 0 ||
                         mapaPrincipal.getInicioI() >= mapaPrincipal.getEstrutura().size() ||
                         mapaPrincipal.getInicioJ() >= mapaPrincipal.getEstrutura().get(0).size()) {
-                    System.out.println("Posição inicial inválida no mapa principal!");
-                    return;
+                    System.out.println("Posição inicial inválida no mapa principal! Encerrando o jogo.");
+                    salvarProgresso(niveisCompletados);
+                    return; // Erro crítico, sair do main
                 }
 
-                // Cria jogador novo (reinicia todos os itens e status)
-                List<Tesouros> tesourosEncontrados = new ArrayList<>();
+                List<Tesouros> tesourosEncontrados = new ArrayList<>(); // Reiniciar tesouros para o novo nível
                 Aventureiro jogador = new Aventureiro(nomeJogador, tesourosEncontrados, mapaPrincipal, mapaPrincipal.getInicioI(), mapaPrincipal.getInicioJ(), kitEscolhido);
-
-                System.out.println("\nBem-vindo, " + nomeJogador + "!");
+                System.out.println("\nBem-vindo, " + nomeJogador + " (" + kitEscolhido.getNome() + ")!");
                 System.out.println("Você está prestes a enfrentar o nível " +
                         (dificuldadeMapa == 1 ? "FÁCIL" : dificuldadeMapa == 2 ? "MÉDIO" : "DIFÍCIL"));
                 System.out.println("Boa sorte em sua jornada!\n");
                 esperar(2000);
 
-                // Game loop principal
-                boolean emJogo = true;
-                while (emJogo) {
-                    // Verifica se chegou na sala do boss final
+                boolean emJogoEsteNivel = true;
+                while (emJogoEsteNivel) {
+                    // Verifica se chegou na sala do boss final (Vitória)
                     if (jogador.getLabirintoAtual() == mapaPrincipal &&
                             jogador.getPosI() == mapaPrincipal.getFimI() &&
                             jogador.getPosJ() == mapaPrincipal.getFimJ()) {
                         System.out.println("\n==== PARABÉNS, VOCÊ TERMINOU O LABIRINTO ====");
                         System.out.println("Você completou o nível " +
                                 (dificuldadeMapa == 1 ? "FÁCIL" : dificuldadeMapa == 2 ? "MÉDIO" : "DIFÍCIL") + "!");
-                        niveisCompletados[dificuldadeMapa-1] = true;
-                        emJogo = false;
-                        reiniciarNivel = false;
+                        niveisCompletados[dificuldadeMapa - 1] = true;
+                        salvarProgresso(niveisCompletados); // Salvar progresso imediatamente
+
+                        emJogoEsteNivel = false;      // Sai do loop do nível atual
+                        reiniciarNivelAtual = false;  // Não reinicia este nível, volta ao menu principal
+                        jogoTerminouParaTrocaClasse = true; // Indica que o jogo terminou para perguntar sobre classe
                         esperar(3000);
-                        break;
+                        // O break implícito pela condição do loop while(emJogoEsteNivel)
                     }
 
-                    // Verifica se o jogador morreu
+                    // Verifica se o jogador morreu (Derrota)
                     if (!jogador.estaVivo()) {
                         System.out.println("\n====================================");
-                        System.out.println("|           GAME OVER             |");
+                        System.out.println("|           GAME OVER         |");
                         System.out.println("====================================");
                         System.out.println("Você foi derrotado, " + nomeJogador + "...");
-                        System.out.print("Deseja tentar novamente? (S/N): ");
-                        char resposta = sc.nextLine().toUpperCase().charAt(0);
-                        emJogo = false;
-                        reiniciarNivel = (resposta == 'S');
+
+                        emJogoEsteNivel = false;
+                        reiniciarNivelAtual = false;
+                        jogoTerminouParaTrocaClasse = true;
+
+                        System.out.print("\nDeseja trocar de classe antes de selecionar um novo desafio? (S/N): ");
+                        char respostaTrocarClasse = sc.nextLine().toUpperCase().charAt(0);
+                        if (respostaTrocarClasse == 'S') {
+                            kitEscolhido = selecionarClasse(sc, classes, kitEscolhido);
+                        }
+                    }
+
+                    if (!emJogoEsteNivel) { // Se venceu ou perdeu, sai do loop de input/movimento
                         break;
                     }
 
@@ -168,11 +157,12 @@ public class Centro {
 
                     switch (comando) {
                         case 'Q':
-                            System.out.print("Deseja realmente sair? (S/N): ");
+                            System.out.print("Deseja realmente sair deste nível e voltar ao Menu Principal? (S/N): ");
                             char confirmacao = sc.nextLine().toUpperCase().charAt(0);
                             if (confirmacao == 'S') {
-                                emJogo = false;
-                                reiniciarNivel = false;
+                                emJogoEsteNivel = false;
+                                reiniciarNivelAtual = false; // Não reiniciar, voltar ao menu principal
+                                jogoTerminouParaTrocaClasse = false; // Não foi vitória/derrota
                             }
                             break;
                         case 'M':
@@ -185,9 +175,99 @@ public class Centro {
                     }
                 }
             }
+
+            if (jogoTerminouParaTrocaClasse) {
+                System.out.print("\nDeseja trocar de classe antes de selecionar um novo desafio? (S/N): ");
+                char respostaTrocarClasse = sc.nextLine().toUpperCase().charAt(0);
+                if (respostaTrocarClasse == 'S') {
+                    kitEscolhido = selecionarClasse(sc, classes, kitEscolhido);
+                }
+                jogoTerminouParaTrocaClasse = false;
+            }
         }
+
+        System.out.println("Salvando progresso final...");
+        salvarProgresso(niveisCompletados); // Garante que o progresso seja salvo ao sair
         sc.close();
+        System.out.println("Obrigado por jogar Labirintos Misteriosos!");
     }
+
+    // Método para selecionar classe (novo ou modificado)
+    public static KitClasse selecionarClasse(Scanner sc, KitClasse[] classes, KitClasse kitAtual) {
+        System.out.println("\n--- SELEÇÃO DE CLASSE ---");
+        if (kitAtual != null) {
+            System.out.println("Sua classe atual é: " + kitAtual.getNome());
+        }
+        System.out.println("Classes disponíveis:");
+        for (int i = 0; i < classes.length; i++) {
+            System.out.print((i + 1) + " - " + classes[i].getNome());
+            if (classes[i].getNome().equals("Guerreiro")) System.out.println(" (+15 Vida, +15 Ataque, +2 Dano Verdadeiro, +30% Armadura, -1 Velocidade)");
+            else if (classes[i].getNome().equals("Mago")) System.out.println(" (+10 Vida, +5 Ataque, +20 Dano Verdadeiro, +15% Armadura, +2 Velocidade)");
+            else if (classes[i].getNome().equals("Arqueiro")) System.out.println(" (+13 Vida, +10 Ataque, +10 Dano Verdadeiro, +20% Armadura, +7 Velocidade)");
+            else System.out.println(); // Nova linha se não for uma das classes conhecidas com descrição
+        }
+        System.out.print("Escolha sua classe (1-" + classes.length + ")" + (kitAtual != null ? ", ou 0 para manter a atual (" + kitAtual.getNome() + ")" : "") + ": ");
+
+        int escolhaClasseNum;
+        while (true) {
+            try {
+                String linha = sc.nextLine();
+                if (linha.trim().isEmpty() && kitAtual != null) { // Se o usuário só apertar Enter e tiver uma classe atual
+                    System.out.println("Você manteve a classe " + kitAtual.getNome() + ".");
+                    esperar(1000);
+                    return kitAtual;
+                }
+                escolhaClasseNum = Integer.parseInt(linha);
+
+                if (kitAtual != null && escolhaClasseNum == 0) {
+                    System.out.println("Você manteve a classe " + kitAtual.getNome() + ".");
+                    esperar(1000);
+                    return kitAtual;
+                }
+                if (escolhaClasseNum >= 1 && escolhaClasseNum <= classes.length) {
+                    break; // Seleção válida
+                }
+                System.out.print("Escolha inválida! Digite um número entre " + (kitAtual != null ? "0 e " : "1 e ") + classes.length + ": ");
+            } catch (NumberFormatException e) {
+                System.out.print("Entrada inválida! Digite um número entre " + (kitAtual != null ? "0 e " : "1 e ") + classes.length + ": ");
+            }
+        }
+        KitClasse kitSelecionado = classes[escolhaClasseNum - 1];
+        System.out.println("\nVocê selecionou a classe " + kitSelecionado.getNome() + "!");
+        esperar(1500);
+        return kitSelecionado;
+    }
+
+    private static void carregarProgresso(boolean[] niveisCompletados) {
+        File arquivo = new File("progresso.dat");
+        if (arquivo.exists()) {
+            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(arquivo))) {
+                boolean[] progressoSalvo = (boolean[]) ois.readObject();
+                // Copia com segurança, prevenindo ArrayIndexOutOfBoundsException se os tamanhos diferirem
+                int lengthToCopy = Math.min(progressoSalvo.length, niveisCompletados.length);
+                System.arraycopy(progressoSalvo, 0, niveisCompletados, 0, lengthToCopy);
+                System.out.println("Progresso carregado com sucesso!");
+            } catch (IOException | ClassNotFoundException e) {
+                System.err.println("Erro ao carregar progresso: " + e.getMessage() + ". Um novo progresso será iniciado.");
+                // Opcional: apagar o arquivo corrompido
+                // arquivo.delete();
+            }
+        } else {
+            System.out.println("Nenhum arquivo de progresso encontrado. Iniciando um novo jogo.");
+        }
+    }
+
+    // Método para salvar progresso (sem alterações, mas chamado em mais lugares)
+    private static void salvarProgresso(boolean[] niveisCompletados) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("progresso.dat"))) {
+            oos.writeObject(niveisCompletados);
+            // System.out.println("Progresso salvo."); // Descomente para debug se necessário
+        } catch (IOException e) {
+            System.err.println("Erro ao salvar progresso: " + e.getMessage());
+        }
+    }
+
+    // Método esperar (sem alterações)
     private static void esperar(int milissegundos) {
         try {
             Thread.sleep(milissegundos);

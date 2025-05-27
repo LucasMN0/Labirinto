@@ -1,10 +1,10 @@
 // Perigo.java
 package LABIRINTO;
 
-import java.util.*;
+import java.io.Serializable;
 import java.util.Random;
 
-public class Perigo{
+public class Perigo implements Serializable{
     private String nome;
     private String historia;
     private String descricao;
@@ -12,6 +12,7 @@ public class Perigo{
     private int dano;
     private int linha;
     private int coluna;
+    private static final long serialVersionUID = 1L;
 
     public Perigo(String nome, String historia, String descricao, int IDP, int dano, int linha, int coluna){
         this.nome = nome;
@@ -23,6 +24,7 @@ public class Perigo{
         this.coluna = coluna;
     }
 
+    //Getters
     public String getNome() {return nome;}
     public String getHistoria() {return  historia;}
     public String getDescricao() {return descricao;}

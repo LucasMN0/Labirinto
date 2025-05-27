@@ -2,38 +2,24 @@ package LABIRINTO;
 
 import java.util.Random;
 import java.util.Scanner;
-import java.util.Map;
-import LABIRINTO.Inimigo;
-import LABIRINTO.Armadilha;
 
 public class SistemaCombate {
     private static final Scanner sc = new Scanner(System.in);
     private static final Random rand = new Random();
 
-    public static void encontrarPerigo(Aventureiro jogador) {
-        if (rand.nextInt(100) < 30) {
-            Perigo perigo = Perigo.criarPerigoAleatorio(rand);
-
-            if (perigo instanceof Armadilha) {
-                encontrarArmadilha(jogador, (Armadilha) perigo);
-            } else {
-                encontrarInimigo(jogador, (Inimigo) perigo);
-            }
-        }
-    }
-
-    public static void encontrarArmadilha(Aventureiro jogador, Armadilha armadilha) {
+    public static boolean encontrarArmadilha(Aventureiro jogador, Armadilha armadilha) {
         System.out.println("\n=== PERIGO ===\n");
         System.out.println("Você caiu em uma " + armadilha.getNome());
         esperar(2000);
         System.out.println("\nDescrição: " + armadilha.getDescricao());
         esperar(2000);
 
-        jogador.getMonstruario().registrarArmadilha(armadilha); // Registra a armadilha no monstrurio do aventureiro
+        jogador.getMonstruario().registrarArmadilha(armadilha);
 
         if (jogador.getVelocidadeTotal() > armadilha.getVelocidade()) {
             System.out.println("\nVocê foi rápido o suficiente para evitar a armadilha!");
             esperar(2000);
+            return false;
         } else {
             int danoSofrido = armadilha.getDano();
             jogador.setVida(jogador.getVida() - danoSofrido);
@@ -43,12 +29,14 @@ public class SistemaCombate {
             if (jogador.getVida() <= 0) {
                 System.out.println("Você foi derrotado pela armadilha...");
                 System.out.println("Fim de jogo!");
-                System.exit(0);
+                return true;
             }
         }
+
+        return false;
     }
 
-    public static void encontrarInimigo(Aventureiro jogador, Inimigo inimigo) {
+    public static boolean encontrarInimigo(Aventureiro jogador, Inimigo inimigo) {
         System.out.println("\n=== COMBATE ===\n");
         System.out.println("Você encontrou um " + inimigo.getNome() + "!");
         esperar(2000);
@@ -58,7 +46,7 @@ public class SistemaCombate {
         jogador.getMonstruario().registrarInimigo(inimigo);
 
         int vidaInimigo = inimigo.getVida();
-        int vidaMaximaInimigo = getVidaMaximaInimigo(inimigo); // Vida máxima original
+        int vidaMaximaInimigo = getVidaMaximaInimigo(inimigo);
         String nomeInimigo = inimigo.getNome();
         int danoInimigo = inimigo.getDano();
         double armaduraInimigo = inimigo.getArmadura();
@@ -67,7 +55,7 @@ public class SistemaCombate {
 
         System.out.println("\n--- Detalhes do Inimigo ---");
         System.out.println("Nome: " + nomeInimigo);
-        System.out.println("Vida: " + vidaInimigo + "/" + vidaMaximaInimigo); // Exibe vida atual/máxima
+        System.out.println("Vida: " + vidaInimigo + "/" + vidaMaximaInimigo);
         System.out.println("Dano: " + danoInimigo);
         System.out.printf("Armadura: %.2f%%\n", armaduraInimigo * 100);
         System.out.println("Velocidade: " + velocidadeInimigo);
@@ -102,13 +90,12 @@ public class SistemaCombate {
 
             switch (escolha) {
                 case 1:
-                    // Calcula o dano do jogador
                     int danoBaseJogador = jogador.getDanoAtaqueTotal();
                     int danoVerdadeiroJogador = jogador.getDanoVerdadeiroTotal();
-                    double reducaoDanoInimigo = armaduraInimigo; // Armadura do inimigo
+                    double reducaoDanoInimigo = armaduraInimigo;
 
                     int danoCausado = (int) (danoBaseJogador * (1 - reducaoDanoInimigo));
-                    danoCausado += danoVerdadeiroJogador; // Dano verdadeiro ignora armadura
+                    danoCausado += danoVerdadeiroJogador;
 
                     vidaInimigo -= danoCausado;
                     System.out.println("\nVocê atacou o " + nomeInimigo + " e causou " + danoCausado + " de dano!");
@@ -117,7 +104,7 @@ public class SistemaCombate {
                 case 2:
                     if (!usarConsumivelCombate(jogador)) {
                         esperar(1000);
-                        continue; // Permite que o jogador tente novamente se não usou o consumível
+                        continue;
                     }
                     break;
                 default:
@@ -128,23 +115,21 @@ public class SistemaCombate {
             if (vidaInimigo <= 0) {
                 System.out.println("\nVocê derrotou o " + nomeInimigo + "!");
                 esperar(2000);
-                jogador.adicionarMoedas(10 + rand.nextInt(20)); // Recompensa em moedas
+                jogador.adicionarMoedas(10 + rand.nextInt(20));
                 System.out.println("Você ganhou moedas! Moedas atuais: " + jogador.getMoedas());
                 esperar(2000);
-                return;
+                return false; // Jogador não foi derrotado
             }
 
-            // Turno do inimigo
             System.out.println("\n--- Turno do Inimigo (" + nomeInimigo + ") ---");
             esperar(2000);
 
-            // Calcula o dano do inimigo ao jogador
             int danoBaseInimigo = danoInimigo;
             int danoVerdadeiroInimigoAtual = danoVerdadeiroInimigo;
-            double reducaoDanoJogador = jogador.getArmaduraTotal(); // Armadura do jogador
+            double reducaoDanoJogador = jogador.getArmaduraTotal();
 
             int danoRecebido = (int) (danoBaseInimigo * (1 - reducaoDanoJogador));
-            danoRecebido += danoVerdadeiroInimigoAtual; // Dano verdadeiro ignora armadura
+            danoRecebido += danoVerdadeiroInimigoAtual;
 
             jogador.setVida(jogador.getVida() - danoRecebido);
             System.out.println("O " + nomeInimigo + " atacou você e causou " + danoRecebido + " de dano!");
@@ -153,16 +138,14 @@ public class SistemaCombate {
 
             if (jogador.getVida() <= 0) {
                 System.out.println("\nVocê foi derrotado pelo " + nomeInimigo + "...");
-                System.out.println("Fim de jogo!");
-                System.exit(0);
+                return true; // Jogador foi derrotado
             }
         }
+        return false; // Por padrão, retorna false (não foi derrotado)
     }
 
 
-    // Metodo auxiliar para obter a vida máxima de inimigos específicos (para exibir ao jogador)
     private static int getVidaMaximaInimigo(Inimigo inimigo) {
-        // Retorna a vida máxima do inimigo (usando o valor original do construtor)
         return inimigo.getVida();
     }
 
