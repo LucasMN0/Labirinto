@@ -9,12 +9,18 @@ Projeto desenvolvido para a disciplina de **Progamação Orientada à Objetos** 
 
 ## Objetivos
 
-- Desenvolver um jogo de labirinto usando Java, onde jogadores devem navegar por um labirinto.
+-Desenvolver um jogo de labirinto usando Java, onde jogadores devem navegar por um labirinto.
+  
 -Permitir que o Aventureiro colete tesouros escondidos e evite perigos, registrando o progresso.
+
 -Implementar as principais entidades: Aventureiro, Tesouro, Perigo e Labirinto, cada uma com seus respectivos atributos e comportamentos.
+
 -Utilizar coleções (como ArrayList) para gerenciar a estrutura do labirinto, lista de tesouros, perigos e itens coletados.
+
 -Garantir uma experiência estável e segura com tratamento de exceções, evitando erros comuns de movimentação ou coleta.
+
 -Aplicar conceitos de polimorfismo através de heranças na classe Tesouro, criando efeitos variados para os tesouros.
+
 -Garantir abstração e encapsulamento, organizando o código com modificadores de acesso e métodos adequados.
 
 ---
