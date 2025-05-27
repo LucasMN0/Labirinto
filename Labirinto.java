@@ -6,7 +6,7 @@ import java.util.Random;
 public class Labirinto {
     private int ID;
     private boolean isMapaPrincipal;
-    private int dificuldade; // 0 para labirintos, 1-3 para mapas
+    private int dificuldade;
     private ArrayList<ArrayList<String>> estruturaLabirinto;
     private ArrayList<Tesouros> listaTesouros;
     private ArrayList<Perigo> listaPerigos;
@@ -25,82 +25,55 @@ public class Labirinto {
         this.music = new Musica();
 
         if (isMapaPrincipal) {
-            gerar_Mapa(dificuldade);  // Usando o seu metodo existente
+            gerar_Mapa(dificuldade);
         } else {
-            gerar_labirinto(ID);  // Usando o seu metodo existente
+            gerar_labirinto(ID);
             adicionarTesourosAleatorios(rand.nextInt(3) + 1);
             adicionarPerigosAleatorios(rand.nextInt(2) + 1);
         }
     }
+
+    // Metodos de musica
     public void setMusica(int levelMusic){
         music.playLevel(levelMusic);
     }
-
     public void paraMusica(){
         music.stop();
     }
 
-    public boolean isMapaPrincipal() {
-        return this.isMapaPrincipal;
-    }
-
-    public boolean isEntradaLabirinto(int i, int j) {
-        return isMapaPrincipal() && estruturaLabirinto.get(i).get(j).equals("L");
-    }
-
-    private void gerarMapa(int dificuldade) {
-        gerar_Mapa(dificuldade); // Redireciona para o metodo existente
-    }
-
-    private void gerarLabirintoAleatorio() {
-        // Implementação básica - você pode ajustar conforme necessário
-        Random rand = new Random();
-        int labirintoID = rand.nextInt(12) + 1; // Gera ID entre 1-12
-        gerar_labirinto(labirintoID);
-    }
-
-    public void restaurarMapaPrincipal() {
-        gerar_Mapa(this.dificuldade);
-    }
-
+    // Getters
     public int getInicioI() {
         return InicioI;
     }
-
     public int getInicioJ() {
         return InicioJ;
     }
-
     public int getFimI() {
         return FimI;
     }
-
     public int getFimJ() {
         return FimJ;
     }
-
-    public int getID() {
-        return this.ID;
-    }
-
     public int getDificuldade() {
         return this.dificuldade;
     }
 
+    // Metodos para inicializar tanto o mapa como o labirinto
     public ArrayList<ArrayList<String>> getEstrutura(){
         return estruturaLabirinto;
     }
-
     public void setEstrutura(ArrayList<ArrayList<String>> labirinto){
         this.estruturaLabirinto = labirinto;
     }
-
+    public boolean isMapaPrincipal() {
+        return this.isMapaPrincipal;
+    }
     public void gerar_labirinto(int ID){
         estruturaLabirinto.clear();
         String[][] matriz;
 
         switch(ID){
-            case 0: 
+            case 0:
                 matriz = new String[][] {
                         {"X", "X", "X", "X", "X", "X", "X"},
                         {"X", " ", " ", " ", " ", " ", "X"},
@@ -298,7 +271,7 @@ public class Labirinto {
                 break;
             case 11:
                 matriz = new String[][] {
-                        {".",".",".", "X", "X", "X", "S", "X","X", "X"},
+                        {".",".",".", "X", "X", "X", "B", "X","X", "X"},
                         {".",".","X","X"," ", " ", " ", " ", " ", "X","X"},
                         {".","X","X"," ", " ", " ", " ", " "," "," ", "X","X"},
                         {"X", "X", " ", " ", " ", " ", " ", " ", " ", " ", " ", "X","X"},
@@ -342,7 +315,6 @@ public class Labirinto {
             estruturaLabirinto.add(linha);
         }
     }
-
     public void gerar_Mapa(int Level) {
         estruturaLabirinto.clear();
         String[][] matriz;
@@ -405,7 +377,6 @@ public class Labirinto {
             estruturaLabirinto.add(linha);
         }
     }
-
     public void imprimirLabirinto() {
         long countO = estruturaLabirinto.stream()
                 .flatMap(List::stream)
@@ -433,10 +404,9 @@ public class Labirinto {
                 if (temTesouro) {
                     System.out.print("T ");
                 }
-                // Mostra espaço vazio no lugar do L
-                // else if (c.equals("L")) {
-                //     System.out.print("  ");
-                // }
+                else if (c.equals("L")) {
+                     System.out.print("  ");
+                }
                 // Mostra espaço duplo para células vazias
                 else if (c.equals(" ")) {
                     System.out.print("  ");
@@ -456,6 +426,7 @@ public class Labirinto {
         }
     }
 
+    // Metodos sobre tesouros
     public void adicionarTesourosAleatorios(int quantidade) {
         List<int[]> posicoesValidas = new ArrayList<>();
 
@@ -481,7 +452,6 @@ public class Labirinto {
             listaTesouros.add(tesouro);
         }
     }
-
     private Tesouros criarTesouroAleatorio(int i, int j) {
         Random rand = new Random();
 
@@ -510,21 +480,14 @@ public class Labirinto {
             );
         }
     }
-
     public List<Tesouros> getListaTesouros() {
         return listaTesouros;
     }
 
-    public void limparTerminal(){
-        for(int i=0;i<40;++i){
-            System.out.println();
-        }
-    }
-
+    // Metodos sobre perigos
     public List<Perigo> getListaPerigos() {
         return listaPerigos;
     }
-
     public void adicionarPerigosAleatorios(int quantidade) {
         List<int[]> posicoesValidas = new ArrayList<>();
 
@@ -554,13 +517,12 @@ public class Labirinto {
             listaPerigos.add(perigo);
         }
     }
-
     private Perigo criarPerigoAleatorio(int i, int j) {
         Perigo perigo = Perigo.criarPerigoAleatorio(rand);
 
-        if (perigo instanceof Perigo.Armadilha) {
-            Perigo.Armadilha armadilha = (Perigo.Armadilha) perigo;
-            return new Perigo.Armadilha(
+        if (perigo instanceof Armadilha) {
+            Armadilha armadilha = (Armadilha) perigo;
+            return new Armadilha(
                     armadilha.getNome(),
                     armadilha.getHistoria(),
                     armadilha.getDescricao(),
@@ -571,8 +533,8 @@ public class Labirinto {
                     j
             );
         } else {
-            Perigo.Inimigo inimigo = (Perigo.Inimigo) perigo;
-            return new Perigo.Inimigo(
+            Inimigo inimigo = (Inimigo) perigo;
+            return new Inimigo(
                     inimigo.getNome(),
                     inimigo.getHistoria(),
                     inimigo.getDescricao(),
@@ -582,9 +544,16 @@ public class Labirinto {
                     inimigo.getArmadura(),
                     inimigo.getVida(),
                     inimigo.getDanoVerdadeiro(),
-                    i,  // Linha
-                    j   // Coluna
+                    i,
+                    j
             );
+        }
+    }
+
+    // Metodos pra limpar terminal
+    public void limparTerminal(){
+        for(int i=0;i<40;++i){
+            System.out.println();
         }
     }
 }

@@ -17,5 +17,4 @@ public class ItemComum extends Tesouros {
     public int getValorVenda() {
         return (int) (getValor() * 0.8);
     }
-
 }
