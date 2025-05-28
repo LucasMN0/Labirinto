@@ -138,7 +138,14 @@ public class Loja {
 
         if (jogador.removerMoedas(preco)) {
             System.out.println("\nVocê comprou: " + item.getNome() + " por " + preco + " moedas!");
-            jogador.getTesourosEncontrados().add(item);
+
+            // Adiciona à lista correta dependendo do tipo
+            if (item.getTipo().equals("Consumível")) {
+                jogador.adicionarConsumivel(item); // Adiciona à lista de consumíveis
+            } else {
+                jogador.getTesourosEncontrados().add(item); // Adiciona aos tesouros encontrados
+            }
+
             System.out.println("Moedas restantes: " + jogador.getMoedas());
             jogador.setPodeComprarNaLoja(false);
         } else {

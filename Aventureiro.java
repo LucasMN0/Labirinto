@@ -12,6 +12,7 @@ class   Aventureiro {
     private List<Tesouros> tesourosEncontrados =  new ArrayList<>();
     private List<Tesouros> listaTesouros;
     private List<ItemEquipavel> equipamentos;
+    private List<ItemEquipavel> itensNaoEquipados;
     private List<ItemComum> consumiveis = new ArrayList<>();
     private Labirinto labirintoAtual;
     private Labirinto mapaPrincipal;
@@ -33,6 +34,7 @@ class   Aventureiro {
         this.tesourosEncontrados = tesourosEncontrados;
         this.labirintoAtual = labirinto;
         this.listaTesouros = labirinto.getListaTesouros();
+        this.itensNaoEquipados = new ArrayList<>();
         this.mapaPrincipal = labirinto;
         this.monstruario = Monstruario.getInstance();
         this.posI = i;
@@ -124,6 +126,12 @@ class   Aventureiro {
         equipamentos.add(item);
         System.out.println(nome + " equipou: " + item.getNome());
     }
+
+    public void adicionarItemNaoEquipado(ItemEquipavel item) {
+        itensNaoEquipados.add(item);
+        System.out.println(item.getNome() + " foi adicionado ao seu inventário!");
+    }
+
     public void desequiparItem() {
         if (equipamentos.isEmpty()) {
             System.out.println("Você não tem itens equipados!");
@@ -341,7 +349,7 @@ class   Aventureiro {
             System.out.println("3 - Acessar Loja");
             System.out.println("4 - Usar Consumível");
             System.out.println("5 - Desequipar Item");
-            System.out.println("6 - Ver Tesouros Encontrados");
+            System.out.println("6 - Ver Inventário");
             System.out.println("7 - Ver Monstruário");
             System.out.println("8 - Voltar ao Jogo");
             System.out.print("Escolha uma opção: ");
@@ -381,7 +389,7 @@ class   Aventureiro {
                     desequiparItem();
                     break;
                 case "6":
-                    mostrarTesourosEncontrados();
+                    mostrarInventario();
                     break;
                 case "7":
                     if (monstruario.temRegistros()) {
@@ -718,18 +726,98 @@ public boolean mover(char direcao) {
             System.out.println("\nVocê derrotou " + bossFinal.getNome() + "!");
             System.out.println("O caminho para a saída se abre!");
 
-            // Pergunta se quer trocar de classe
-            System.out.print("\nDeseja trocar de classe? (s/n): ");
-            String resposta = sc.nextLine().trim().toLowerCase();
-            if (resposta.equals("s")) {
-                trocarClasse();
-            }
-
             // Marca a posição atual como saída
             labirintoAtual.getEstrutura().get(posI).set(posJ, "S");
 
             // Volta para o mapa principal
             sairDoLabirinto();
+        }
+    }
+
+    public void mostrarInventario() {
+        Scanner sc = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("\n=== INVENTÁRIO ===");
+
+            // Itens equipados
+            System.out.println("\n--- ITENS EQUIPADOS ---");
+            if (equipamentos.isEmpty()) {
+                System.out.println("Nenhum item equipado");
+            } else {
+                for (int i = 0; i < equipamentos.size(); i++) {
+                    ItemEquipavel item = equipamentos.get(i);
+                    System.out.println((i+1) + " - " + item.getNome());
+                    System.out.println("   (Vida: +" + item.getBonusVida() +
+                            " | Ataque: +" + item.getBonusAtaque() +
+                            " | Armadura: +" + (int)(item.getBonusArmadura() * 100) + "%" +
+                            " | Dano Verdadeiro: +" + item.getBonusVerdadeiro() +
+                            " | Velocidade: +" + item.getBonusVelocidade() + ")");
+                }
+            }
+
+            // Itens não equipados
+            System.out.println("\n--- ITENS NÃO EQUIPADOS ---");
+            if (itensNaoEquipados.isEmpty()) {
+                System.out.println("Nenhum item não equipado");
+            } else {
+                for (int i = 0; i < itensNaoEquipados.size(); i++) {
+                    ItemEquipavel item = itensNaoEquipados.get(i);
+                    System.out.println((i+1) + " - " + item.getNome());
+                    System.out.println("   (Vida: +" + item.getBonusVida() +
+                            " | Ataque: +" + item.getBonusAtaque() +
+                            " | Armadura: +" + (int)(item.getBonusArmadura() * 100) + "%" +
+                            " | Dano Verdadeiro: +" + item.getBonusVerdadeiro() +
+                            " | Velocidade: +" + item.getBonusVelocidade() + ")");
+                }
+            }
+
+            // Itens comuns (consumíveis)
+            System.out.println("\n--- ITENS COMUNS ---");
+            listarConsumiveis();
+
+            String opcao;
+
+            do {
+                System.out.println("\n--- OPÇÕES ---");
+                System.out.println("1 - Equipar item");
+                System.out.println("2 - Voltar");
+                System.out.print("Escolha uma opção: ");
+
+                opcao = sc.nextLine();
+
+                if (!opcao.equals("1") && !opcao.equals("2")) {
+                    System.out.println("Opção inválida! Digite apenas 1 ou 2.");
+                }
+            } while (!opcao.equals("1") && !opcao.equals("2"));
+
+            if (opcao.equals("1")) {
+                if (itensNaoEquipados.isEmpty()) {
+                    System.out.println("Você não tem itens não equipados!");
+                    continue;
+                }
+
+                System.out.print("Digite o número do item que deseja equipar (ou 0 para cancelar): ");
+                try {
+                    int escolha = Integer.parseInt(sc.nextLine()) - 1;
+                    if (escolha == -1) {
+                        continue;
+                    }
+                    if (escolha >= 0 && escolha < itensNaoEquipados.size()) {
+                        ItemEquipavel item = itensNaoEquipados.get(escolha);
+                        equipar(item);
+                        itensNaoEquipados.remove(escolha);
+                    } else {
+                        System.out.println("Número inválido!");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Digite um número válido!");
+                }
+            } else if (opcao.equals("2")) {
+                break;
+            } else {
+                System.out.println("Opção inválida!");
+            }
         }
     }
 
@@ -842,27 +930,36 @@ public boolean mover(char direcao) {
                     System.out.println("Velocidade: +" + item.getBonusVelocidade());
                     System.out.println("Valor de venda: " + item.getValorVenda() + " moedas");
 
-                    System.out.print("\nDeseja equipar este item? (s/n): ");
-                    String resposta = sc.nextLine();
-                    if (resposta.equalsIgnoreCase("s")) {
+                    System.out.println("\nO que deseja fazer com este item?");
+                    System.out.println("1 - Equipar agora");
+                    System.out.println("2 - Colocar no inventário");
+                    System.out.print("Escolha: ");
+
+                    String escolha = sc.nextLine();
+                    if (escolha.equals("1")) {
                         equipar(item);
+                    } else {
+                        adicionarItemNaoEquipado(item);
                     }
                     tesourosEncontrados.add(tesouro);
                 }
                 else if (tesouro instanceof ItemComum) {
                     ItemComum item = (ItemComum) tesouro;
-                    if(item.getTipo().equals("Consumível")){
-                        System.out.println("\nValor: " + item.getValor() + " moedas");
+                    if (item.getTipo().equals("Consumível")) {
                         System.out.println("Valor de venda: " + item.getValorVenda() + " moedas");
                         System.out.println("Este item recupera " + item.getValor() + " de vida!\n");
-                        System.out.print("Deseja pegar este consumível? (s/n): ");
-                        String resposta = sc.nextLine();
-                        if (resposta.equalsIgnoreCase("s")) {
+
+                        String resposta;
+                        do {
+                            System.out.print("Deseja pegar este consumível? (S/N): ");
+                            resposta = sc.nextLine().trim().toLowerCase();
+                        } while (!resposta.equals("s") && !resposta.equals("n"));
+
+                        if (resposta.equals("s")) {
                             adicionarConsumivel(item);
                             tesourosEncontrados.add(tesouro);
                         }
-                    }else{
-                        System.out.println("Valor: " + item.getValor() + " moedas");
+                    } else {
                         System.out.println("Valor de venda: " + item.getValorVenda() + " moedas\n");
                         tesourosEncontrados.add(tesouro);
                     }
