@@ -1,3 +1,64 @@
+
+/*
+
+package LABIRINTO;
+
+import javax.sound.sampled.*;
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
+public class Musica {
+
+    private Clip clip;
+    private final Map<Integer, String> musicas;
+
+    public Musica() {
+        // Mapeia nomes lógicos aos caminhos dos arquivos de música
+        musicas = new HashMap<>();
+        musicas.put(1, "res/audio/nivel1.wav");
+        musicas.put(2, "res/audio/nivel2.wav");
+        musicas.put(3, "res/audio/nivel3.wav");
+        musicas.put(4, "res/audio/batalha.wav");
+        musicas.put(5, "res/audio/derrota.wav");
+    }
+
+    public void playLevel(int ID) {
+        stop(); // Para a música anterior
+
+        String caminho = musicas.get(ID);
+        if (caminho == null) {
+            System.err.println("Música não encontrada: " + ID);
+            return;
+        }
+
+        try {
+            AudioInputStream audioInput = AudioSystem.getAudioInputStream(new File(caminho));
+            clip = AudioSystem.getClip();
+            clip.open(audioInput);
+            clip.loop(Clip.LOOP_CONTINUOUSLY); // Toca em loop
+            clip.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void stop() {
+        if (clip != null && clip.isRunning()) {
+            clip.stop();
+            clip.close();
+        }
+    }
+}
+
+*/
+
+
+
+
+
+
+
 package LABIRINTO;
 
 import javax.sound.midi.*;

@@ -78,7 +78,7 @@ public class Monstruario implements Serializable {
 
             oos.writeObject(paraSalvar);
         } catch (IOException e) {
-            System.err.println("Erro ao salvar monstruário: " + e.getMessage());
+            //System.err.println("Erro ao salvar monstruário: " + e.getMessage());
             new File(ARQUIVO_MONSTRUARIO).delete();
         }
     }
@@ -91,7 +91,7 @@ public class Monstruario implements Serializable {
                 this.inimigosRegistrados = new HashMap<>(carregado.inimigosRegistrados);
                 this.armadilhasRegistradas = new HashMap<>(carregado.armadilhasRegistradas);
             } catch (IOException | ClassNotFoundException e) {
-                System.err.println("Erro ao carregar monstruário. Iniciando novo monstruário.");
+                //System.err.println("Erro ao carregar monstruário. Iniciando novo monstruário.");
                 arquivo.delete();
                 this.inimigosRegistrados = new HashMap<>();
                 this.armadilhasRegistradas = new HashMap<>();

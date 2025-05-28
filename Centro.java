@@ -7,7 +7,6 @@ public class Centro {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
 
-        // Introdução do jogo
         System.out.println("============================================");
         System.out.println("|           Labirintos Misteriósos         |");
         System.out.println("============================================");
@@ -15,13 +14,20 @@ public class Centro {
         System.out.println("Prepare-se para enfrentar criaturas lendárias!");
         esperar(2000);
 
-        // Pede o nome do jogador
         System.out.print("\nAntes de começar, qual é o seu nome, aventureiro? ");
         System.out.print("\nNome: ");
-        String nomeJogador = sc.nextLine();
-        if (nomeJogador.trim().isEmpty()) {
+        String nomeJogador = sc.nextLine().trim();
+
+        while (!nomeJogador.matches("[a-zA-Z0-9]+")) {
+            System.out.println("Por favor, digite um nome válido (apenas letras e números, sem espaços ou símbolos especiais).");
+            System.out.print("Nome: ");
+            nomeJogador = sc.nextLine().trim();
+        }
+
+        if (nomeJogador.isEmpty()) {
             nomeJogador = "Aventureiro";
         }
+        Monstruario monstruario = new Monstruario();
 
         KitClasse[] classes = {
                 new KitClasse("Guerreiro", 15, 15, 2, 0.3, -1),
@@ -37,44 +43,73 @@ public class Centro {
 
         boolean jogando = true;
         while (jogando) {
-            // Menu de seleção de dificuldade
             System.out.println("\n====================================");
             System.out.println("|           MENU PRINCIPAL         |");
             System.out.println("====================================");
             System.out.println("1 - Jogar no nível Fácil" + (niveisCompletados[0] ? " (COMPLETADO)" : ""));
             System.out.println("2 - Jogar no nível Médio" + (niveisCompletados[1] ? " (COMPLETADO)" : ""));
             System.out.println("3 - Jogar no nível Difícil" + (niveisCompletados[2] ? " (COMPLETADO)" : ""));
-            System.out.println("4 - Sair do jogo");
+            System.out.println("4 - Ver Monstruário");
+            System.out.println("5 - Ver Tutorial");
+            System.out.println("6 - Sair do jogo");
             System.out.print("Escolha uma opção: ");
 
             int opcao;
             try {
                 opcao = Integer.parseInt(sc.nextLine());
             } catch (NumberFormatException e) {
-                System.out.println("Opção inválida! Digite um número de 1 a 4.");
+                System.out.println("Opção inválida! Digite um número de 1 a 6.");
                 continue;
             }
 
-            if (opcao == 4) {
+            if(opcao == 4){
+                if (monstruario.temRegistros()) {
+                    monstruario.mostrarMonstruario();
+                } else {
+                    System.out.println("Seu monstruário está vazio. Encontre inimigos e armadilhas para registrá-los!");
+                }
+                continue;
+            }
+
+            if(opcao == 5){
+                System.out.println("\n---Tutorial---");
+                System.out.println("\n\uD83C\uDFAE - Nos mapas e labirintos: ");
+                System.out.println("\nNo jogo você (jogador) é representado por 'O' !");
+                System.out.println("Os Tesouros são representados por 'T' !");
+                System.out.println("Você pode encontrar inimigos e armadilhas nos labirintos!");
+                System.out.println("Use WASD para mover no mapa e labirinto!");
+                System.out.println("Digite M para ir pro Menu!");
+                System.out.println("Digite Q para sair para o menu do jogo!");
+                System.out.println("\n⚔\uFE0F - Em combate: ");
+                System.out.println("\nDigite 1 para atacar e 2 para usar consumível!");
+                continue;
+            }
+
+            if (opcao == 6) {
                 System.out.println("Até a próxima, " + nomeJogador + "!");
-                salvarProgresso(niveisCompletados); // Salvar progresso ao sair
-                jogando = false; // Sair do loop principal
-                continue;
-            }
-
-            if (opcao < 1 || opcao > 3) {
-                System.out.println("Opção inválida! Digite um número de 1 a 4.");
+                salvarProgresso(niveisCompletados);
+                jogando = false;
+                System.exit(0);
                 continue;
             }
 
             int dificuldadeMapa = opcao;
 
-            if (niveisCompletados[dificuldadeMapa - 1]) {
-                System.out.print("\nVocê já completou esse nível. Deseja jogar novamente? (S/N): ");
-                char respostaRejogarCompleto = sc.nextLine().toUpperCase().charAt(0);
-                if (respostaRejogarCompleto != 'S') {
-                    continue;
+            if (opcao >= 1 && opcao <= 3) {
+                dificuldadeMapa = opcao;
+
+                if (niveisCompletados[dificuldadeMapa - 1]) {
+                    System.out.print("\nVocê já completou esse nível. Deseja jogar novamente? (S/N): ");
+                    char respostaRejogarCompleto = sc.nextLine().toUpperCase().charAt(0);
+                    if (respostaRejogarCompleto != 'S') {
+                        continue;
+                    }
                 }
+
+                // Restante da lógica do jogo...
+            } else {
+                System.out.println("Opção inválida! Digite um número de 1 a 6.");
+                continue;
             }
 
             boolean reiniciarNivelAtual = true;
@@ -181,12 +216,11 @@ public class Centro {
         }
 
         System.out.println("Salvando progresso final...");
-        salvarProgresso(niveisCompletados); // Garante que o progresso seja salvo ao sair
+        salvarProgresso(niveisCompletados);
         sc.close();
         System.out.println("Obrigado por jogar Labirintos Misteriosos!");
     }
 
-    // Método para selecionar classe (novo ou modificado)
     public static KitClasse selecionarClasse(Scanner sc, KitClasse[] classes, KitClasse kitAtual) {
         System.out.println("\n--- SELEÇÃO DE CLASSE ---");
         if (kitAtual != null) {
@@ -198,7 +232,7 @@ public class Centro {
             if (classes[i].getNome().equals("Guerreiro")) System.out.println(" (+15 Vida, +15 Ataque, +2 Dano Verdadeiro, +30% Armadura, -1 Velocidade)");
             else if (classes[i].getNome().equals("Mago")) System.out.println(" (+10 Vida, +5 Ataque, +20 Dano Verdadeiro, +15% Armadura, +2 Velocidade)");
             else if (classes[i].getNome().equals("Arqueiro")) System.out.println(" (+13 Vida, +10 Ataque, +10 Dano Verdadeiro, +20% Armadura, +7 Velocidade)");
-            else System.out.println(); // Nova linha se não for uma das classes conhecidas com descrição
+            else System.out.println();
         }
         System.out.print("Escolha sua classe (1-" + classes.length + ")" + (kitAtual != null ? ", ou 0 para manter a atual (" + kitAtual.getNome() + ")" : "") + ": ");
 
@@ -206,7 +240,7 @@ public class Centro {
         while (true) {
             try {
                 String linha = sc.nextLine();
-                if (linha.trim().isEmpty() && kitAtual != null) { // Se o usuário só apertar Enter e tiver uma classe atual
+                if (linha.trim().isEmpty() && kitAtual != null) {
                     System.out.println("Você manteve a classe " + kitAtual.getNome() + ".");
                     esperar(1000);
                     return kitAtual;
@@ -219,7 +253,7 @@ public class Centro {
                     return kitAtual;
                 }
                 if (escolhaClasseNum >= 1 && escolhaClasseNum <= classes.length) {
-                    break; // Seleção válida
+                    break;
                 }
                 System.out.print("Escolha inválida! Digite um número entre " + (kitAtual != null ? "0 e " : "1 e ") + classes.length + ": ");
             } catch (NumberFormatException e) {
@@ -237,31 +271,22 @@ public class Centro {
         if (arquivo.exists()) {
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(arquivo))) {
                 boolean[] progressoSalvo = (boolean[]) ois.readObject();
-                // Copia com segurança, prevenindo ArrayIndexOutOfBoundsException se os tamanhos diferirem
                 int lengthToCopy = Math.min(progressoSalvo.length, niveisCompletados.length);
                 System.arraycopy(progressoSalvo, 0, niveisCompletados, 0, lengthToCopy);
                 System.out.println("Progresso carregado com sucesso!");
             } catch (IOException | ClassNotFoundException e) {
-                System.err.println("Erro ao carregar progresso: " + e.getMessage() + ". Um novo progresso será iniciado.");
-                // Opcional: apagar o arquivo corrompido
-                // arquivo.delete();
             }
-        } else {
-            System.out.println("Nenhum arquivo de progresso encontrado. Iniciando um novo jogo.");
         }
     }
 
-    // Método para salvar progresso (sem alterações, mas chamado em mais lugares)
     private static void salvarProgresso(boolean[] niveisCompletados) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("progresso.dat"))) {
             oos.writeObject(niveisCompletados);
-            // System.out.println("Progresso salvo."); // Descomente para debug se necessário
         } catch (IOException e) {
             System.err.println("Erro ao salvar progresso: " + e.getMessage());
         }
     }
 
-    // Método esperar (sem alterações)
     private static void esperar(int milissegundos) {
         try {
             Thread.sleep(milissegundos);

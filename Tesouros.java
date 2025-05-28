@@ -20,6 +20,7 @@ public abstract class Tesouros {
     }
 
     private static final List<ItemEquipavel> itensEquipaveis = Arrays.asList(
+
             new ItemEquipavel("Espada de Onix", 0, 0, "Arma", 0, 0.00, 30, 1, 0, rd.nextInt(51) + 5),
             new ItemEquipavel("Machado Quebrado", 0, 0, "Arma", 0, 0.0, 5, 0, 0, rd.nextInt(6) + 1),
             new ItemEquipavel("Cajado de Mago", 0, 0, "Arma", 0, 0.0, 10, 30, -1, rd.nextInt(41) + 5),

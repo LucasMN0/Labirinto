@@ -61,7 +61,7 @@ Projeto desenvolvido para a disciplina de **Progamação Orientada à Objetos** 
 - Sistema de iniciativa e efeitos de status.
 
 ### Musica
--Jogo tem uma música própria.
+- Jogo tem uma música própria.
 
 ---
 
