@@ -1,6 +1,9 @@
 package LABIRINTO;
 
-public class KitClasse {
+import java.io.Serializable;
+
+public class KitClasse implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String nome;
     private int bonusVida;
     private int bonusAtaque;

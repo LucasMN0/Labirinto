@@ -4,8 +4,11 @@ import java.io.*;
 import java.util.*;
 
 public class Centro {
+    private static final String SAVE_DIR = "saves/";
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
+
+        new File(SAVE_DIR).mkdirs();
 
         System.out.println("============================================");
         System.out.println("|           Labirintos Misteriósos         |");
@@ -14,6 +17,33 @@ public class Centro {
         System.out.println("Prepare-se para enfrentar criaturas lendárias!");
         esperar(2000);
 
+        File[] saveFiles = new File(SAVE_DIR).listFiles((dir, name) -> name.endsWith(".dat"));
+
+        if (saveFiles != null && saveFiles.length > 0) {
+            System.out.println("\nSaves disponíveis:");
+            for (int i = 0; i < saveFiles.length; i++) {
+                String saveName = saveFiles[i].getName().replace(".dat", "");
+                System.out.println((i+1) + " - " + saveName);
+            }
+            System.out.println((saveFiles.length+1) + " - Criar novo save");
+
+            System.out.print("\nEscolha uma opção: ");
+            int escolha = sc.nextInt();
+            sc.nextLine(); // Limpar buffer
+
+            if (escolha > 0 && escolha <= saveFiles.length) {
+                // Carregar save existente
+                carregarJogo(saveFiles[escolha-1].getName().replace(".dat", ""), sc);
+                return;
+            }
+            // Se escolheu criar novo save, continuar normalmente
+        }
+
+        // Se não há saves ou escolheu criar novo
+        iniciarNovoJogo(sc);
+    }
+
+    private static void iniciarNovoJogo(Scanner sc) {
         System.out.print("\nAntes de começar, qual é o seu nome, aventureiro? ");
         System.out.print("\nNome: ");
         String nomeJogador = sc.nextLine().trim();
@@ -27,7 +57,45 @@ public class Centro {
         if (nomeJogador.isEmpty()) {
             nomeJogador = "Aventureiro";
         }
-        Monstruario monstruario = new Monstruario();
+
+        try {
+            jogar(nomeJogador, sc);
+        } catch (Exception e) {
+            System.out.println("Erro ao iniciar novo jogo: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private static void carregarJogo(String saveName, Scanner sc) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(SAVE_DIR + saveName + ".dat"))) {
+            SaveData saveData = (SaveData) ois.readObject();
+
+            System.out.println("\nBem-vindo de volta, " + saveData.getNomeJogador() + "!");
+
+            // Se já tinha classe salva, usa ela
+            if (saveData.getClasseAtual() != null) {
+                jogar(saveData.getNomeJogador(), sc, saveData, saveData.getClasseAtual());
+            } else {
+                jogar(saveData.getNomeJogador(), sc, saveData);
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Erro ao carregar o save. Iniciando novo jogo...");
+            e.printStackTrace();
+            iniciarNovoJogo(sc);
+        }
+    }
+
+    private static void jogar(String nomeJogador, Scanner sc) {
+        jogar(nomeJogador, sc, null, null);
+    }
+
+    private static void jogar(String nomeJogador, Scanner sc, SaveData saveData) {
+        jogar(nomeJogador, sc, saveData, null);
+    }
+
+    private static void jogar(String nomeJogador, Scanner sc, SaveData saveData, KitClasse classeSalva) {
+        Monstruario monstruario = saveData != null ? saveData.getMonstruario() : new Monstruario();
+        boolean[] niveisCompletados = saveData != null ? saveData.getNiveisCompletados() : new boolean[3];
 
         KitClasse[] classes = {
                 new KitClasse("Guerreiro", 15, 15, 2, 0.3, -1),
@@ -36,9 +104,8 @@ public class Centro {
         };
 
         // Seleção de classe inicial
-        KitClasse kitEscolhido = selecionarClasse(sc, classes, null); // Passamos null pois é a primeira seleção
+        KitClasse kitEscolhido = classeSalva != null ? classeSalva : selecionarClasse(sc, classes, null);
 
-        boolean[] niveisCompletados = new boolean[3]; // Fácil, Médio, Difícil
         carregarProgresso(niveisCompletados);
 
         boolean jogando = true;
@@ -51,14 +118,15 @@ public class Centro {
             System.out.println("3 - Jogar no nível Difícil" + (niveisCompletados[2] ? " (COMPLETADO)" : ""));
             System.out.println("4 - Ver Monstruário");
             System.out.println("5 - Ver Tutorial");
-            System.out.println("6 - Sair do jogo");
+            System.out.println("6 - Gerenciar Saves");
+            System.out.println("7 - Sair do jogo");
             System.out.print("Escolha uma opção: ");
 
             int opcao;
             try {
                 opcao = Integer.parseInt(sc.nextLine());
             } catch (NumberFormatException e) {
-                System.out.println("Opção inválida! Digite um número de 1 a 6.");
+                System.out.println("Opção inválida! Digite um número de 1 a 7.");
                 continue;
             }
 
@@ -85,12 +153,16 @@ public class Centro {
                 continue;
             }
 
-            if (opcao == 6) {
+            if(opcao == 6){
+                gerenciarSaves(sc, nomeJogador, niveisCompletados, monstruario, kitEscolhido);
+                continue;
+            }
+
+            if (opcao == 7) {
                 System.out.println("Até a próxima, " + nomeJogador + "!");
-                salvarProgresso(niveisCompletados);
+                salvarJogo(nomeJogador, niveisCompletados, monstruario, kitEscolhido);
                 jogando = false;
                 System.exit(0);
-                continue;
             }
 
             int dificuldadeMapa = opcao;
@@ -105,10 +177,8 @@ public class Centro {
                         continue;
                     }
                 }
-
-                // Restante da lógica do jogo...
             } else {
-                System.out.println("Opção inválida! Digite um número de 1 a 6.");
+                System.out.println("Opção inválida! Digite um número de 1 a 7.");
                 continue;
             }
 
@@ -275,6 +345,7 @@ public class Centro {
                 System.arraycopy(progressoSalvo, 0, niveisCompletados, 0, lengthToCopy);
                 System.out.println("Progresso carregado com sucesso!");
             } catch (IOException | ClassNotFoundException e) {
+                System.out.println("Erro ao carregar progresso, iniciando novo jogo...");
             }
         }
     }
@@ -287,11 +358,103 @@ public class Centro {
         }
     }
 
+    private static void salvarJogo(String nomeJogador, boolean[] niveisCompletados,
+                                   Monstruario monstruario, KitClasse classeAtual) {
+        try {
+            SaveData saveData = new SaveData(nomeJogador, niveisCompletados, monstruario, classeAtual);
+
+            // Garante que o diretório existe
+            new File(SAVE_DIR).mkdirs();
+
+            try (ObjectOutputStream oos = new ObjectOutputStream(
+                    new FileOutputStream(SAVE_DIR + nomeJogador + ".dat"))) {
+                oos.writeObject(saveData);
+                System.out.println("Jogo salvo com sucesso!");
+            }
+        } catch (IOException e) {
+            System.out.println("Erro ao salvar o jogo: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private static void salvarJogo(String nomeJogador, boolean[] niveisCompletados, Monstruario monstruario) {
+        salvarJogo(nomeJogador, niveisCompletados, monstruario, null);
+    }
+
+    private static void gerenciarSaves(Scanner sc, String nomeJogadorAtual, boolean[] niveisCompletadosAtual,
+                                       Monstruario monstruarioAtual, KitClasse classeAtual) {
+        System.out.println("\n=== GERENCIAR SAVES ===");
+
+        File[] saveFiles = new File(SAVE_DIR).listFiles((dir, name) -> name.endsWith(".dat"));
+
+        if (saveFiles == null || saveFiles.length == 0) {
+            System.out.println("Nenhum save encontrado.");
+            return;
+        }
+
+        for (int i = 0; i < saveFiles.length; i++) {
+            String saveName = saveFiles[i].getName().replace(".dat", "");
+            System.out.println((i+1) + " - " + saveName);
+        }
+        System.out.println((saveFiles.length+1) + " - Criar novo save");
+
+        System.out.print("\nEscolha uma opção: ");
+        int escolha;
+        try {
+            escolha = Integer.parseInt(sc.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Opção inválida!");
+            return;
+        }
+
+        if (escolha == saveFiles.length + 1) {
+            // Criar novo save
+            return;
+        }
+
+        if (escolha > 0 && escolha <= saveFiles.length) {
+            try {
+                // Salvar o jogo atual antes de carregar outro
+                if (nomeJogadorAtual != null && !nomeJogadorAtual.isEmpty()) {
+                    salvarJogo(nomeJogadorAtual, niveisCompletadosAtual, monstruarioAtual, classeAtual);
+                }
+
+                String saveName = saveFiles[escolha-1].getName().replace(".dat", "");
+                carregarJogo(saveName, sc);
+            } catch (Exception e) {
+                System.out.println("Erro ao trocar de save: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
+
     private static void esperar(int milissegundos) {
         try {
             Thread.sleep(milissegundos);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            System.out.println("O atraso foi interrompido.");
         }
     }
+}
+
+class SaveData implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private String nomeJogador;
+    private boolean[] niveisCompletados;
+    private Monstruario monstruario;
+    private KitClasse classeAtual;
+
+    public SaveData(String nomeJogador, boolean[] niveisCompletados, Monstruario monstruario, KitClasse classeAtual) {
+        this.nomeJogador = nomeJogador;
+        this.niveisCompletados = niveisCompletados;
+        this.monstruario = monstruario;
+        this.classeAtual = classeAtual;
+    }
+
+    // Getters
+    public String getNomeJogador() { return nomeJogador; }
+    public boolean[] getNiveisCompletados() { return niveisCompletados; }
+    public Monstruario getMonstruario() { return monstruario; }
+    public KitClasse getClasseAtual() { return classeAtual; }
 }

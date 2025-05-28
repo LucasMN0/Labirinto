@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Inimigo extends Perigo implements Serializable{
+public class    Inimigo extends Perigo implements Serializable{
     private int velocidade;
     private double armadura;
     private int vida;
@@ -380,9 +380,10 @@ public class Inimigo extends Perigo implements Serializable{
         }
         return inimigosNormais.get(rand.nextInt(inimigosNormais.size()));
     }
+
     private static boolean isBoss(String nome) {
         return nome.equals("Prometheus") ||
-                nome.equals("mão de deus") ||
+                nome.equals("Mão de Deus") ||
                 nome.equals("Memórias de um Sonho Antigo");
     }
 

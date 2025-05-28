@@ -687,10 +687,6 @@ public boolean mover(char direcao) {
         }
     }
 
-    private boolean estaNaPosicaoDoBoss() {
-        return posI == 0 && posJ == 6;
-    }
-
     private void iniciarCombateComBoss() {
         labirintoAtual.getEstrutura().get(posI).set(posJ, " ");
 
@@ -830,62 +826,6 @@ public boolean mover(char direcao) {
         }
     }
 
-    private void trocarClasse() {
-        KitClasse[] classes = {
-                new KitClasse("Guerreiro", 15, 15, 2, 0.3, -1),
-                new KitClasse("Mago", 10, 5, 20, 0.15, 2),
-                new KitClasse("Arqueiro", 13, 10, 10, 0.2, 7)
-        };
-
-        System.out.println("\nSelecione sua nova classe:");
-        System.out.println("1 - Guerreiro");
-        System.out.println("   +15 Vida, +15 Ataque, +2 Dano Verdadeiro, +30% Armadura, -1 Velocidade");
-        System.out.println("2 - Mago");
-        System.out.println("   +10 Vida, +5 Ataque, +20 Dano Verdadeiro, +15% Armadura, +2 Velocidade");
-        System.out.println("3 - Arqueiro");
-        System.out.println("   +13 Vida, +10 Ataque, +10 Dano Verdadeiro, +20% Armadura, +7 Velocidade");
-        System.out.print("Escolha (1-3): ");
-
-        int escolhaClasse;
-        while (true) {
-            try {
-                escolhaClasse = Integer.parseInt(sc.nextLine());
-                if (escolhaClasse >= 1 && escolhaClasse <= 3) break;
-                System.out.print("Escolha inválida! Digite 1, 2 ou 3: ");
-            } catch (NumberFormatException e) {
-                System.out.print("Entrada inválida! Digite 1, 2 ou 3: ");
-            }
-        }
-
-        KitClasse novaClasse = classes[escolhaClasse - 1];
-
-        // Remove o kit de classe atual
-        equipamentos.removeIf(item -> item.getNome().startsWith("Kit de "));
-
-        // Aplica os bônus da nova classe
-        this.vidaMaxima = 100 + novaClasse.getBonusVida();
-        this.vida = Math.min(vida, vidaMaxima);
-        this.danoAtaque = novaClasse.getBonusAtaque();
-        this.danoVerdadeiro = novaClasse.getBonusDanoVerdadeiro();
-        this.armadura = novaClasse.getBonusArmadura();
-        this.velocidade = novaClasse.getBonusVelocidade();
-
-        ItemEquipavel kitItem = new ItemEquipavel(
-                "Kit de " + novaClasse.getNome(),
-                0, 0, "Classe",
-                novaClasse.getBonusVida(),
-                novaClasse.getBonusArmadura(),
-                novaClasse.getBonusAtaque(),
-                novaClasse.getBonusDanoVerdadeiro(),
-                novaClasse.getBonusVelocidade(),
-                0
-        );
-        this.equipamentos.add(kitItem);
-
-        System.out.println("\nVocê agora é um " + novaClasse.getNome() + "!");
-        mostrarStatus();
-    }
-
     private void sairDoLabirinto() {
         System.out.println("\n--- SAINDO DO LABIRINTO ---");
         mapaPrincipal.paraMusica();
@@ -939,18 +879,26 @@ public boolean mover(char direcao) {
                     System.out.println("Velocidade: +" + item.getBonusVelocidade());
                     System.out.println("Valor de venda: " + item.getValorVenda() + " moedas");
 
-                    System.out.println("\nO que deseja fazer com este item?");
-                    System.out.println("1 - Equipar agora");
-                    System.out.println("2 - Colocar no inventário");
-                    System.out.print("Escolha: ");
+                    String escolha;
+                    do {
+                        System.out.println("\nO que deseja fazer com este item?");
+                        System.out.println("1 - Equipar agora");
+                        System.out.println("2 - Colocar no inventário");
+                        System.out.print("Escolha: ");
+                        escolha = sc.nextLine();
 
-                    String escolha = sc.nextLine();
+                        if (!escolha.equals("1") && !escolha.equals("2")) {
+                            System.out.println("Opção inválida. Por favor, escolha 1 ou 2.");
+                        }
+                    } while (!escolha.equals("1") && !escolha.equals("2"));
+
                     if (escolha.equals("1")) {
                         equipar(item);
                     } else {
                         adicionarItemNaoEquipado(item);
                     }
                     tesourosEncontrados.add(tesouro);
+
                 }
                 else if (tesouro instanceof ItemComum) {
                     ItemComum item = (ItemComum) tesouro;

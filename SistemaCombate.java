@@ -115,10 +115,14 @@ public class SistemaCombate {
             if (vidaInimigo <= 0) {
                 System.out.println("\nVocê derrotou o " + nomeInimigo + "!");
                 esperar(2000);
-                jogador.adicionarMoedas(10 + rand.nextInt(20));
-                System.out.println("Você ganhou moedas! Moedas atuais: " + jogador.getMoedas());
+
+                if (!isBoss(nomeInimigo)) {
+                    jogador.adicionarMoedas(10 + rand.nextInt(20));
+                    System.out.println("Você ganhou moedas! Moedas atuais: " + jogador.getMoedas());
+                } else {}
+
                 esperar(2000);
-                return false; // Jogador não foi derrotado
+                return false;
             }
 
             System.out.println("\n--- Turno do Inimigo (" + nomeInimigo + ") ---");
@@ -181,5 +185,11 @@ public class SistemaCombate {
             Thread.currentThread().interrupt();
             System.out.println("O atraso foi interrompido.");
         }
+    }
+
+    private static boolean isBoss(String nome) {
+        return nome.equals("Prometheus") ||
+                nome.equals("Mão de Deus") ||
+                nome.equals("Memórias de um Sonho Antigo");
     }
 }
