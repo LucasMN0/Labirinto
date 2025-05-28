@@ -72,7 +72,8 @@ public abstract class Tesouros {
     }
     public static int getValorRecuperacaoConsumivel(String nomeConsumivel) {
         switch (nomeConsumivel) {
-            case "Galeto Crocante", "Poção de Vida":
+            case "Galeto Crocante":
+            case "Poção de Vida":
                 return 30;
             case "Poção de Mana":
                 return 20;

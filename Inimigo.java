@@ -390,5 +390,4 @@ public class Inimigo extends Perigo implements Serializable{
     public Perigo copiar() {
         return new Inimigo(getNome(), getHistoria(), getDescricao(), getIDP(), getDano(), getVelocidade(), getArmadura(), getVida(), getDanoVerdadeiro(), getLinha(), getColuna());
     }
->>>>>>> 14cdff2a4c8842774da79d0c19ad3d25e04e16dd
 }

@@ -15,7 +15,6 @@ public class ItemEquipavel extends Tesouros {
         this.bonusAtaque = bonusAtaque;
         this.bonusVerdadeiro = bonusVerdadeiro;
         this.bonusVelocidade = bonusVelocidade;
-        this.valor = bonusVida * 2 + bonusAtaque * 3 + bonusVerdadeiro * 4;
     }
 
     // Getters

@@ -130,12 +130,6 @@ public class Centro {
                         emJogoEsteNivel = false;
                         reiniciarNivelAtual = false;
                         jogoTerminouParaTrocaClasse = true;
-
-                        System.out.print("\nDeseja trocar de classe antes de selecionar um novo desafio? (S/N): ");
-                        char respostaTrocarClasse = sc.nextLine().toUpperCase().charAt(0);
-                        if (respostaTrocarClasse == 'S') {
-                            kitEscolhido = selecionarClasse(sc, classes, kitEscolhido);
-                        }
                     }
 
                     if (!emJogoEsteNivel) { // Se venceu ou perdeu, sai do loop de input/movimento

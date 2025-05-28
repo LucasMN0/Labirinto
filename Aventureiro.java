@@ -686,12 +686,21 @@ public boolean mover(char direcao) {
     private void iniciarCombateComBoss() {
         labirintoAtual.getEstrutura().get(posI).set(posJ, " ");
 
-        Inimigo boss = switch(mapaPrincipal.getDificuldade()) {
-            case 1 -> Inimigo.getBossByName("Prometheus");
-            case 2 -> Inimigo.getBossByName("Mão de Deus");
-            case 3 -> Inimigo.getBossByName("Memórias de um Sonho Antigo");
-            default -> Inimigo.getInimigoAleatorio();
-        };
+    Inimigo boss;
+    switch (mapaPrincipal.getDificuldade()) {
+        case 1:
+            boss = Inimigo.getBossByName("Prometheus");
+            break;
+        case 2:
+            boss = Inimigo.getBossByName("Mão de Deus");
+            break;
+        case 3:
+            boss = Inimigo.getBossByName("Memórias de um Sonho Antigo");
+            break;
+        default:
+            boss = Inimigo.getInimigoAleatorio();
+            break;
+    }
 
         Inimigo bossFinal = new Inimigo(
                 boss.getNome(),
