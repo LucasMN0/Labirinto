@@ -7,19 +7,23 @@ import java.util.Map;
 public class Monstruario implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final String ARQUIVO_MONSTRUARIO = "monstruario.dat";
+
     private Map<String, Perigo> inimigosRegistrados;
     private Map<String, Perigo> armadilhasRegistradas;
+
     private static Monstruario instancia;
 
-    Monstruario() {
+    private Monstruario() {
         this.inimigosRegistrados = new HashMap<>();
         this.armadilhasRegistradas = new HashMap<>();
-        carregar();
     }
 
     public static Monstruario getInstance() {
         if (instancia == null) {
-            instancia = new Monstruario();
+            instancia = carregar();
+            if (instancia == null) {
+                instancia = new Monstruario();
+            }
         }
         return instancia;
     }
@@ -72,30 +76,23 @@ public class Monstruario implements Serializable {
 
     private void salvar() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(ARQUIVO_MONSTRUARIO))) {
-            Monstruario paraSalvar = new Monstruario();
-            paraSalvar.inimigosRegistrados = new HashMap<>(this.inimigosRegistrados);
-            paraSalvar.armadilhasRegistradas = new HashMap<>(this.armadilhasRegistradas);
-
-            oos.writeObject(paraSalvar);
+            oos.writeObject(this);
         } catch (IOException e) {
-            //System.err.println("Erro ao salvar monstruário: " + e.getMessage());
+            System.err.println("Erro ao salvar monstruário: " + e.getMessage());
             new File(ARQUIVO_MONSTRUARIO).delete();
         }
     }
 
-    private void carregar() {
+    private static Monstruario carregar() {
         File arquivo = new File(ARQUIVO_MONSTRUARIO);
         if (arquivo.exists()) {
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(arquivo))) {
-                Monstruario carregado = (Monstruario) ois.readObject();
-                this.inimigosRegistrados = new HashMap<>(carregado.inimigosRegistrados);
-                this.armadilhasRegistradas = new HashMap<>(carregado.armadilhasRegistradas);
+                return (Monstruario) ois.readObject();
             } catch (IOException | ClassNotFoundException e) {
-                //System.err.println("Erro ao carregar monstruário. Iniciando novo monstruário.");
+                System.err.println("Erro ao carregar monstruário. Iniciando novo.");
                 arquivo.delete();
-                this.inimigosRegistrados = new HashMap<>();
-                this.armadilhasRegistradas = new HashMap<>();
             }
         }
+        return null;
     }
 }

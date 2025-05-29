@@ -7,7 +7,7 @@ public class Centro {
     private static final String SAVE_DIR = "saves/";
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-
+        final long serialVersionUID = 1L;
         new File(SAVE_DIR).mkdirs();
 
         System.out.println("============================================");
@@ -94,7 +94,7 @@ public class Centro {
     }
 
     private static void jogar(String nomeJogador, Scanner sc, SaveData saveData, KitClasse classeSalva) {
-        Monstruario monstruario = saveData != null ? saveData.getMonstruario() : new Monstruario();
+        Monstruario monstruario = saveData != null ? saveData.getMonstruario() : Monstruario.getInstance();
         boolean[] niveisCompletados = saveData != null ? saveData.getNiveisCompletados() : new boolean[3];
 
         KitClasse[] classes = {
@@ -227,11 +227,14 @@ public class Centro {
 
                     // Verifica se o jogador morreu (Derrota)
                     if (!jogador.estaVivo()) {
+                        MusicaWav musica = new MusicaWav();
+                        musica.tocar(2);
                         System.out.println("\n====================================");
                         System.out.println("|           GAME OVER         |");
                         System.out.println("====================================");
                         System.out.println("Você foi derrotado, " + nomeJogador + "...");
-
+                        esperar(6000);
+                        musica.parar();
                         emJogoEsteNivel = false;
                         reiniciarNivelAtual = false;
                         jogoTerminouParaTrocaClasse = true;
