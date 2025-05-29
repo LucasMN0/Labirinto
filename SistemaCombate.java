@@ -37,10 +37,9 @@ public class SistemaCombate {
     }
 
     public static boolean encontrarInimigo(Aventureiro jogador, Inimigo inimigo) {
-        MusicaWav musica = new MusicaWav();
-        musica.tocar(1);
+        ControlarAudio.getMusica().tocarWav(1);
         System.out.println("\n=== COMBATE ===\n");
-        System.out.println("Você encontrou um " + inimigo.getNome() + "!");
+        System.out.println("Você encontrou um(a) " + inimigo.getNome() + "!");
         esperar(2000);
         System.out.println("\nDescrição: " + inimigo.getDescricao());
         esperar(2000);
@@ -124,7 +123,7 @@ public class SistemaCombate {
                 } else {}
 
                 esperar(2000);
-                musica.parar();
+                ControlarAudio.getMusica().pararTudo();
                 return false;
             }
 

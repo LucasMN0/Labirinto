@@ -303,7 +303,7 @@ class   Aventureiro {
     }
 
     public int calcularMusica(){
-        int x = mapaPrincipal.getInicioI() + mapaPrincipal.getInicioJ();
+        int x = getUltimaPosicaoMapaI() + getUltimaPosicaoMapaJ();
         int levelMusica;
         switch(mapaPrincipal.getDificuldade()){
                 case 1: 

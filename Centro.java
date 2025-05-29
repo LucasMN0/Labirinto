@@ -227,14 +227,13 @@ public class Centro {
 
                     // Verifica se o jogador morreu (Derrota)
                     if (!jogador.estaVivo()) {
-                        MusicaWav musica = new MusicaWav();
-                        musica.tocar(2);
+                        ControlarAudio.getMusica().tocarWav(2);
                         System.out.println("\n====================================");
                         System.out.println("|           GAME OVER         |");
                         System.out.println("====================================");
                         System.out.println("Você foi derrotado, " + nomeJogador + "...");
                         esperar(6000);
-                        musica.parar();
+                        ControlarAudio.getMusica().pararTudo();
                         emJogoEsteNivel = false;
                         reiniciarNivelAtual = false;
                         jogoTerminouParaTrocaClasse = true;

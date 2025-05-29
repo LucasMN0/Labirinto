@@ -12,7 +12,6 @@ public class Labirinto {
     private ArrayList<Perigo> listaPerigos;
     private int InicioI, InicioJ;
     private int FimI, FimJ;
-    private Musica music;
     Random rand = new Random();
 
     public Labirinto(int ID, int dificuldade, boolean isMapaPrincipal) {
@@ -22,7 +21,6 @@ public class Labirinto {
         this.estruturaLabirinto = new ArrayList<>();
         this.listaTesouros = new ArrayList<>();
         this.listaPerigos = new ArrayList<>();
-        this.music = new Musica();
 
         if (isMapaPrincipal) {
             gerar_Mapa(dificuldade);
@@ -35,10 +33,10 @@ public class Labirinto {
 
     // Metodos de musica
     public void setMusica(int levelMusic){
-        music.playLevel(levelMusic);
+        ControlarAudio.getMusica().tocarMidi(levelMusic);
     }
     public void paraMusica(){
-        music.stop();
+        ControlarAudio.getMusica().pararTudo();
     }
 
     // Getters
