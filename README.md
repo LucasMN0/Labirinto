@@ -69,3 +69,15 @@ Projeto desenvolvido para a disciplina de **Progamação Orientada à Objetos** 
 
 - Código dividido em múltiplas classes, promovendo organização e manutenção.
 - Facilmente expansível com novas classes, inimigos ou itens.
+
+## Fotos da Interface do Usuario
+
+![Interface 1](fotos-interface-usuario/foto1.png)
+![Interface 2](fotos-interface-usuario/foto2.png)
+![Interface 3](fotos-interface-usuario/foto3.png)
+![Interface 4](fotos-interface-usuario/foto4.png)
+![Interface 5](fotos-interface-usuario/foto5.png)
+![Interface 6](fotos-interface-usuario/foto6.png)
+![Interface 7](fotos-interface-usuario/foto7.png)
+![Interface 8](fotos-interface-usuario/foto8.png)
+![Interface 9](fotos-interface-usuario/foto9.png)
