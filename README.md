@@ -3,9 +3,9 @@
 Projeto desenvolvido para a disciplina de **Progamação Orientada à Objetos** no curso de **Ciência da Computação** da **Universidade Católica de Pernambuco**, ministrada pelo professor Lucas Rodolfo Celestino de Farias.
 
 ## Equipe
-- Bento Guilherme Gomes Oliveira
-- Arthur Amaral de Souza
-- Lucas Mendes Nóbrega
+- Bento Guilherme Gomes Oliveira -RA:00000852680
+- Arthur Amaral de Souza -RA:00000852603
+- Lucas Mendes Nóbrega -RA:00000852727
 
 ## Objetivos
 
