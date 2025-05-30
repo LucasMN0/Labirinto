@@ -116,10 +116,9 @@ public class Centro {
             System.out.println("1 - Jogar no nível Fácil" + (niveisCompletados[0] ? " (COMPLETADO)" : ""));
             System.out.println("2 - Jogar no nível Médio" + (niveisCompletados[1] ? " (COMPLETADO)" : ""));
             System.out.println("3 - Jogar no nível Difícil" + (niveisCompletados[2] ? " (COMPLETADO)" : ""));
-            System.out.println("4 - Ver Monstruário");
-            System.out.println("5 - Ver Tutorial");
-            System.out.println("6 - Gerenciar Saves");
-            System.out.println("7 - Sair do jogo");
+            System.out.println("4 - Ver Tutorial");
+            System.out.println("5 - Gerenciar Saves");
+            System.out.println("6 - Sair do jogo");
             System.out.print("Escolha uma opção: ");
 
             int opcao;
@@ -131,15 +130,6 @@ public class Centro {
             }
 
             if(opcao == 4){
-                if (monstruario.temRegistros()) {
-                    monstruario.mostrarMonstruario();
-                } else {
-                    System.out.println("Seu monstruário está vazio. Encontre inimigos e armadilhas para registrá-los!");
-                }
-                continue;
-            }
-
-            if(opcao == 5){
                 System.out.println("\n---Tutorial---");
                 System.out.println("\n\uD83C\uDFAE - Nos mapas e labirintos: ");
                 System.out.println("\nNo jogo você (jogador) é representado por 'O' !");
@@ -153,12 +143,12 @@ public class Centro {
                 continue;
             }
 
-            if(opcao == 6){
+            if(opcao == 5){
                 gerenciarSaves(sc, nomeJogador, niveisCompletados, monstruario, kitEscolhido);
                 continue;
             }
 
-            if (opcao == 7) {
+            if (opcao == 6) {
                 System.out.println("Até a próxima, " + nomeJogador + "!");
                 salvarJogo(nomeJogador, niveisCompletados, monstruario, kitEscolhido);
                 jogando = false;

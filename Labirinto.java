@@ -32,8 +32,8 @@ public class Labirinto {
     }
 
     // Metodos de musica
-    public void setMusica(int levelMusic){
-        ControlarAudio.getMusica().tocarMidi(levelMusic);
+    public void setMusica(){
+        ControlarAudio.getMusica().tocarWav(3);
     }
     public void paraMusica(){
         ControlarAudio.getMusica().pararTudo();
